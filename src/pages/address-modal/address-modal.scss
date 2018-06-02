@@ -1,0 +1,44 @@
+page-address-modal {
+    .backButton{
+        color:black;
+    }
+
+    ion-content {
+        background:linear-gradient(to right,#005C97 ,#363795);
+    }
+    .error-message {
+        color: red;
+    }
+
+    .item-md {
+        // padding-left: 16px;
+        // padding-left: 16px;
+        padding-left:10px !important;
+        padding-bottom:10px;
+        border-radius: 0;
+        position: relative;
+        font-size: 1.7rem;
+        font-weight: bolder;
+        color: #f5f1f1;
+        background-color: transparent;
+        -webkit-transition: background-color 200ms linear;
+        transition: background-color 200ms linear;
+    }
+    .errorBorder {
+        border-left-color: red;
+    }
+    .txt {
+        border-bottom: 1px solid white !important;
+        // color: white !important;
+        // height: 70% !important;
+    }
+    ion-input:focus {
+        border-left: 5px solid #32db64;
+        // padding-left: 4px;
+    }
+    .mb-4 {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    
+}

@@ -1,14 +1,21 @@
-<ion-header>
+<!-- <ion-header>
   <ion-navbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
+    <button>Sign In</button>
   </ion-navbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+  
+
+  <ion-row justify-content-end>
+    <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
+    <button *ngIf="authState && authState !== undefined" ion-button outline (click)="logout()">Log Out</button>
+  </ion-row>
+  
+  <ion-grid style="height: 100%">
+      <ion-row justify-content-center align-items-center style="height: 80%">
+          <ion-searchbar placeholder="Search Game"></ion-searchbar>
+      </ion-row>
+  </ion-grid>
+
 </ion-content>

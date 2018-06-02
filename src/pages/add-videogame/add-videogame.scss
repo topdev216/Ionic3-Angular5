@@ -1,0 +1,18 @@
+page-add-videogame {
+    .content{
+        background:linear-gradient(to right,#005C97 ,#363795);
+    }
+
+    .item-md {
+        // padding-left: 16px;
+        // padding-left: 16px;
+        padding-left:10px !important;
+        padding-bottom:10px;
+        background: transparent;
+    }
+
+    ion-select{
+        min-width:80% !important;
+        color:white;
+    }
+}

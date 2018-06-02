@@ -1,0 +1,58 @@
+page-profile {
+  
+  ion-content {
+    background: linear-gradient(to right,#005C97 ,#363795) !important;
+    
+    .profile-top {
+        width: 100%;
+        margin: 0;
+        background: linear-gradient(to right,#2980B9 ,#6DD5FA) !important;
+        border-bottom:3px solid #2980B9;
+
+        button{
+          color:white;
+        }
+
+        .trial-text{
+          text-align: center;
+          p{
+            color:rgba(255, 255, 255, 0.836);
+          }
+        }
+        .profile-photo {
+            padding-top: 16px;
+            
+            $photoSize: 128px;
+            
+            img {
+                width: $photoSize;
+                height: $photoSize;
+                border-radius: 50%;
+                border: solid 2px rgba(234, 79, 20, .5);
+                margin: 0 auto;
+            }
+        }
+    }
+
+    .profile-detail {
+        margin-top: 0px;
+
+        .editIcon{
+          margin-top:10px;
+          font-size:20px;
+        }
+
+        ion-item {
+            background:linear-gradient(to right,#005C97 ,#363795) !important;
+            color:white;
+            ion-icon {
+                font-size: 1.4rem;
+            }
+            p {
+                padding-top: 6px;
+                color:rgba(255, 255, 255, 0.836);
+            }
+        }
+    }
+}
+}
