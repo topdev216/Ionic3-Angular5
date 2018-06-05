@@ -1,7 +1,24 @@
 page-profile {
+
+
   
   ion-content {
     background: linear-gradient(to right,#005C97 ,#363795) !important;
+
+    ion-spinner{
+        width:68px;
+        height:68px;
+        margin-top:65%;
+        * {
+          stroke: white !important;
+        }
+    
+        &.spinner-circles circle,
+        &.spinner-bubbles circle,
+        &.spinner-dots circle {
+          fill: white !important;
+        }
+      }
     
     .profile-top {
         width: 100%;
@@ -21,6 +38,10 @@ page-profile {
         }
         .profile-photo {
             padding-top: 16px;
+            h1{
+                color:white;
+                padding:10px;
+            }
             
             $photoSize: 128px;
             

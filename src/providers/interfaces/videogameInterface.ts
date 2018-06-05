@@ -1,9 +1,9 @@
-export interface GameInterface {
+export interface VideogameInterface {
     title?: string;
-    rating?: string;
-    genre?: string;
     year?: string;
+    genre?: string;
     platform?: string;
+    rating?:string;
     frontPhoto?: string;
     backPhoto?: string;
 }

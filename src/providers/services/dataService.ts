@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { UrlEnvironment} from '../services/urlEnvironment';
 import { Observable } from 'rxjs/Observable';
 import { AddressInterface } from '../interfaces/addressInterface';  
-import { GameInterface } from '../interfaces/gameInterface';
+import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map'
 
@@ -30,6 +30,9 @@ export class DataService {
   public email: string;
   public authState: boolean;
   public user: firebase.User;
+  public trialAmount: number;
+  public trialEnd:number;
+  public errorDismiss: boolean;
   private _apiKey = "8ba5da0644ab24d2283053a6d8ee30a4"
 
   constructor(public http: HttpClient
@@ -87,14 +90,18 @@ export class DataService {
       .then((credential: any) => {
         let user = credential.user;
 
-        firebase.database().ref('/users/' + user.uid).once('value').then(function(snapshot) {
+        this.database.ref('/users/' + user.uid).once('value').then(function(snapshot) {
           console.log(snapshot.val());
           //user is not registered on database...
           if(snapshot.val() == null){
             this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime)
+          }//user doesn't have an username yet...
+          else if(snapshot.val().username == null){
+            return null;
           }
         });
-        return credential;
+        // return credential;
+        return user;
       });
   }
 
@@ -122,19 +129,35 @@ export class DataService {
   }
 
   
-  public addUserToDatabase(uid:string,username:string,email:string,date: string): void {
-    this.database.ref('users/'+uid).set({
-      name: username,
+  public addUserToDatabase(uid:string,name:string,email:string,date: string,username:string): Promise<any> {
+    return this.database.ref('users/'+uid).set({
+      username: username,
+      name: name,
       email: email,
       creationTime: date,
     })
   }
 
-  public saveAddress(address: AddressInterface) :void {
+  public fetchUserFromDatabase(uid:string): Promise<any>{
+    return this.database.ref('users/'+uid).once('value', (userSnapshot) => {
+      let user = {};
+      user = userSnapshot.val();
+      return user;
+    })
+  }
+  
+
+  public updateUserToDatabase(field: string, value:any) : Promise<any>{
+    return this.database.ref('users/'+this.uid).update({
+      [field]:value
+    })
+  }
+
+  public saveAddress(address: AddressInterface) :Promise<any> {
 
     console.log(address);
 
-    this.database.ref('users/'+this.uid).update({
+    return this.database.ref('users/'+this.uid).update({
       address:{
         street:address.streetAddress,
         zipCode:address.zipCode,
@@ -145,8 +168,8 @@ export class DataService {
 
   }
 
-  public savePhoneNumber(phoneNumber: string) :void{
-    this.database.ref('users/'+this.uid).update({
+  public savePhoneNumber(phoneNumber: string) :Promise<any>{
+    return this.database.ref('users/'+this.uid).update({
       phoneNumber:phoneNumber
     })
   }
@@ -159,23 +182,55 @@ export class DataService {
     let passedMilliseconds = now - amountOfCreation;
 
     let passedDays = Math.floor(passedMilliseconds / 86400000);
+
     
-    let remainingDays = 15 - passedDays;
+    
+    let remainingDays = this.trialAmount - passedDays;
 
     return remainingDays;
   }
 
-  public signUp(email: string, password: string): Promise<any> {
+  public checkExistingUsername(username:string):Promise<any>{
+    return this.database.ref('/users/').orderByChild("username").equalTo(username).once("value")
+  }
+
+  public getConstants() : void{
+    this.database.ref('constants/trialAmount').once('value').then( (snapshot)=>{
+      this.trialAmount = snapshot.val();
+    })
+
+    this.database.ref('constants/trialEnd').once('value').then( (snapshot)=>{
+      this.trialEnd = snapshot.val();
+    })
+
+
+  }
+
+  public errorDismissed(value:boolean):void{
+    this.errorDismiss = value;
+  }
+
+  public signUp(email: string, password: string,username:string): Promise<any> {
+    
     return firebase.auth()
       .createUserWithEmailAndPassword(email, password)
-      .then((user) => {
-        this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime)
-        return user.sendEmailVerification();
+      .then(() => {
+          let user = firebase.auth().currentUser;
+          this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,username)
+          .then(()=>{
+            return user.sendEmailVerification();
+          })
       })
       .then((user) => {
         return this.signOut();
       });
   }
+  
+  public signIn(email: string, password: string): Promise<any> {
+    return firebase.auth().signInWithEmailAndPassword(email, password);
+  }
+
+
 
 
   public getUserAddress(lat:string,lng:string,apiKey:string):Observable<any>{
@@ -188,9 +243,9 @@ export class DataService {
     return this.http.get(this.urlEnvironment.getGamesAPI())
   }
 
-  public getGamesFirebase(): void{
+  public getGamesFirebase(): Promise<any>{
 
-    firebase.database().ref('/videogames/' + this.uid).once('value').then(function(snapshot) {
+    return firebase.database().ref('/videogames/' + this.uid).once('value').then(function(snapshot) {
      
     });
 

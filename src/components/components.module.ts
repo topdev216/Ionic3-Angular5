@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
+import { ErrorCardComponent } from './error-card/error-card';
 @NgModule({
-	declarations: [],
+	declarations: [ErrorCardComponent],
 	imports: [],
-	exports: []
+	exports: [ErrorCardComponent]
 })
 export class ComponentsModule {}

@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
 
   <ion-navbar>
     <button ion-button menuToggle>
@@ -7,72 +7,88 @@
     <ion-title text-center>PROFILE</ion-title>
   </ion-navbar>
 
-</ion-header>
+</ion-header> -->
 
 
 <ion-content>
-  <ion-card class="profile-top">
-    <ion-row justify-content-center>
-      <ion-col>
-        <div class="profile-photo">
-          <img src="{{photoUrl}}" alt="asda">
-        </div>
-        <button ion-button (click)="changeProfile()" block clear>Change profile picture</button>
-        <div class="trial-text">
-          <p>{{remainingDays}} days remaining</p>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-card>
-  <ion-list class="profile-detail">
-    <ion-row>
-      <ion-col no-padding>
-        <ion-item icon-right>
 
-          <ion-row no-padding>
+  <div *ngIf="loading">
+      <ion-grid style="height: 100%">
+          <ion-row justify-content-center align-items-center style="height: 100%">
+                  <ion-spinner name="crescent"></ion-spinner>
+          </ion-row>
+      </ion-grid>
+  </div>
 
-          <ion-col text-wrap>
-            <h4>Address</h4>
-            <p>{{streetAddress}} {{city}} {{state}} {{zipCode}} {{country}}</p>
-          </ion-col>
-          
-          <ion-col>
-            <ion-row justify-content-end>
-              <button ion-button clear (click)="editAddress()"><ion-icon class="editIcon" name="create" ></ion-icon></button>
+
+  <div *ngIf="!loading">
+    <ion-card class="profile-top">
+      <ion-row justify-content-center>
+        <ion-col>
+          <div class="profile-photo">
+            <ion-row justify-content-start>
+                <h1>{{username}}</h1>
             </ion-row>
-          </ion-col>
+            <img src="{{photoUrl}}" alt="asda">
+          </div>
+          <button ion-button (click)="changeProfile()" block clear>Change profile picture</button>
+          <div class="trial-text">
+            <p>{{remainingDays}} days remaining</p>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+    <ion-list class="profile-detail">
+      <ion-row>
+        <ion-col no-padding>
+          <ion-item icon-right>
 
-        </ion-row>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    
-    <ion-item icon-left>
-      <h4><ion-icon name="mail"></ion-icon>Email Address</h4>
-      <p>{{emailAddress}}</p>
-    </ion-item>
+            <ion-row no-padding>
 
-    <ion-item icon-left>
-        <ion-row no-padding>
-
-            <ion-col>
-              <h4><ion-icon name="call"></ion-icon>Phone</h4>
-              <p>{{phoneNumber}}</p>
+            <ion-col text-wrap>
+              <h4>Address</h4>
+              <p>{{streetAddress}} {{city}} {{state}} {{zipCode}} {{country}}</p>
             </ion-col>
             
             <ion-col>
               <ion-row justify-content-end>
-                <button ion-button clear (click)="editPhoneNumber()"><ion-icon class="editIcon" name="create" ></ion-icon></button>
+                <button ion-button clear (click)="editAddress()"><ion-icon class="editIcon" name="create" ></ion-icon></button>
               </ion-row>
             </ion-col>
-  
+
           </ion-row>
-    </ion-item>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      
+      <ion-item icon-left>
+        <h4><ion-icon name="mail"></ion-icon>Email Address</h4>
+        <p>{{emailAddress}}</p>
+      </ion-item>
 
-  </ion-list>
+      <ion-item icon-left>
+          <ion-row no-padding>
 
-  <ion-row justify-content-center>
-    <button ion-button outline icon-left (click)="addVideogame()"><ion-icon name="add"></ion-icon>ADD VIDEOGAME</button>
-  </ion-row>
+              <ion-col>
+                <h4><ion-icon name="call"></ion-icon>Phone</h4>
+                <p>{{phoneNumber}}</p>
+              </ion-col>
+              
+              <ion-col>
+                <ion-row justify-content-end>
+                  <button ion-button clear (click)="editPhoneNumber()"><ion-icon class="editIcon" name="create" ></ion-icon></button>
+                </ion-row>
+              </ion-col>
+    
+            </ion-row>
+      </ion-item>
+
+    </ion-list>
+
+    <ion-row justify-content-center>
+      <button ion-button outline icon-left (click)="addVideogame()"><ion-icon name="add"></ion-icon>ADD VIDEOGAME Interested/Offering</button>
+      <button ion-button outline icon-left><ion-icon name="people"></ion-icon>VIEW FRIENDS</button>
+    </ion-row>
+  </div>
 
 </ion-content>

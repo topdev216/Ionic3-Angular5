@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
-import { GameInterface } from '../../providers/interfaces/gameInterface'; 
+import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
 import { DataService } from '../../providers/services/dataService';
 
 /**
@@ -20,9 +20,9 @@ import { DataService } from '../../providers/services/dataService';
 export class AddVideogamePage {
 
   private postForm: FormGroup;
-  private game: GameInterface;
-  private games: GameInterface[];
-  
+  private game: VideogameInterface;
+  private games: VideogameInterface[];
+  private type: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public formBuilder: FormBuilder
@@ -38,7 +38,10 @@ export class AddVideogamePage {
       frontPhoto: ['', Validators.compose([Validators.required])],
       backPhoto: ['', Validators.compose([Validators.required])],
       game: ['', Validators.compose([Validators.required])],
+      type: ['', Validators.compose([Validators.required])],
     });
+
+    this.type = "offer";
 
 
   }

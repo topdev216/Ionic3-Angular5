@@ -50,7 +50,6 @@ export class AddressModalPage {
     address.city = form.city;
     address.state = form.state;
     address.streetAddress = form.streetAddress;
-    address.uid = this.dataService.user.uid;
 
     this.dataService.saveAddress(address);
     this.navCtrl.pop();

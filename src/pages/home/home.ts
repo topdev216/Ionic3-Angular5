@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { LoginPage } from '../../pages/login/login';
+import { LoadingPage } from '../../pages/loading/loading';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
 
@@ -11,13 +12,13 @@ import * as firebase from 'firebase/app';
 export class HomePage {
 
   public authState:boolean = null;
-
   constructor(public navCtrl: NavController
   , public dataService: DataService) {
     
   }
 
   ionViewWillEnter(){
+    
     firebase.auth().onAuthStateChanged( (user) =>{
       if(user){
         this.authState = true

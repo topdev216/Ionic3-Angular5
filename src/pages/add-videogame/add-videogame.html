@@ -16,7 +16,16 @@
 <ion-content padding>
     <form [formGroup]="postForm" (ngSubmit)="submitVideogame(postForm.value)">
 
-        
+        <ion-segment [(ngModel)]="type" formControlName="type">
+            <ion-segment-button value="offer">
+              Offering
+            </ion-segment-button>
+            <ion-segment-button value="interested">
+              Interested
+            </ion-segment-button>
+            
+        </ion-segment>
+      
       <ion-list>
           <ion-item>
               <select-searchable

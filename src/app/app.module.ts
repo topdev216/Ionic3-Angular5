@@ -18,6 +18,11 @@ import { AddVideogamePage } from '../pages/add-videogame/add-videogame';
 import { AddressModalPage } from '../pages/address-modal/address-modal';
 import { UrlEnvironment } from '../providers/services/urlEnvironment';
 import { SelectSearchableModule } from 'ionic-select-searchable';
+import { AddUsernamePage } from '../pages/add-username/add-username';
+import { LoadingPage } from '../pages/loading/loading';
+import { UsernameValidator } from '../providers/services/usernameValidator';
+import { ChatPage } from '../pages/chat/chat';
+import { ErrorCardComponent } from '../components/error-card/error-card';
 
 
 const firebaseConfig = {
@@ -38,7 +43,11 @@ const firebaseConfig = {
     SignupPage,
     ProfilePage,
     AddVideogamePage,
-    AddressModalPage
+    AddressModalPage,
+    AddUsernamePage,
+    LoadingPage,
+    ChatPage,
+    ErrorCardComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -60,7 +69,11 @@ const firebaseConfig = {
     SignupPage,
     ProfilePage,
     AddVideogamePage,
-    AddressModalPage
+    AddressModalPage,
+    AddUsernamePage,
+    LoadingPage,
+    ChatPage,
+    ErrorCardComponent
   ],
   providers: [
     StatusBar,
@@ -68,7 +81,8 @@ const firebaseConfig = {
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     DataService,
     HttpClient,
-    UrlEnvironment
+    UrlEnvironment,
+    UsernameValidator
   ]
 })
 export class AppModule {}

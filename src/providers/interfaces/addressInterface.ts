@@ -3,5 +3,4 @@ export interface AddressInterface {
     city?: string;
     state?: string;
     zipCode?: string;
-    uid?: string;
 }

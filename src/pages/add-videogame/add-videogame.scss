@@ -14,5 +14,16 @@ page-add-videogame {
     ion-select{
         min-width:80% !important;
         color:white;
+        
     }
-}
+
+    ion-segment{
+        padding-bottom:60px;
+        padding-top:10px;
+        
+    }
+    .segment-md .segment-button {
+        font-size:17px;
+    }
+
+}   

@@ -25,6 +25,8 @@ export class MyApp {
   , public dataService: DataService
   , splashScreen: SplashScreen
   , public events: Events) {
+    
+    this.dataService.getConstants();
 
     firebase.auth().onAuthStateChanged((user: firebase.User) => {
       let uid = null;
@@ -44,7 +46,7 @@ export class MyApp {
         
         
         if (user.emailVerified) {
-          if(dataService.getRemainingDays(user) <= 0){
+          if(dataService.getRemainingDays(user) <= this.dataService.trialEnd){
             this.trialCondition = false;
             console.log('Trial expired');
           }

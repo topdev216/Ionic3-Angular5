@@ -1,0 +1,26 @@
+<!-- Generated template for the ErrorCardComponent component -->
+<ion-card *ngIf="!dismissed">
+  <ion-card-header>
+    <ion-row justify-content-center>
+        <ion-icon name="alert"></ion-icon>
+    </ion-row>
+    <ion-row justify-content-center>
+        Oh snap!
+    </ion-row>
+    
+  </ion-card-header>
+  
+  <ion-card-content>
+      <ion-row justify-content-center>
+          <div class="error message">
+            An error has ocurred. {{errorMessage}}
+          </div>
+      </ion-row>
+
+      <ion-row>
+        <div class="dismiss">
+          <button ion-button clear (click)="dismiss()" >Dismiss</button>
+        </div>
+      </ion-row>
+  </ion-card-content>
+</ion-card>

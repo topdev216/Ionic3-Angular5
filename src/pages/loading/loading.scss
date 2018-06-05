@@ -1,0 +1,20 @@
+page-loading {
+
+    .content{
+      background:linear-gradient(to right,#005C97 ,#363795);
+    }
+    ion-spinner{
+        width:68px;
+        height:68px;
+        margin-top:65%;
+        * {
+          stroke: white !important;
+        }
+    
+        &.spinner-circles circle,
+        &.spinner-bubbles circle,
+        &.spinner-dots circle {
+          fill: white !important;
+        }
+    }
+}

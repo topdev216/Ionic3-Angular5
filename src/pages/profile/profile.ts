@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ModalController,AlertController } 
 import { DataService} from '../../providers/services/dataService'; 
 import { AddVideogamePage } from '../../pages/add-videogame/add-videogame'; 
 import { AddressModalPage } from '../../pages/address-modal/address-modal';
+import { AddUsernamePage } from '../../pages/add-username/add-username';
 import * as firebase from 'firebase/app';
 
 /**
@@ -19,15 +20,18 @@ import * as firebase from 'firebase/app';
 })
 export class ProfilePage {
 
-  emailAddress:string;
-  photoUrl:string;
-  phoneNumber:string;
+  username:string = null;
+  emailAddress:string = null;
+  photoUrl:string = null;
+  phoneNumber:string = null;
   remainingDays:number;
-  streetAddress:string;
-  city:string;
-  state: string;
-  zipCode:string;
-  country:string;
+  streetAddress:string = null;
+  city:string = null;
+  state: string = null;
+  zipCode:string = null;
+  country:string = null;
+  disabled:boolean = true;
+  loading: boolean;
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams
@@ -41,31 +45,51 @@ export class ProfilePage {
   }
 
   ionViewWillEnter(){
-    firebase.database().ref('users/' + this.dataService.uid).once('value', (snapshot) => {
-      if(snapshot.val().address){
-        let address = snapshot.val().address;
+    this.loading = true;
+
+    this.dataService.fetchUserFromDatabase(this.dataService.uid).then((user) => {
+      if(user.val().address){
+        let address = user.val().address;
         console.log(address.street);
         this.streetAddress = address.street;
         this.city = address.city;
         this.state = address.state;
         this.zipCode = address.zipCode;
         this.country = "USA"
+        
       }
       else{
         this.streetAddress = "Please set your address";
+        this.city = "";
+        this.state = "";
+        this.zipCode = "";
+        this.country = "";
+        
       }
-      if(snapshot.val().phoneNumber){
-        let phoneNumber = snapshot.val().phoneNumber;
+      if(user.val().phoneNumber){
+        let phoneNumber = user.val().phoneNumber;
         this.phoneNumber = phoneNumber;
       }
       else{
         this.phoneNumber = "Please set your phone number"; 
       }
+      if(user.val().username){
+        this.username = user.val().username;
+      }
+      else{
+        this.username = "";
+        console.log('no username');
+        let modal = this.modalCtrl.create(AddUsernamePage);
+        modal.present();
+      }
+
+      this.remainingDays = this.dataService.getRemainingDays(this.dataService.user);
+      this.emailAddress = this.dataService.email;
+      this.photoUrl = this.dataService.user.photoURL;
+      this.loading = false;
     });
-    this.emailAddress = this.dataService.email;
-    this.photoUrl = this.dataService.user.photoURL;
-    // this.phoneNumber = this.dataService.user.phoneNumber;
-    this.remainingDays = this.dataService.getRemainingDays(this.dataService.user);
+    
+    
   }
 
   editAddress(){
@@ -84,13 +108,13 @@ export class ProfilePage {
         else{
           this.streetAddress = "Please set your address";
         }
-        if(snapshot.val().phoneNumber){
-          let phoneNumber = snapshot.val().phoneNumber;
-          this.phoneNumber = phoneNumber;
-        }
-        else{
-          this.phoneNumber = "Please set your phone number"; 
-        }
+        // if(snapshot.val().phoneNumber){
+        //   let phoneNumber = snapshot.val().phoneNumber;
+        //   this.phoneNumber = phoneNumber;
+        // }
+        // else{
+        //   this.phoneNumber = "Please set your phone number"; 
+        // }
       })
       
     })

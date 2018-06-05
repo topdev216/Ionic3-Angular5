@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { LoginPage } from '../../pages/login/login';
+import { HomePage } from '../../pages/home/home';
+import { LoginPage} from '../../pages/login/login';
+import { TabsPage } from '../../pages/tabs/tabs'; 
 import { DataService} from '../../providers/services/dataService';
 import { Observable, Subscription } from "rxjs/Rx";
 
@@ -24,6 +26,7 @@ export class SignupPage {
   majlis: string = "";
   loading: any;
   error: any;
+  username: string="";
   subscriptionDoSaveUser: Subscription;
   firstName: string;
   zipcode: number;
@@ -40,10 +43,11 @@ export class SignupPage {
   private submit(): void {
     this.dataService.showLoading();
     this.error = null;
-    this.dataService.signUp(this.email, this.password)
-      .then(() => {
-          this.navCtrl.push(LoginPage);
-          this.dataService.hideLoading();
+    this.dataService.signUp(this.email, this.password,this.username)
+      .then((user) => {   
+            this.navCtrl.push(LoginPage);
+            this.dataService.hideLoading();
+          
       })
       .catch((error: any) => {
         this.dataService.hideLoading();
