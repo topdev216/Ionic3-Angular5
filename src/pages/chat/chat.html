@@ -46,8 +46,9 @@
                         </ion-list-header>
 
                         <ion-item *ngFor="let room of rooms" no-padding>
-                        <button menuClose ion-item outline text-wrap (click)="enterChat(room.name)"><ion-icon name="chatboxes" item-end></ion-icon>
-                            {{room.name}}</button>
+                        <button menuClose ion-item outline text-wrap (click)="enterChat(room.name,room.key)"><ion-icon name="chatboxes" item-end></ion-icon>
+                            {{room.name}}
+                        </button>
                         </ion-item>
 
                        

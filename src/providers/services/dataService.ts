@@ -31,6 +31,7 @@ export class DataService {
   public authState: boolean;
   public user: firebase.User;
   public username:string;
+  public activeChatroomID:string;
   public trialAmount: number;
   public trialEnd:number;
   public errorDismiss: boolean;
@@ -274,5 +275,17 @@ export class DataService {
     return this.database.ref('/chatrooms/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).once("value")
   }
 
+  public joinPublicRoom(chatKey:string,username:string):Promise<any>{
+
+    let joinData = firebase.database().ref('chatrooms/'+chatKey+'/chats').push();
+    return joinData.set({
+    type:'join',
+    user:username,
+    message:username+' has joined this room.',
+    sendDate:Date()
+    });
+ 
+    
+  }
   
 }

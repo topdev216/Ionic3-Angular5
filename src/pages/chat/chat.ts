@@ -23,6 +23,7 @@ export class ChatPage {
   private error: string;
   private user: any;
   private rooms:any [] = [];
+  private roomKeys: any [] = [];
 
 
 
@@ -56,7 +57,10 @@ export class ChatPage {
           
           snapshot.forEach((childSnapshot) =>{
             console.log('rooms:',childSnapshot.val());
-            this.rooms.push(childSnapshot.val());
+            console.log('keys:',childSnapshot.key);
+            let room = childSnapshot.val();
+            room.key = childSnapshot.key;
+            this.rooms.push(room);
           })
           this.loading = false;
 
@@ -78,8 +82,9 @@ export class ChatPage {
     this.rooms = [];
   }
 
-  private enterChat(chatTitle:string) :void{
-    this.navCtrl.push(MessagingPage,{title:chatTitle});
+  private enterChat(chatTitle:string,chatKey:string) :void{
+    this.dataService.joinPublicRoom(chatKey,this.user.username);
+    this.navCtrl.push(MessagingPage,{title:chatTitle,key:chatKey,username:this.user.username});
   }
 
 }

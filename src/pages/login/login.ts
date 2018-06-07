@@ -42,6 +42,7 @@ export class LoginPage {
     this.dataService.googleLogin().then((data:any)=>{
       this.dataService.hideLoading();
       console.log('logged data: ',data);
+      this.navCtrl.setRoot(TabsPage);
       //returned with no username
       // if(data == undefined){
       //   let modal = this.modalCtrl.create(AddUsernamePage);
