@@ -7,17 +7,26 @@
 <ion-content padding>
   
 
-  <ion-row justify-content-end>
-    <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
-    <button *ngIf="authState && authState !== undefined" ion-button outline (click)="logout()">Log Out</button>
-  </ion-row>
-  
-  <ion-grid style="height: 100%">
-      <ion-row justify-content-center align-items-center style="height: 80%">
-          <ion-searchbar placeholder="Search Game"></ion-searchbar>
-      </ion-row>
-  </ion-grid>
+    <div *ngIf="loading">
+        <ion-grid style="height: 100%">
+            <ion-row justify-content-center align-items-center style="height: 100%">
+                    <ion-spinner name="crescent"></ion-spinner>
+            </ion-row>
+        </ion-grid>
+    </div>
 
+  <div *ngIf="!loading" style="height:80%;">
+      <ion-row justify-content-end>
+          <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
+          <button *ngIf="authState && authState !== undefined" ion-button outline (click)="logout()">Log Out</button>
+      </ion-row>
+        
+        <ion-grid style="height: 100%">
+            <ion-row justify-content-center align-items-center style="height: 100%">
+                <ion-searchbar placeholder="Search Game"></ion-searchbar>
+            </ion-row>
+        </ion-grid>
+  </div>
 
 
 

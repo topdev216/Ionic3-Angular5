@@ -1,1 +1,9 @@
-<ion-nav [root]="rootPage"></ion-nav>
+<ion-menu [content]="mycontent">
+
+    <ion-content no-padding>
+        <menu username="{{username}}"></menu>
+    </ion-content>
+
+</ion-menu>
+
+<ion-nav #mycontent [root]="rootPage"></ion-nav>

@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import { ErrorCardComponent } from './error-card/error-card';
+import { MenuComponent } from './menu/menu';
 @NgModule({
-	declarations: [ErrorCardComponent],
+	declarations: [ErrorCardComponent,
+    MenuComponent],
 	imports: [],
-	exports: [ErrorCardComponent]
+	exports: [ErrorCardComponent,
+    MenuComponent]
 })
 export class ComponentsModule {}

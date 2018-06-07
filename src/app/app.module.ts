@@ -23,6 +23,8 @@ import { LoadingPage } from '../pages/loading/loading';
 import { UsernameValidator } from '../providers/services/usernameValidator';
 import { ChatPage } from '../pages/chat/chat';
 import { ErrorCardComponent } from '../components/error-card/error-card';
+import { MenuComponent } from '../components/menu/menu';
+import { MessagingPage } from '../pages/messaging/messaging';
 
 
 const firebaseConfig = {
@@ -47,7 +49,9 @@ const firebaseConfig = {
     AddUsernamePage,
     LoadingPage,
     ChatPage,
-    ErrorCardComponent
+    ErrorCardComponent,
+    MenuComponent,
+    MessagingPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -73,7 +77,9 @@ const firebaseConfig = {
     AddUsernamePage,
     LoadingPage,
     ChatPage,
-    ErrorCardComponent
+    ErrorCardComponent,
+    MenuComponent,
+    MessagingPage
   ],
   providers: [
     StatusBar,

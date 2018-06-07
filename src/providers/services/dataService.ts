@@ -30,6 +30,7 @@ export class DataService {
   public email: string;
   public authState: boolean;
   public user: firebase.User;
+  public username:string;
   public trialAmount: number;
   public trialEnd:number;
   public errorDismiss: boolean;
@@ -250,4 +251,28 @@ export class DataService {
     });
 
   }
+
+  public createPublicChatroom(name:string): Promise<any>{
+
+    let chatroomRef = this.database.ref('/chatrooms/').push();
+    
+
+    return chatroomRef.set({
+      name:name,
+      type:'public',
+      participants:{
+        [this.uid]:{
+          username:this.username
+        }
+      }
+      
+    }) 
+  }
+
+  public getUserPublicRooms():Promise<any>{
+    console.log(this.username);
+    return this.database.ref('/chatrooms/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).once("value")
+  }
+
+  
 }

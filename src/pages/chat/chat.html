@@ -5,7 +5,26 @@
   Ionic pages and navigation.
 -->
 
+<ion-header text-align-center>
+        <ion-toolbar>
+                <button ion-button menuToggle left>
+                  <ion-icon name="menu"></ion-icon>
+                </button>
+                <ion-title>
+                  Chat
+                </ion-title>
+                <ion-buttons start>
+                  <button ion-button>
+                    <ion-icon name="more"></ion-icon>
+                  </button>
+                </ion-buttons>
+        </ion-toolbar>
+</ion-header>
+
+
 <ion-content padding>
+
+    
 
     <div *ngIf="loading">
         <ion-grid style="height: 100%">
@@ -17,6 +36,47 @@
 
     <div *ngIf="!loading">
             <error-card errorMessage="{{error}}" *ngIf="showError"></error-card>
+
+            <div *ngIf="!showError">
+            <ion-card>
+                <ion-list>
+
+                        <ion-list-header>
+                        Rooms
+                        </ion-list-header>
+
+                        <ion-item *ngFor="let room of rooms" no-padding>
+                        <button menuClose ion-item outline text-wrap (click)="enterChat(room.name)"><ion-icon name="chatboxes" item-end></ion-icon>
+                            {{room.name}}</button>
+                        </ion-item>
+
+                       
+                
+                </ion-list>
+            </ion-card>
+
+            <ion-card>
+                <ion-list>
+
+                        <ion-list-header>
+                        Chats
+                        </ion-list-header>
+                        <ion-item no-padding>
+                        <button menuClose ion-item outline text-wrap><ion-icon name="chatboxes" item-end></ion-icon>
+                            user_123</button>
+                        </ion-item>
+
+                        <ion-item no-padding>
+                                <button menuClose ion-item outline text-wrap><ion-icon name="chatboxes" item-end></ion-icon>
+                                user_321</button>
+                        </ion-item>
+                        
+                
+                </ion-list>
+            </ion-card>
+            </div>
+            
     </div>
 
 </ion-content>
+

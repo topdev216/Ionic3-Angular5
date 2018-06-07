@@ -2,7 +2,14 @@ page-chat {
 
     .content{
         background:linear-gradient(to right,#005C97 ,#363795);
+
+        ion-list-header{
+          font-size:16px;
+          border-bottom:0.03rem solid rgb(197, 197, 197);
+        }
     }
+
+
 
     ion-spinner{
         width:68px;

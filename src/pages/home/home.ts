@@ -12,19 +12,22 @@ import * as firebase from 'firebase/app';
 export class HomePage {
 
   public authState:boolean = null;
+  private loading:boolean;
   constructor(public navCtrl: NavController
   , public dataService: DataService) {
     
   }
 
   ionViewWillEnter(){
-    
+    this.loading = true;
     firebase.auth().onAuthStateChanged( (user) =>{
       if(user){
         this.authState = true
+        this.loading = false;
       }
       else{
         this.authState = false;
+        this.loading = false;
       }  
     })
   }

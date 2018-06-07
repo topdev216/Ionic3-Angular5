@@ -1,0 +1,15 @@
+menu {
+    padding-left:0px !important;
+    margin-top:0px !important;
+    ion-list{
+        .item{
+        background:#003366;
+        color:white;
+        min-width:100% !important;
+        }
+        
+        .list-header{
+            background:#8db4db;
+        }
+    }
+}

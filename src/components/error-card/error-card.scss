@@ -1,7 +1,12 @@
 error-card {
     width:70%;
+    .card{
+        background:#9fc2ff;
+        border:1px solid #488aff;
+        border-radius:5px;
+    }
     .icon{
-        color:red;
+        color:#f53d3d;
         font-size:60px;
         padding-top:10px;
         padding-bottom:20px;
@@ -13,7 +18,7 @@ error-card {
 
     .dismiss{
         height:40px;
-        background:red;
+        background:#f53d3d;
         width:100%;
         text-align:center;
         button{
@@ -27,6 +32,7 @@ error-card {
     }
     
     .error.message{
-        padding-bottom:10px;
+        padding:10px;
+        word-wrap: break-word;
     }
 }   

@@ -20,6 +20,7 @@ export class MyApp {
   trialCondition:boolean = null;
   rootPage:any = TabsPage;
   user: Observable<firebase.User>;
+  username:string;
 
   constructor(platform: Platform, statusBar: StatusBar
   , public dataService: DataService
@@ -27,6 +28,7 @@ export class MyApp {
   , public events: Events) {
     
     this.dataService.getConstants();
+    
 
     firebase.auth().onAuthStateChanged((user: firebase.User) => {
       let uid = null;
@@ -38,6 +40,10 @@ export class MyApp {
         console.log("user.emailVerified: ", user.emailVerified);
         uid = user.uid;
         dataService.user = user;
+        dataService.fetchUserFromDatabase(user.uid).then((user)=>{
+          this.dataService.username = user.username;
+          this.username = user.username;
+        })
         this.events.publish('user logged',{
           condition:true
         })
