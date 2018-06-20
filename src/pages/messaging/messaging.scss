@@ -1,20 +1,30 @@
 page-messaging {
+  .toolbar-background {
+    background-color:color($colors,primary);
+  } 
+
+    ion-input{
+      // border-radius:.4em;
+      border-bottom:1px solid rgba(27, 27, 27, 0.952);
+    }
 
     ion-content {
-        background:linear-gradient(to right,#005C97 ,#363795);
+        // background:linear-gradient(to right,#005C97 ,#363795);
+        background-color:#002147 !important;
         background-size: cover;
         height: 100%;
         overflow: hidden;
         .item-md, .item-ios {
-          background: none;
+          background: transparent;
         }
+        
       }
       ion-footer {
-        background: white;
+        background: color($colors,primary);
         ion-icon {
           padding: 10px;
-          font-size: 20px;
-          color: green;
+          font-size: 25px;
+          color: rgba(27, 27, 27, 0.952);
         }
       }
       .chat-status {
@@ -45,19 +55,23 @@ page-messaging {
         min-height: 40px;
         .right-bubble {
             position: relative;
-            background: #dcf8c6;
+            background: #3a92f8;
             border-top-left-radius: .4em;
           border-bottom-left-radius: .4em;
           border-bottom-right-radius: .4em;
           padding: 5px 10px 10px;
           left: 15%;
           span.msg-name {
-            font-size: 12px;
+            font-size: 17px;
             font-weight: bold;
-            color: green;
+            color: rgba(0, 255, 0, 0.788);
           }
           span.msg-date {
             font-size: 10px;
+          }
+          p{
+            font-size:16px;
+            color:white;
           }
         }
     
@@ -69,7 +83,7 @@ page-messaging {
             width: 0;
             height: 0;
             border: 27px solid transparent;
-            border-left-color: #dcf8c6;
+            border-left-color: #3a92f8;
             border-right: 0;
             border-top: 0;
             margin-top: -13.5px;
@@ -77,20 +91,25 @@ page-messaging {
         }
         .left-bubble {
             position: relative;
-            background: #ffffff;
+            background: #00489b;
           border-top-right-radius: .4em;
           border-bottom-left-radius: .4em;
           border-bottom-right-radius: .4em;
           padding: 5px 10px 10px;
           left: 5%;
           span.msg-name {
-            font-size: 12px;
+            font-size: 17px;
             font-weight: bold;
-            color: blue;
+            color: color($colors,primary);
           }
           span.msg-date {
-            font-size: 10px;
+            font-size: 13px;
+            color:white;
           }
+          p{
+            font-size:16px;
+            color:white;
+            }
         }
     
         .left-bubble:after {
@@ -101,7 +120,7 @@ page-messaging {
             width: 0;
             height: 0;
             border: 27px solid transparent;
-            border-right-color: #ffffff;
+            border-right-color: #00489b;
             border-left: 0;
             border-top: 0;
             margin-top: -13.5px;

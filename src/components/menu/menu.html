@@ -6,22 +6,41 @@
         Actions
       </ion-list-header>
       <ion-item no-padding>
-        <button menuClose ion-item outline text-wrap (click)="createPublic()"><ion-icon name="people" item-end></ion-icon>
+        <button detail-none menuClose ion-item outline text-wrap (click)="createPublic()"><ion-icon name="people" item-end></ion-icon>
           CREATE PUBLIC ROOM</button>
       </ion-item>
       <ion-item no-padding>
-        <button menuClose ion-item outline text-wrap><ion-icon name="key" item-end></ion-icon>
+        <button detail-none menuClose ion-item outline text-wrap (click)="createPrivate()"><ion-icon name="key" item-end></ion-icon>
           CREATE PRIVATE ROOM</button>
       </ion-item>
+      <ion-item no-padding>
+            <button detail-none menuClose ion-item outline text-wrap><ion-icon name="card" item-end></ion-icon>
+              SET UP PAYMENT</button>
+          </ion-item>
 
     </ion-list>
 
     <ion-list no-lines>
+
         <ion-list-header no-lines>
-              Friends
+              <ion-icon name="contacts"></ion-icon>Friends
         </ion-list-header>
+
+        <ion-item *ngFor="let friend of friends" no-padding>
+            <ion-row>
+                <ion-col col-2>
+                    <ion-icon name="contact"></ion-icon>
+                </ion-col>
+                <ion-col col-8>
+                    <i>{{friend.username}}</i>
+                </ion-col>
+                <ion-col col-2>
+                    <ion-icon id="more" name="more" (click)="presentPopover($event,friend.key,friend.username)"item-end></ion-icon>
+                </ion-col>
+            </ion-row>
+        </ion-item>
         
-      </ion-list>
+    </ion-list>
 
 </div>
 

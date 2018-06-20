@@ -1,0 +1,14 @@
+<!-- Generated template for the PopoverComponent component -->
+
+<div>
+      <button *ngIf="chatKey" ion-item (click)="leaveChatroom()">
+          <ion-icon name="log-out" item-start></ion-icon>
+          <div text-center>Leave Chatroom</div>
+      </button>
+    
+
+      <button *ngIf="username" ion-item (click)="textUser()">
+        <ion-icon name="chatboxes" item-end></ion-icon>
+        <div text-center>Send Message</div>
+      </button>
+</div>

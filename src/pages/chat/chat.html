@@ -7,15 +7,15 @@
 
 <ion-header text-align-center>
         <ion-toolbar>
-                <button ion-button menuToggle left>
+                <button detail-none ion-button menuToggle left>
                   <ion-icon name="menu"></ion-icon>
                 </button>
                 <ion-title>
                   Chat
                 </ion-title>
-                <ion-buttons start>
-                  <button ion-button>
-                    <ion-icon name="more"></ion-icon>
+                <ion-buttons end>
+                  <button detail-none ion-button icon-only>
+                    <ion-icon name="exit"></ion-icon>
                   </button>
                 </ion-buttons>
         </ion-toolbar>
@@ -45,32 +45,61 @@
                         Rooms
                         </ion-list-header>
 
-                        <ion-item *ngFor="let room of rooms" no-padding>
-                        <button menuClose ion-item outline text-wrap (click)="enterChat(room.name,room.key)"><ion-icon name="chatboxes" item-end></ion-icon>
-                            {{room.name}}
-                        </button>
+                        <ion-item *ngFor="let room of rooms" no-padding> 
+                            
+                            <ion-row no-padding>
+                                    <ion-col col-8 no-padding>
+                                        <button detail-none ion-item outline text-wrap icon-only right>{{room.name}}<ion-icon *ngIf="room.type == 'private' " name="key" item-end></ion-icon></button>
+                                    </ion-col>
+
+                                    <ion-col col-2 no-padding>
+                                    <button detail-none ion-item outline text-wrap (click)="enterChat(room,false)"><ion-icon name="chatboxes" item-end></ion-icon>
+                                    </button>
+                                    </ion-col>
+
+                                    <ion-col col-2 no-padding>
+                                    <button detail-none ion-item outline text-wrap (click)="presentPopover($event,room.key)">
+                                        <ion-icon name="more" item-end></ion-icon>
+                                    </button>
+                                    </ion-col>
+                            </ion-row>
+                           
+                        
+                        </ion-item>
+
+                        <ion-item *ngIf="rooms?.length === 0">
+                            <ion-row no padding justify-content-center>
+                                    You don't have any active rooms.
+                            </ion-row>
                         </ion-item>
 
                        
                 
                 </ion-list>
             </ion-card>
-
+            <br>
+            <br>
             <ion-card>
                 <ion-list>
 
                         <ion-list-header>
                         Chats
                         </ion-list-header>
-                        <ion-item no-padding>
-                        <button menuClose ion-item outline text-wrap><ion-icon name="chatboxes" item-end></ion-icon>
-                            user_123</button>
+
+                        <ion-item no-padding *ngFor="let user of toUsername">
+
+                            <button detail-none menuClose ion-item outline text-wrap (click)="enterChat(user,true)"><ion-icon name="chatboxes" item-end></ion-icon>
+                                {{user.username}}</button>
                         </ion-item>
 
-                        <ion-item no-padding>
-                                <button menuClose ion-item outline text-wrap><ion-icon name="chatboxes" item-end></ion-icon>
-                                user_321</button>
+                        <ion-item *ngIf="toUsername?.length === 0">
+                            <ion-row no padding justify-content-center>
+                                    You don't have any active chats.
+                            </ion-row>
                         </ion-item>
+
+
+                        
                         
                 
                 </ion-list>

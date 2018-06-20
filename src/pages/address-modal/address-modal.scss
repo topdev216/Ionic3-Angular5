@@ -3,14 +3,18 @@ page-address-modal {
         color:black;
     }
 
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
     ion-content {
-        background:linear-gradient(to right,#005C97 ,#363795);
+        background:#002147 !important;
     }
     .error-message {
         color: red;
     }
 
-    .item-md {
+    .item {
         // padding-left: 16px;
         // padding-left: 16px;
         padding-left:10px !important;

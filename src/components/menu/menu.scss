@@ -3,13 +3,35 @@ menu {
     margin-top:0px !important;
     ion-list{
         .item{
-        background:#003366;
-        color:white;
+        background:transparent;
+        color:color($colors,primary);
         min-width:100% !important;
+        }
+
+        ion-list-header{
+            .icon{
+                padding-right:10px;
+            }
         }
         
         .list-header{
-            background:#8db4db;
+            background:color($colors,primary);
+            color:rgba(27, 27, 27, 0.952);
         }
+    }
+
+    ion-row{
+        .icon{
+            padding-left:16px;
+            padding-right:10px;
+            margin-top:0px;
+        }
+
+        .icon#more{
+            margin-top:0px;
+        }
+
+
+
     }
 }

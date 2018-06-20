@@ -1,7 +1,11 @@
 page-login {
 
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
     .login-content {
-        background: linear-gradient(to right,#005C97 ,#363795);
+        background: rgba(27, 27, 27, 0.952);
         background-size: no-repeat;
         height: 100%;
         .logo-row {
@@ -76,6 +80,11 @@ page-login {
         .register-btn {
             color: #ffffff;
             font-size: 0.8em;
+        }
+        .button{
+            background:rgb(20, 20, 20);
+            outline:1px solid color($colors,primary);
+            color: color($colors,primary);
         }
     }
     @media (min-width: 576px) {

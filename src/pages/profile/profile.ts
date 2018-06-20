@@ -5,6 +5,7 @@ import { AddVideogamePage } from '../../pages/add-videogame/add-videogame';
 import { AddressModalPage } from '../../pages/address-modal/address-modal';
 import { AddUsernamePage } from '../../pages/add-username/add-username';
 import * as firebase from 'firebase/app';
+import { GamelistPage } from '../gamelist/gamelist';
 
 /**
  * Generated class for the ProfilePage page.
@@ -84,12 +85,17 @@ export class ProfilePage {
       }
 
       this.remainingDays = this.dataService.getRemainingDays(this.dataService.user);
+      console.log(this.remainingDays);
       this.emailAddress = this.dataService.email;
       this.photoUrl = this.dataService.user.photoURL;
       this.loading = false;
     });
     
     
+  }
+
+  openGameList(){
+    this.navCtrl.push(GamelistPage);
   }
 
   editAddress(){

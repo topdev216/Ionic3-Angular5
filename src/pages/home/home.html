@@ -1,8 +1,20 @@
-<!-- <ion-header>
+<ion-header>
   <ion-navbar>
-    <button>Sign In</button>
+        <button ion-button menuToggle left>
+                <ion-icon name="menu"></ion-icon>
+        </button>
+
+        <ion-buttons end>
+                <button *ngIf="authState == false && authState !== undefined" ion-button outline right (click)="goToLogin()">
+                        Sign In
+                    </button>
+                    <button *ngIf="authState && authState !== undefined" ion-button icon-only (click)="logout()" right>
+                        <ion-icon name="exit"></ion-icon>
+                    </button>
+        </ion-buttons>
+        
   </ion-navbar>
-</ion-header> -->
+</ion-header>
 
 <ion-content padding>
   
@@ -16,10 +28,13 @@
     </div>
 
   <div *ngIf="!loading" style="height:80%;">
-      <ion-row justify-content-end>
-          <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
-          <button *ngIf="authState && authState !== undefined" ion-button outline (click)="logout()">Log Out</button>
-      </ion-row>
+      <!-- <ion-row justify-content-end>
+          
+            <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
+            <button *ngIf="authState && authState !== undefined" ion-button outline (click)="logout()">Log Out</button>
+          
+          
+      </ion-row> -->
         
         <ion-grid style="height: 100%">
             <ion-row justify-content-center align-items-center style="height: 100%">

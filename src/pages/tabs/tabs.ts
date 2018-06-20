@@ -4,6 +4,7 @@ import { HomePage } from '../../pages/home/home';
 import { LoginPage } from '../../pages/login/login';
 import { ProfilePage } from '../../pages/profile/profile';
 import { ChatPage } from '../../pages/chat/chat';
+import { DiscoverPage } from '../discover/discover';
 
 /**
  * Generated class for the TabsPage page.
@@ -22,6 +23,7 @@ export class TabsPage {
   tab1Root = HomePage;
   tab2Root = '';
   tab3Root = ChatPage;
+  tab4Root = DiscoverPage;
   tab5Root = ProfilePage;
   public enabled:boolean;
   

@@ -10,8 +10,9 @@ import { AddressInterface } from '../interfaces/addressInterface';
 import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map'
+import { INTERNAL_BROWSER_PLATFORM_PROVIDERS } from '@angular/platform-browser/src/browser';
 
-
+declare var Stripe:any;
 
 
 
@@ -30,6 +31,7 @@ export class DataService {
   public email: string;
   public authState: boolean;
   public user: firebase.User;
+  public friends: any [] = [];
   public username:string;
   public activeChatroomID:string;
   public trialAmount: number;
@@ -181,13 +183,13 @@ export class DataService {
     let amountOfCreation = Date.parse(creationTime);
     let now = (new Date).getTime();
     
-    let passedMilliseconds = now - amountOfCreation;
+    let passedMilliseconds = (now - amountOfCreation);
 
     let passedDays = Math.floor(passedMilliseconds / 86400000);
-
+    console.log(this.trialAmount);
     
     
-    let remainingDays = this.trialAmount - passedDays;
+    const remainingDays = (this.trialAmount - passedDays);
 
     return remainingDays;
   }
@@ -196,13 +198,15 @@ export class DataService {
     return this.database.ref('/users/').orderByChild("username").equalTo(username).once("value")
   }
 
-  public getConstants() : void{
-    this.database.ref('constants/trialAmount').once('value').then( (snapshot)=>{
-      this.trialAmount = snapshot.val();
-    })
+  public getConstants() : Promise<any>{
 
-    this.database.ref('constants/trialEnd').once('value').then( (snapshot)=>{
-      this.trialEnd = snapshot.val();
+    return this.database.ref('constants/trialAmount').once('value').then( (snapshot)=>{
+      
+      this.trialAmount = snapshot.val();
+
+      return this.database.ref('constants/trialEnd').once('value').then( (snapshot)=>{
+        this.trialEnd = snapshot.val();
+      })
     })
 
 
@@ -257,35 +261,265 @@ export class DataService {
 
     let chatroomRef = this.database.ref('/chatrooms/').push();
     
-
-    return chatroomRef.set({
-      name:name,
-      type:'public',
-      participants:{
-        [this.uid]:{
-          username:this.username
-        }
+    return this.checkExistingRoom(name).then((data)=>{
+      if(data.val() !== null){
+        return alert('room already exists!');
       }
-      
-    }) 
+      else{
+        return chatroomRef.set({
+          name:name,
+          type:'public',
+          participants:{
+            [this.uid]:{
+              username:this.username
+            }
+          }
+          
+        }) 
+      }
+    })
+  
+  }
+
+  public createPrivateChatroom(name:string,password:string):Promise<any>{
+
+    let chatroomRef = this.database.ref('/chatrooms/').push();
+
+    return this.checkExistingRoom(name).then((data)=>{
+      if(data.val() !== null){
+        return alert('room already exists!');
+      }
+      else{
+        return chatroomRef.set({
+          name:name,
+          type:'private',
+          password:password,
+          participants:{
+            [this.uid]:{
+              username:this.username
+            }
+          }
+          
+        }) 
+      }
+    })
   }
 
   public getUserPublicRooms():Promise<any>{
-    console.log(this.username);
     return this.database.ref('/chatrooms/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).once("value")
   }
 
-  public joinPublicRoom(chatKey:string,username:string):Promise<any>{
-
-    let joinData = firebase.database().ref('chatrooms/'+chatKey+'/chats').push();
-    return joinData.set({
-    type:'join',
-    user:username,
-    message:username+' has joined this room.',
-    sendDate:Date()
-    });
- 
-    
+  public getUserDirectChats():Promise<any>{
+    return this.database.ref('/directChats/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).once('value')
   }
   
+
+  public joinPublicRoom(chatKey:string,username:string,isDirect:boolean):Promise<any>{
+
+    if(!isDirect){
+      let joinData = this.database.ref('chatrooms/'+chatKey+'/chats').push();
+      return joinData.set({
+      type:'join',
+      user:username,
+      message:username+' has joined this room.',
+      sendDate:Date()
+      }); 
+    }
+    else{
+      return
+    }
+  }
+
+  public checkPrivatePassword(password:string,chatKey:string):Promise<any>{
+    return this.database.ref('chatrooms/'+chatKey+'/password').once('value')
+  }
+
+  public joinPrivateRoom(chatKey:string,username:string,password:string):Promise<any>{
+
+    return this.checkPrivatePassword(password,chatKey).then((snap)=>{
+      console.log(snap.val());
+      if(snap.val() == password){
+        let joinData = this.database.ref('chatrooms/'+chatKey+'/chats').push();
+        return joinData.set({
+        type:'join',
+        user:username,
+        message:username+' has joined this room.',
+        sendDate:Date()
+        }); 
+      }
+      else{
+        let toast = this.toastCtrl.create({
+          message: "Wrong Password",
+          duration: 1500,
+          position: 'top'
+        });
+    
+        toast.onDidDismiss(() => {
+          console.log('Dismissed toast');
+        });
+    
+        return toast.present();
+      }
+    })
+    
+    
+  }
+
+  public sendMessageToUser():Promise<any>{
+    return
+  }
+
+  public searchGamesAPI(queryString: string,id:string):Observable<any>{
+
+   
+    let json = {
+      query: queryString,
+      platformID: id
+    }
+
+    return this.http.post(this.urlEnvironment.getGamesAPI(),json);
+  }
+
+  public searchPlatformsAPI(queryString: string):Observable<any>{
+    let json = {
+      query: queryString,
+    }
+    return this.http.post(this.urlEnvironment.getPlatformsAPI(),json)
+  }
+
+  public leavePublicRoom(chatKey:string):Promise<any>{
+    return this.database.ref('chatrooms/'+chatKey+'/participants/'+this.uid).remove();
+  }
+
+  public checkExistingRoom(name:string):Promise<any>{
+    return this.database.ref('chatrooms/').orderByChild('name').equalTo(name).once('value')
+  }
+
+  public checkEmptyRoom(chatKey:string):Promise<any>{
+    return this.database.ref('chatrooms/'+chatKey).once('value');
+  }
+
+  public deleteEmptyRoom(chatKey:string):Promise<any>{
+    return this.database.ref('chatrooms/'+chatKey).remove();
+  
+  }
+
+  public fetchUserKey(username:string):Promise<any>{
+    
+    return this.database.ref('/users').orderByChild('username').equalTo(username).once('value')
+  }
+
+  public checkExistingDirect(firstUsername:string,secondUsername:string):Promise<any>{
+
+    let count = 0;
+    let data = {
+      count:count,
+      key: ''
+    }
+
+    return this.getUserDirectChats().then((snap)=>{
+      
+      snap.forEach((childSnap) =>{
+        console.log(childSnap.key);
+        childSnap.forEach((user)=>{
+          user.forEach((res)=>{
+            console.log(res.val());
+            if(res.val().username == firstUsername){
+              data.count++;
+            }
+            if(res.val().username == secondUsername){
+              data.count++;
+            }
+            if(data.count == 2){
+              data.key = childSnap.key;
+            }
+          })
+        })
+      }) 
+
+      if(data.count == 2){
+        console.log('direct exists!');
+        
+      }
+      else{
+        console.log('doesnt!');
+      }
+      return data;
+      
+    })
+  }
+
+
+  public createDirectChat(receiverUsername:string,receiverUid:string):Promise<any>{
+
+    let directChat = this.database.ref('/directChats/').push();
+
+            return this.checkExistingDirect(this.username,receiverUsername).then((data)=>{
+              console.log('must be count',data.count);
+              if(data.count < 2){
+                directChat.set({
+                  participants:{
+                    [this.uid]:{
+                      username: this.username
+                    },
+                    [receiverUid]:{
+                      username: receiverUsername
+                    }
+                  }
+                })
+                return directChat.key;
+              }
+              else{
+                return data.key;
+              }
+              
+            })
+            
+            
+  
+  }
+  // public addFriend(user: firebase.User, username: string) :Promise<any>{
+  //   return this.database.ref('/users/'+this.uid+'/friends/').set({
+  //     [user.uid]:{
+  //       username:username
+  //     }
+  //   })
+  // }
+
+  public getFriendsList():Promise<any>{
+
+    return this.database.ref('/users/'+this.uid+'/friends').once('value')
+
+  }
+
+  ///////////////////////////////////////////////////BANK////////////////////////////////////////////////////////
+
+  public getStripeBankToken(accountNumber: string, routingNumber: string): Promise<any | Error> {
+    let stripe = new Stripe(this.urlEnvironment.getStripeAPI());
+    return stripe.createToken('bank_account', {
+      country: 'US',
+      currency: 'usd',
+      routing_number: routingNumber,
+      account_number: accountNumber,
+      account_holder_name: name,
+      account_holder_type: 'individual',
+    })
+      .then((result) => {
+        console.log("result: ", result);
+        if (result && result.error) {
+          return;
+        }
+        if (result && result.token && result.token.id) {
+          console.log("tokenId: ", result.token.id);
+          return result.token.id;
+          // return Observable.of(result.token.id);
+        }
+      })
+      .catch((err) => {
+
+        return err;
+      });
+  }
+
+
 }

@@ -25,6 +25,10 @@ import { ChatPage } from '../pages/chat/chat';
 import { ErrorCardComponent } from '../components/error-card/error-card';
 import { MenuComponent } from '../components/menu/menu';
 import { MessagingPage } from '../pages/messaging/messaging';
+import { PopoverComponent } from '../components/popover/popover';
+import { DiscoverPage } from '../pages/discover/discover';
+import { GamelistPage } from '../pages/gamelist/gamelist';
+import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
 
 
 const firebaseConfig = {
@@ -51,7 +55,11 @@ const firebaseConfig = {
     ChatPage,
     ErrorCardComponent,
     MenuComponent,
-    MessagingPage
+    MessagingPage,
+    PopoverComponent,
+    DiscoverPage,
+    GamelistPage,
+    PaymentModalPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -79,7 +87,11 @@ const firebaseConfig = {
     ChatPage,
     ErrorCardComponent,
     MenuComponent,
-    MessagingPage
+    MessagingPage,
+    PopoverComponent,
+    DiscoverPage,
+    GamelistPage,
+    PaymentModalPage
   ],
   providers: [
     StatusBar,

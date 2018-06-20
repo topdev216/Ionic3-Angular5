@@ -15,9 +15,25 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+.tabs .tabbar {
+    background-color: #FFA400 !important;
+}
+
 ion-menu{
     
     ion-content{
-        background:#003366 !important;
+        background:rgba(27, 27, 27, 0.952) !important;
     }
-   }
+}
+
+.alert-head {
+    color:color($colors,primary);
+}
+
+.bar-button-default-ios{
+    color:#002147;
+}
+
+
+
+

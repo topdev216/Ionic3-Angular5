@@ -23,40 +23,87 @@ export class MessagingPage {
   roomkey:string;
   username:string;
   offStatus:boolean = false;
+  isDirect:boolean;
   chatTitle : string;
+  tabBar : any;
   constructor(public navCtrl: NavController, public navParams: NavParams) {
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.chatTitle = this.navParams.get('title');
     this.roomkey = this.navParams.get("key") as string;
     this.username = this.navParams.get("username") as string;
+    this.isDirect = this.navParams.get("condition") as boolean;
     this.data.type = 'message';
     this.data.username = this.username;
 
 
-    firebase.database().ref('chatrooms/'+this.roomkey+'/chats').on('value', snapshot => {
-      this.chats = [];
-      snapshot.forEach((childSnap)=>{
-        let chat = childSnap.val();
-        chat.key = childSnap.key;
-        this.chats.push(chat);
-      })
-      // setTimeout(() => {
-      //   if(this.offStatus === false) {
-      //     this.content.scrollToBottom(300);
-      //   }
-      // }, 1000);
-    });
+    if(!this.isDirect){
+      firebase.database().ref('chatrooms/'+this.roomkey+'/chats').on('value', snapshot => {
+        this.chats = [];
+        snapshot.forEach((childSnap)=>{
+          let chat = childSnap.val();
+          chat.key = childSnap.key;
+          this.chats.push(chat);
+        })
+        
+        setTimeout(() => {
+            if(this.offStatus === false){
+              if(this.content._scroll){
+              this.content.scrollToBottom(300); 
+              }       
+            }
+        }, 100);
+
+      });
+    }
+    else{
+
+      firebase.database().ref('directChats/'+this.roomkey+'/chats').on('value', snapshot => {
+        this.chats = [];
+        snapshot.forEach((childSnap)=>{
+          let chat = childSnap.val();
+          chat.key = childSnap.key;
+          this.chats.push(chat);
+        })
+        
+        setTimeout(() => {
+            if(this.offStatus === false){
+              if(this.content._scroll){
+              this.content.scrollToBottom(300); 
+              }       
+            }
+        }, 100);
+
+      });
+    }
+
+
+
+    
 
   }
 
   private sendMessage() :void {
-    let newData = firebase.database().ref('chatrooms/'+this.roomkey+'/chats').push();
-    newData.set({
-      type:this.data.type,
-      user:this.data.username,
-      message:this.data.message,
-      sendDate:Date()
-    });
-    this.data.message = '';
+
+    if(!this.isDirect){
+      let newData = firebase.database().ref('chatrooms/'+this.roomkey+'/chats').push();
+      newData.set({
+        type:this.data.type,
+        user:this.data.username,
+        message:this.data.message,
+        sendDate:Date()
+      });
+      this.data.message = '';
+    }
+    else{
+      let newData = firebase.database().ref('directChats/'+this.roomkey+'/chats').push();
+      newData.set({
+        type:this.data.type,
+        user:this.data.username,
+        message:this.data.message,
+        sendDate:Date()
+      });
+      this.data.message = '';
+    }
   }
 
   private exitChat() :void {
@@ -69,13 +116,23 @@ export class MessagingPage {
     });
   
     this.offStatus = true;
-  
-    this.navCtrl.pop();
+
+    this.navCtrl.popToRoot();
   }
 
   ionViewDidLoad() {
 
     console.log('ionViewDidLoad MessagingPage');
   }
+
+  ionViewWillEnter(){
+    this.tabBar.style.display = 'none';
+  }
+
+  ionViewWillLeave(){
+    this.tabBar.style.display = 'flex';
+
+  }
+
 
 }

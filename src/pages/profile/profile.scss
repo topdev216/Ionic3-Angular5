@@ -3,28 +3,30 @@ page-profile {
 
   
   ion-content {
-    background: linear-gradient(to right,#005C97 ,#363795) !important;
+    // background: linear-gradient(to right,#005C97 ,#363795) !important;
+    background-color:#002147 !important;
 
     ion-spinner{
         width:68px;
         height:68px;
         margin-top:65%;
         * {
-          stroke: white !important;
+          stroke: #FFA400 !important;
         }
     
         &.spinner-circles circle,
         &.spinner-bubbles circle,
         &.spinner-dots circle {
-          fill: white !important;
+          fill: #FFA400 !important;;
         }
       }
     
     .profile-top {
         width: 100%;
         margin: 0;
-        background: linear-gradient(to right,#2980B9 ,#6DD5FA) !important;
-        border-bottom:3px solid #2980B9;
+        // background: linear-gradient(to right,#2980B9 ,#6DD5FA) !important;
+        background-color:#002c5e !important;
+        border-bottom:3px solid color($colors,primary);
 
         button{
           color:white;
@@ -39,7 +41,7 @@ page-profile {
         .profile-photo {
             padding-top: 16px;
             h1{
-                color:white;
+                color:color($colors,primary);
                 padding:10px;
             }
             
@@ -49,7 +51,7 @@ page-profile {
                 width: $photoSize;
                 height: $photoSize;
                 border-radius: 50%;
-                border: solid 2px rgba(234, 79, 20, .5);
+                border: solid 2px color($colors,primary);
                 margin: 0 auto;
             }
         }
@@ -57,14 +59,15 @@ page-profile {
 
     .profile-detail {
         margin-top: 0px;
-
+        
         .editIcon{
           margin-top:10px;
           font-size:20px;
         }
 
         ion-item {
-            background:linear-gradient(to right,#005C97 ,#363795) !important;
+            // background:linear-gradient(to right,#005C97 ,#363795) !important;
+            background-color:transparent !important;
             color:white;
             ion-icon {
                 font-size: 1.4rem;
@@ -72,8 +75,20 @@ page-profile {
             p {
                 padding-top: 6px;
                 color:rgba(255, 255, 255, 0.836);
-            }
+                }
         }
+
+        h4{
+            color:color($colors,primary);
+        }
+
+        ion-col#first{
+            border-right:3px solid color($colors,primary);
+        }
+
+
     }
-}
+    }
+
+
 }

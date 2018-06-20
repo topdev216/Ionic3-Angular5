@@ -6,5 +6,6 @@ export interface UserInterface{
     email?:string;
     address?: AddressInterface;
     uid?: string;
+    friends?: any[];
     videogameCollection?: VideogameInterface[];
 }

@@ -26,48 +26,110 @@
             
         </ion-segment>
       
-      <ion-list>
+      <ion-list no-lines>
           <ion-item>
-              <select-searchable
+              <ion-label>Platform</ion-label>
+              <ion-select
+              [(ngModel)]="platform"
+              formControlName="platform">
+              <ion-option *ngFor="let platform of platforms" (ionSelect)="platformChange(platform.name)">{{platform.name}}</ion-option>
+              </ion-select>
                 
-                  
-                  itemValueField="id"
-                  itemTextField="name"
+          </ion-item>
+
+
+
+          <ion-item>
+              <!-- <select-searchable
+                
+                  [(ngModel)]="title"
+                  formControlName="title"
+                  [items]="gameList"
+                  itemValueField="title"
+                  itemTextField="title"
                   [canSearch]="true"
                   (onChange)="gameChange($event)">
                   <ng-template selectSearchableLabelTemplate>
                       Game Title
                   </ng-template>
-              </select-searchable>
+              </select-searchable> -->
+            <ion-searchbar
+              id="input"
+              [showCancelButton]="shouldShowCancel"
+              [debounce]="700"
+              (ionChange)="gameChange($event)"
+              (ionCancel)="onCancel($event)">
+            </ion-searchbar>
+
+            <div *ngIf="gameList.length > 0 && !gamePicked">
+              <ion-item id="searchItem" *ngFor="let game of gameList" (click)="selectedGame(game)">
+                <ion-row no-padding>
+
+                    <ion-col col-3 no-padding>
+                      <img src="{{game?.cover?.url}}" alt="">
+                      <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
+                    </ion-col>
+
+                    <ion-col col-9 padding-left>
+                      <div text-wrap> {{game.name}} </div>
+                      <p text-wrap>{{platform}}</p>
+                      <div *ngFor="let genre of game.genres; let i = index">
+                          <p *ngIf="i == 0" text-wrap>{{genre.name}}</p>
+                      </div>
+                      <p text-wrap>{{game.first_release_date}}</p>
+                      <!-- <div *ngFor="let platform of game.platforms">
+                          <p text-wrap> {{platform.name}}</p>
+                      </div> -->
+                    </ion-col>
+                    
+                </ion-row>
+              </ion-item>
+            </div>
+          
+
+            
+
           </ion-item>
 
 
-          <ion-item>
-              <ion-label>Year</ion-label>
-              <ion-select>
-                <ion-option value="f">Female</ion-option>
-                <ion-option value="m">Male</ion-option>
-              </ion-select>
-          </ion-item>
+          <ion-card *ngIf="gamePicked">
 
-          <ion-item>
-              <ion-label>Genre</ion-label>
-              <ion-select>
-                <ion-option value="f">Female</ion-option>
-                <ion-option value="m">Male</ion-option>
-              </ion-select>
-          </ion-item>
+            <ion-row>
+              <ion-col text-wrap>
+              
+                  <ion-label>Title</ion-label>
+                  <ion-textarea [(ngModel)]="title" formControlName="title" [disabled]="true"></ion-textarea>
+            
+              </ion-col>
 
-          <ion-item>
-              <ion-label>Rating</ion-label>
-              <ion-select>
-                <ion-option value="E">E</ion-option>
-                <ion-option value="E 10+">E 10+</ion-option>
-                <ion-option value="T">T</ion-option>
-                <ion-option value="M">M</ion-option>
-                <ion-option value="A">A</ion-option>
-              </ion-select>
-          </ion-item>
+              <ion-col>
+            
+                  <ion-label>Release Date</ion-label>
+                  <ion-input [(ngModel)]="releaseDate" formControlName="releaseDate" [disabled]="true"></ion-input>
+              
+              </ion-col>
+
+            </ion-row>
+
+
+            <ion-row>
+              <ion-col>
+              
+                  <ion-label>Genre</ion-label>
+                  <ion-input [(ngModel)]="genre" formControlName="genre" [disabled]="true"></ion-input>
+              
+            </ion-col>
+
+            <ion-col>
+              
+                  <ion-label>ESRB Rating</ion-label>
+                  <ion-input [(ngModel)]="esrbRating" formControlName="esrbRating" [disabled]="true"></ion-input>
+              
+            </ion-col>
+            </ion-row>
+
+        </ion-card>
+          
 
         </ion-list>
       

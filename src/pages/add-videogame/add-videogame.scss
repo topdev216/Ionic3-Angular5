@@ -1,9 +1,13 @@
 page-add-videogame {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
     .content{
-        background:linear-gradient(to right,#005C97 ,#363795);
+        // background:linear-gradient(to right,#005C97 ,#363795);
+        background-color:#002147;
     }
 
-    .item-md {
+    .item {
         // padding-left: 16px;
         // padding-left: 16px;
         padding-left:10px !important;
@@ -11,19 +15,36 @@ page-add-videogame {
         background: transparent;
     }
 
+    .item#searchItem{
+        background:color($colors,primary);
+        #imageInput{
+            display:none;
+        }
+    }
+
+    ion-card{
+        background-color:color($colors,primary) !important;
+    }
+  
+    
+    
+
     ion-select{
         min-width:80% !important;
         color:white;
-        
     }
+
 
     ion-segment{
         padding-bottom:60px;
         padding-top:10px;
         
     }
-    .segment-md .segment-button {
+    .segment .segment-button {
         font-size:17px;
     }
 
+    .button{
+        color:#002147;
+    }
 }   
