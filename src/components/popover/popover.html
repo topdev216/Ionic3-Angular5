@@ -11,4 +11,19 @@
         <ion-icon name="chatboxes" item-end></ion-icon>
         <div text-center>Send Message</div>
       </button>
+
+      <button *ngIf="username" (click)="inviteChatroom()"ion-item >
+          <ion-icon name="add" item-end></ion-icon>
+          <div text-center>Send Invitation</div>
+      </button>
+
+      <button *ngIf="message" ion-item>
+          <ion-icon name="create" item-end></ion-icon>
+          <div text-center>Create Trade</div>
+      </button>
+
+      <button *ngIf="chatroom" (click)="inviteFriend()" ion-item>
+        <ion-icon name="add" item-end></ion-icon>
+        <div text-center>Invite Friend</div>
+      </button>
 </div>

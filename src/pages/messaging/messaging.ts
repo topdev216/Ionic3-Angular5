@@ -1,6 +1,7 @@
 import { Component,ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import * as firebase from 'firebase/app';
+import { PopoverComponent } from '../../components/popover/popover';
 
 /**
  * Generated class for the MessagingPage page.
@@ -26,7 +27,7 @@ export class MessagingPage {
   isDirect:boolean;
   chatTitle : string;
   tabBar : any;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public popoverCtrl:PopoverController) {
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.chatTitle = this.navParams.get('title');
     this.roomkey = this.navParams.get("key") as string;
@@ -118,6 +119,19 @@ export class MessagingPage {
     this.offStatus = true;
 
     this.navCtrl.popToRoot();
+  }
+
+  private presentPopover(myEvent): void {
+    let popover;
+    if(this.isDirect){
+      popover = this.popoverCtrl.create(PopoverComponent, {message: true});
+    }
+    else{
+      popover = this.popoverCtrl.create(PopoverComponent, {message: true,chatroom:true,chatroomName:this.chatTitle,chatKey:this.roomkey});
+    }
+    popover.present({
+      ev: myEvent
+    });
   }
 
   ionViewDidLoad() {

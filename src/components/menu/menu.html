@@ -14,13 +14,13 @@
           CREATE PRIVATE ROOM</button>
       </ion-item>
       <ion-item no-padding>
-            <button detail-none menuClose ion-item outline text-wrap><ion-icon name="card" item-end></ion-icon>
+            <button detail-none menuClose ion-item outline text-wrap (click)="showPayment()"><ion-icon name="card" item-end></ion-icon>
               SET UP PAYMENT</button>
           </ion-item>
 
     </ion-list>
 
-    <ion-list no-lines>
+    <ion-list no-lines> 
 
         <ion-list-header no-lines>
               <ion-icon name="contacts"></ion-icon>Friends
@@ -32,7 +32,7 @@
                     <ion-icon name="contact"></ion-icon>
                 </ion-col>
                 <ion-col col-8>
-                    <i>{{friend.username}}</i>
+                    {{friend.username}}
                 </ion-col>
                 <ion-col col-2>
                     <ion-icon id="more" name="more" (click)="presentPopover($event,friend.key,friend.username)"item-end></ion-icon>

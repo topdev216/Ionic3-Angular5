@@ -1,15 +1,30 @@
 page-profile {
 
+    .toolbar-background {
+        background-color:color($colors,primary);
+    } 
 
   
   ion-content {
     // background: linear-gradient(to right,#005C97 ,#363795) !important;
     background-color:#002147 !important;
 
+    div.horizontal {
+        display: flex;
+        justify-content: center;
+        height:100%;
+    }
+    
+    div.vertical {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
     ion-spinner{
         width:68px;
         height:68px;
-        margin-top:65%;
+        margin-top:50%;
         * {
           stroke: #FFA400 !important;
         }
@@ -40,6 +55,7 @@ page-profile {
         }
         .profile-photo {
             padding-top: 16px;
+            padding-bottom: 16px;
             h1{
                 color:color($colors,primary);
                 padding:10px;

@@ -1,9 +1,9 @@
 export interface VideogameInterface {
     title?: string;
-    year?: string;
+    releaseDate?: string;
     genre?: string;
     platform?: string;
-    rating?:string;
-    frontPhoto?: string;
-    backPhoto?: string;
+    esrbRating?:string;
+    coverPhoto?: string;
+    type?:string;
 }

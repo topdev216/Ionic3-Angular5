@@ -2,7 +2,6 @@ page-messaging {
   .toolbar-background {
     background-color:color($colors,primary);
   } 
-
     ion-input{
       // border-radius:.4em;
       border-bottom:1px solid rgba(27, 27, 27, 0.952);
@@ -128,4 +127,25 @@ page-messaging {
         }
       }
     
+}
+
+.toast-success{
+  > div{
+   text-align:center;
+  }  
+}
+
+.toast-success .toast-message:after {
+  content: '\f3ff';
+  color: green;
+  display: inline-block;
+  font-family: "Ionicons";
+  font-style: normal;
+  font-weight: bolder;
+  font-variant: normal;
+  text-transform: none;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  padding-left: 20px;
+  font-size:20px !important;
 }

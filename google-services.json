@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "22178731920",
+    "firebase_url": "https://tradeupgames-dd.firebaseio.com",
+    "project_id": "tradeupgames-dd",
+    "storage_bucket": "tradeupgames-dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22178731920:android:b39819df97e1755d",
+        "android_client_info": {
+          "package_name": "tradeupgames.david.duth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22178731920-lk61mec69r3aul6j5625etepkhqpocok.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tradeupgames.david.duth",
+            "certificate_hash": "e0f7292704e662166a4cde593206ed0b4fd78c32"
+          }
+        },
+        {
+          "client_id": "22178731920-uqorv9oj177k0kf2jgr58mbmh8s2bqqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-qsYxt3DDams6F9PlbHof18slR52OJgo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22178731920-uqorv9oj177k0kf2jgr58mbmh8s2bqqu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

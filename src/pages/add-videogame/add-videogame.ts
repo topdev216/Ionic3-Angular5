@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
@@ -21,6 +21,7 @@ export class AddVideogamePage {
 
   private postForm: FormGroup;
   private game: VideogameInterface;
+  private gameId:any;
   private games: VideogameInterface[];
   private type: string;
   private platforms: any [] = [];
@@ -37,7 +38,9 @@ export class AddVideogamePage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public formBuilder: FormBuilder
-  , private dataService : DataService) {
+  , private dataService : DataService
+  , public events: Events
+  , public toastCtrl: ToastController) {
     
 
     this.postForm = formBuilder.group({
@@ -118,6 +121,9 @@ export class AddVideogamePage {
     else if(rating == 6){
       this.esrbRating = "M"
     }
+    else if(rating == 'undefined'){
+      this.esrbRating = "Not Available"
+    }
     else{
       this.esrbRating = "AO"
     }
@@ -127,6 +133,36 @@ export class AddVideogamePage {
 
   private submitVideogame(form: any) :void{
     console.log(form);
+    console.log(this.coverPhoto);
+    let game = {} as VideogameInterface;
+
+    game.title = form.title;
+    game.releaseDate = form.releaseDate;
+    game.genre = form.genre;
+    game.platform = form.platform;
+    game.esrbRating = form.esrbRating;
+    game.coverPhoto = this.coverPhoto;
+    game.type = form.type;
+    this.dataService.addVideogame(game,this.gameId).then(()=>{
+
+      if(game.type = "offer"){
+        this.dataService.notifyUsers(this.gameId,game.title).subscribe(((data) =>{
+          console.log(data);
+        }))
+      }
+      else{
+        this.dataService.subscribeToGame(this.gameId).subscribe((data)=>{
+          console.log(data);
+        })
+      }
+      let toast = this.toastCtrl.create({
+        message: 'Game was added successfully to your collection!',
+        duration: 3000,
+        position: 'top'
+      })
+      toast.present();
+      console.log('game submitted');
+    })
   }
   private platformChange(name:string):void{
     this.gamePicked = false;
@@ -176,6 +212,7 @@ export class AddVideogamePage {
 
 private selectedGame(game:any):void{
   this.title = game.name;
+  this.gameId = game.id;
   if("genres" in game){
     this.genre = game.genres[0].name;
   }

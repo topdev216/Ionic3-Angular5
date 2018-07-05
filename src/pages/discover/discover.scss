@@ -2,4 +2,23 @@ page-discover {
     .content{
         background:rgb(0, 29, 74);
     }
+
+    ion-segment{
+        padding:10px;
+    }
+
+    .item{
+        background:#7cb9ff;
+    }
+
+    img {
+        border-radius: 50%;
+        border: solid 2px color($colors,primary);
+        margin: 0 auto;
+    }
+
+    .button#profile{
+        color:#002147;
+        border:1px solid #002147;
+    }
 }

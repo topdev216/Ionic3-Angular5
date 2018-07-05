@@ -1,9 +1,10 @@
 import { Component,Input,ViewChild } from '@angular/core';
-import { AlertController,NavController,NavParams, Events, PopoverController, Nav, MenuController, Popover, ToastController } from 'ionic-angular';
+import { AlertController,NavController,NavParams, Events, PopoverController, Nav, MenuController, Popover, ToastController, ModalController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { MessagingPage } from '../../pages/messaging/messaging';
 import { PopoverComponent } from '../../components/popover/popover'; 
 import * as firebase from 'firebase/app';
+import { PaymentModalPage } from '../../pages/payment-modal/payment-modal';
 /**
  * Generated class for the MenuComponent component.
  *
@@ -29,7 +30,8 @@ export class MenuComponent {
     , public events: Events
     , public popoverCtrl: PopoverController
     , public menuCtrl: MenuController
-    , public toastCtrl: ToastController) {
+    , public toastCtrl: ToastController
+    , public modalCtrl: ModalController) {
     console.log('Hello MenuComponent Component');
     this.text = 'Hello World';
          
@@ -55,7 +57,7 @@ export class MenuComponent {
 
   }
 
-  private presentPopover(myEvent,chatKey:string,username:string): void {
+  private presentPopover(myEvent:any,chatKey:string,username:string): void {
     this.popover = this.popoverCtrl.create(PopoverComponent, {userId: chatKey,username:username});
     this.popover.present({
       ev: myEvent
@@ -97,6 +99,11 @@ export class MenuComponent {
       // this.navCtrl.push(MessagingPage);
     })
     
+  }
+
+  private showPayment():void{
+    let modal = this.modalCtrl.create(PaymentModalPage);
+    modal.present();
   }
 
   private createPrivate() :void{

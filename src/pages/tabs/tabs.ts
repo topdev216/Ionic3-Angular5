@@ -25,7 +25,7 @@ export class TabsPage {
   tab3Root = ChatPage;
   tab4Root = DiscoverPage;
   tab5Root = ProfilePage;
-  public enabled:boolean;
+  public enabled:boolean = false;
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public events: Events) {
     this.events.subscribe('user logged',(data) => {

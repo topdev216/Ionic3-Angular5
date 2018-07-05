@@ -1,5 +1,17 @@
 page-payment-modal {
+
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
     .content{
         background:#002147;
+        #next{
+            padding-left:10px;
+            padding-right:7px;
+            padding-bottom:1px;
+        }
+        #nextBtn{
+            margin-top:10px;
+        }
     }
 }

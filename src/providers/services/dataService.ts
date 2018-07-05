@@ -9,8 +9,8 @@ import { Observable } from 'rxjs/Observable';
 import { AddressInterface } from '../interfaces/addressInterface';  
 import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map'
-import { INTERNAL_BROWSER_PLATFORM_PROVIDERS } from '@angular/platform-browser/src/browser';
+import 'rxjs/add/operator/map';
+import { DEPRECATED_PLURAL_FN } from '@angular/common/src/i18n/localization';
 
 declare var Stripe:any;
 
@@ -37,7 +37,8 @@ export class DataService {
   public trialAmount: number;
   public trialEnd:number;
   public errorDismiss: boolean;
-  private _apiKey = "8ba5da0644ab24d2283053a6d8ee30a4"
+  public browserToken:string;
+  public phoneToken:string;
 
   constructor(public http: HttpClient
   , public platform: Platform
@@ -48,6 +49,12 @@ export class DataService {
   , public urlEnvironment: UrlEnvironment) {
     console.log('Hello DataService Provider');
 
+  }
+
+  public initialiazeWebFCM():firebase.messaging.Messaging{
+    const messaging = firebase.messaging();
+    messaging.usePublicVapidKey("BA7uaEvvGPS9gVgdhgfpb06_aBjOAaviJzglsJepYoxVHs_yTufUIh8aOmg5qdm_iLimp-Zhfct-7DYzt29Cnt8");
+    return messaging;
   }
 
   public showLoading(): void {
@@ -89,16 +96,39 @@ export class DataService {
     }
   }
 
+  public addUserToDatabase(uid:string,name:string,email:string,date: string,username:string,url:string): Promise<any> {
+    return this.database.ref('users/'+uid).set({
+      username: username,
+      name: name,
+      email: email,
+      creationTime: date,
+      coverPhoto:url,
+      online:true
+    })
+  }
+
+  public updateProfilePicture(url:string):Promise<any>{
+    return this.database.ref('/users/'+this.uid).update({
+      coverPhoto:url
+    })
+  }
+
+  public updateOnlineStatus(status:boolean,uid:string):Promise<any>{
+    return this.database.ref('/users/'+uid).update({
+      online:status
+    })
+  }
+
   public googleLogin(): Promise<void> {
     return this.socialSignIn(new firebase.auth.GoogleAuthProvider)
       .then((credential: any) => {
         let user = credential.user;
 
-        this.database.ref('/users/' + user.uid).once('value').then(function(snapshot) {
+        this.database.ref('/users/' + user.uid).once('value').then( (snapshot) => {
           console.log(snapshot.val());
           //user is not registered on database...
           if(snapshot.val() == null){
-            this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime)
+            this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,'',user.photoURL)
           }//user doesn't have an username yet...
           else if(snapshot.val().username == null){
             return null;
@@ -126,20 +156,20 @@ export class DataService {
   public signOut(): Promise<any> {
     var user = firebase.auth().currentUser;
     let uid = user.uid;
-    this.user = null;
-    this.email = null;
-    this.uid = null;
-    return this.afAuth.auth.signOut() 
+    
+    return this.updateOnlineStatus(false,this.uid).then(()=>{
+      this.user = null;
+      this.email = null;
+      this.uid = null;
+      return this.afAuth.auth.signOut();
+    });
+    // return this.afAuth.auth.signOut() 
   }
 
-  
-  public addUserToDatabase(uid:string,name:string,email:string,date: string,username:string): Promise<any> {
-    return this.database.ref('users/'+uid).set({
-      username: username,
-      name: name,
-      email: email,
-      creationTime: date,
-    })
+  public updateOnDisconnect(uid:string):Promise<any> {
+    return this.database.ref('users/'+uid)
+            .onDisconnect()
+            .update({online: false})
   }
 
   public fetchUserFromDatabase(uid:string): Promise<any>{
@@ -222,7 +252,7 @@ export class DataService {
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
           let user = firebase.auth().currentUser;
-          this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,username)
+          this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,username,'')
           .then(()=>{
             return user.sendEmailVerification();
           })
@@ -318,12 +348,18 @@ export class DataService {
 
     if(!isDirect){
       let joinData = this.database.ref('chatrooms/'+chatKey+'/chats').push();
-      return joinData.set({
+      joinData.set({
       type:'join',
       user:username,
       message:username+' has joined this room.',
       sendDate:Date()
       }); 
+
+      return this.database.ref('chatrooms/'+chatKey+'/participants').update({
+          [this.uid]:{
+            username:username
+          }
+      })
     }
     else{
       return
@@ -380,6 +416,54 @@ export class DataService {
     return this.http.post(this.urlEnvironment.getGamesAPI(),json);
   }
 
+  public addVideogame(game:any,id:any):Promise<any>{
+    return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
+      title:game.title,
+      genre:game.genre,
+      releaseDate:game.releaseDate,
+      coverPhoto:game.coverPhoto,
+      esrbRating:game.esrbRating,
+      platform:game.platform
+    })
+    
+  }
+
+  public notifyUsers(topic:string,gameTitle:string):Observable<any>{
+    let json = {
+      topic:topic,
+      user:this.username,
+      title:gameTitle
+    }
+    return this.http.post(this.urlEnvironment.getSendFCM(),json)
+  }
+
+  public subscribeToGame(topic:string):Observable<any>{
+    let json = {
+      topic:topic,
+      browserToken:this.browserToken,
+      phoneToken:this.phoneToken
+    }
+    return this.http.post(this.urlEnvironment.getSubscribeFCM(),json)
+  }
+
+  public sendInvitation():Observable<any>{
+    let json = {};
+    return this.http.post(this.urlEnvironment.getSendInvitation(),json)
+  }
+
+  public inviteChatroom(username:string,key:string,chatroomName:string,chatKey:string):Observable<any>{
+    
+      let json = {
+        uid:key,
+        chatroomName:chatroomName,
+        username:this.username,
+        chatKey:chatKey
+      }
+      
+      return this.http.post(this.urlEnvironment.getInviteChatroom(),json)
+  
+  }
+
   public searchPlatformsAPI(queryString: string):Observable<any>{
     let json = {
       query: queryString,
@@ -409,11 +493,21 @@ export class DataService {
     return this.database.ref('/users').orderByChild('username').equalTo(username).once('value')
   }
 
-  public checkExistingDirect(firstUsername:string,secondUsername:string):Promise<any>{
+  public searchUsersByUsername(query:string):Promise<any>{
+    return this.database.ref('/users').orderByChild('username').startAt(query).endAt(query+'\uf8ff').once('value')
+  }
 
-    let count = 0;
+  public searchUsersByName(query:string):Promise<any>{
+    return this.database.ref('/users').orderByChild('name').startAt(query).endAt(query+'\uf8ff').once('value')
+  }
+
+  
+
+  public checkExistingDirect(firstUsername:string,secondUsername:string,secondUid:string):Promise<any>{
+
+    
     let data = {
-      count:count,
+      exist:false,
       key: ''
     }
 
@@ -421,29 +515,16 @@ export class DataService {
       
       snap.forEach((childSnap) =>{
         console.log(childSnap.key);
-        childSnap.forEach((user)=>{
-          user.forEach((res)=>{
-            console.log(res.val());
-            if(res.val().username == firstUsername){
-              data.count++;
-            }
-            if(res.val().username == secondUsername){
-              data.count++;
-            }
-            if(data.count == 2){
-              data.key = childSnap.key;
-            }
-          })
-        })
+        console.log('second:',secondUid);
+        if(this.uid in childSnap.val().participants && secondUid in childSnap.val().participants){
+          console.log('we got a chat')
+          data.key = childSnap.key;
+          data.exist = true;
+          return data;
+        }
       }) 
 
-      if(data.count == 2){
-        console.log('direct exists!');
-        
-      }
-      else{
-        console.log('doesnt!');
-      }
+      
       return data;
       
     })
@@ -452,11 +533,13 @@ export class DataService {
 
   public createDirectChat(receiverUsername:string,receiverUid:string):Promise<any>{
 
-    let directChat = this.database.ref('/directChats/').push();
+            console.log('receiver:',receiverUsername);
+            console.log('receiverUID:',receiverUid);
 
-            return this.checkExistingDirect(this.username,receiverUsername).then((data)=>{
-              console.log('must be count',data.count);
-              if(data.count < 2){
+            return this.checkExistingDirect(this.username,receiverUsername,receiverUid).then((data)=>{
+              console.log('DATA EXIST:',data.exist);
+              if(!data.exist){
+                let directChat = this.database.ref('/directChats/').push();
                 directChat.set({
                   participants:{
                     [this.uid]:{
@@ -478,18 +561,44 @@ export class DataService {
             
   
   }
-  // public addFriend(user: firebase.User, username: string) :Promise<any>{
-  //   return this.database.ref('/users/'+this.uid+'/friends/').set({
-  //     [user.uid]:{
-  //       username:username
-  //     }
-  //   })
-  // }
+  public addFriend(friend:any) :Promise<any>{
+    return this.database.ref('/users/'+this.uid+'/friends').update({
+      [friend.key]:{
+        username:friend.val().username
+      }
+    })
+  }
 
   public getFriendsList():Promise<any>{
 
     return this.database.ref('/users/'+this.uid+'/friends').once('value')
 
+  }
+
+  public saveNotificationToken(token:string,isBrowser:boolean):Promise<any>{
+    if(isBrowser){
+      return this.database.ref('/users/'+this.uid).update({
+        browserToken: token
+      })
+    }
+    else{
+      return this.database.ref('/users/'+this.uid).update({
+        phoneToken: token
+      })
+    }
+    // return this.database.ref('/users/'+this.uid).update({
+    //   notificationToken: token
+    // })
+  }
+
+
+  public sendFCM(data:any):Observable<any>{
+    let json = {
+      topic:data.id,
+      user:this.username,
+      title:data.title
+    }
+    return this.http.post(this.urlEnvironment.getSendFCM(),json)
   }
 
   ///////////////////////////////////////////////////BANK////////////////////////////////////////////////////////
@@ -519,6 +628,23 @@ export class DataService {
 
         return err;
       });
+  }
+
+  public saveStripeToken(token:string):Promise<any>{
+    return this.database.ref('/users/'+this.uid).update({
+      stripeToken:token
+    })
+  }
+
+  public createStripeCustomer(token:string):Observable<any>{
+
+    let json = {
+      uid:this.uid,
+      token:token,
+      email:this.email,
+      amount:20
+    }
+    return this.http.post(this.urlEnvironment.getStripeCustomer(),json)
   }
 
 

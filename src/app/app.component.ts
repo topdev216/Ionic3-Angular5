@@ -1,16 +1,15 @@
 import { Component,ViewChild } from '@angular/core';
-import { Platform, Nav , NavParams, Events, NavController,MenuController, ModalController } from 'ionic-angular';
+import { Platform, Nav , NavParams, Events, NavController,MenuController, ModalController, ToastController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import * as firebase from 'firebase/app';
 import { DataService } from '../providers/services/dataService';
-import { HomePage } from '../pages/home/home';
-import { LoginPage } from '../pages/login/login';
 import { TabsPage } from '../pages/tabs/tabs';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import { MessagingPage } from '../pages/messaging/messaging';
 import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
+import { FCM } from '@ionic-native/fcm';
 
 @Component({
   templateUrl: 'app.html'
@@ -24,6 +23,7 @@ export class MyApp {
   rootPage:any = TabsPage;
   user: Observable<firebase.User>;
   username:string;
+  messaging:any;
 
   @ViewChild('mycontent') navCtrl: NavController;
 
@@ -32,8 +32,14 @@ export class MyApp {
   , splashScreen: SplashScreen
   , public events: Events
   , public menuCtrl: MenuController
-  , public modalCtrl: ModalController) {
-    
+  , public modalCtrl: ModalController
+  , public toastCtrl: ToastController
+  , public alertCtrl: AlertController
+  , public fcm: FCM) {
+
+    if(platform.is('core')){
+      this.messaging = dataService.initialiazeWebFCM();
+    }
     
     this.events.subscribe('user text',(data)=>{
 
@@ -46,14 +52,73 @@ export class MyApp {
       
     })
 
+    this.events.subscribe('invite room', (data) =>{
+      // dataService.sendInvitation(data).subscribe( (response) =>{
+      //   console.log(response);
+      // })
+    })
+
+    this.events.subscribe('invite friend', (data) => {
+      
+    })
+    
+
     firebase.auth().onAuthStateChanged((user: firebase.User) => {
       let uid = null;
       console.log('entered!');
       if (user && user.uid) {
+        dataService.updateOnlineStatus(true,user.uid).then(()=>{
+          console.log('user is online');
+        })
+
+        
         console.log("user: ", user);
         dataService.uid = user.uid;
+        dataService.updateOnDisconnect(user.uid);
         this.menuCtrl.enable(true,'myMenu');
-        
+        console.log(platform);
+        if(!platform.is('cordova')){
+          
+            this.messaging.requestPermission().then(() => {
+              console.log('Notification permission granted.');
+              this.messaging.getToken().then(function(currentToken) {
+                if (currentToken) {
+                console.log(currentToken)
+                dataService.browserToken = currentToken;
+                dataService.saveNotificationToken(currentToken,true).then(()=>{
+                  console.log('notification token saved');
+                })
+
+                } else {
+                  // Show permission request.
+                  console.log('No Instance ID token available. Request permission to generate one.');
+                  // Show permission UI.
+                
+                }
+              }).catch(function(err) {
+                console.log('An error occurred while retrieving token. ', err);
+                
+              });
+            
+            }).catch(function(err) {
+              console.log('Unable to get permission to notify.', err);
+            });
+        }
+        else{
+          this.fcm.getToken().then((token)=>{
+            dataService.phoneToken = token;
+            dataService.saveNotificationToken(token,false).then(()=>{
+              console.log('token saved');
+            })
+            .catch((err)=>{
+              console.log('Something ocurred while saving token. ',err);
+            })
+          })
+          .catch((error)=>{
+            console.log('Something ocurred while retrieving token. ',error)
+          })
+          
+        }
         dataService.email = user.email;
         console.log("user.emailVerified: ", user.emailVerified);
         uid = user.uid;
@@ -69,21 +134,18 @@ export class MyApp {
           })
           this.username = user.username;
         })
-        this.events.publish('user logged',{
-          condition:true
-        })
 
         
-        
-        
         if (user.emailVerified) {
+          this.events.publish('user logged',{
+            condition:true
+          })
           this.dataService.getConstants().then(()=>{
           this.remainingDays = this.dataService.getRemainingDays(user);
           if(this.remainingDays <= (this.dataService.trialEnd) ){
             this.trialCondition = false;
             console.log('Trial expired');
-            let paymentModal = this.modalCtrl.create(PaymentModalPage);
-            paymentModal.present();
+            this.navCtrl.push(PaymentModalPage);
             }
           else{
             this.trialCondition = true;
@@ -98,6 +160,9 @@ export class MyApp {
         uid = user.uid;
         user.sendEmailVerification();
         this.dataService.showToast("Verification email sent");
+        this.events.publish('user logged',{
+          condition:true
+        })
       } else if (user == null) {
         this.events.publish('user logged',{
           condition:false
@@ -108,9 +173,109 @@ export class MyApp {
       }
     });
 
+    
+    
+
+
+
     platform.ready().then(() => {
+      
+      
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+
+      // Handle incoming messages. Called when:
+    // - a message is received while the app has focus
+    // - the user clicks on an app notification created by a service worker
+    //   `messaging.setBackgroundMessageHandler` handler.
+
+    if(platform.is('mobile')){
+      this.fcm.onNotification().subscribe(data => {
+        if(data.wasTapped){
+          console.log("Received in background");
+        } else {
+          console.log('Message received. ', JSON.stringify(data));
+          let alert = alertCtrl.create({
+            title: data.title,
+            message: data.body,
+            buttons: [
+              {
+                text: 'Decline',
+                role: 'cancel',
+                handler: () => {
+                  console.log('Cancel clicked');
+                }
+              },
+              {
+                text: 'Accept',
+                handler: () => {
+                  dataService.joinPublicRoom(data.chatKey,dataService.username,false).then(()=>{
+                    this.navCtrl.push(MessagingPage,{title:'',key:data.chatKey,condition:false,username:dataService.username})
+                  })
+                  console.log('Invitation accepted')
+                }
+              }
+            ]
+          });
+          alert.present();
+        };
+      });
+
+      this.fcm.onTokenRefresh().subscribe(token => {
+        dataService.saveNotificationToken(token,false).then(()=>{
+          console.log('token refreshed');
+        })
+      });
+    }
+
+    else{
+      //     Retrieve Firebase Messaging object.
+      this.messaging.onMessage(function(payload) {
+        console.log('Message received. ', payload);
+        let alert = alertCtrl.create({
+          title: 'Chatroom Invitation',
+          message: payload.notification.body,
+          buttons: [
+            {
+              text: 'Decline',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Accept',
+              handler: () => {
+                console.log('Invitation accepted')
+                dataService.joinPublicRoom(payload.data.chatKey,dataService.username,false).then(()=>{
+                  this.navCtrl.push(MessagingPage,{title:'',key:payload.data.chatKey,condition:false,username:dataService.username})
+                })
+              }
+            }
+          ]
+        });
+        alert.present();
+      });
+
+      this.messaging.onTokenRefresh(function() {
+        this.messaging.getToken().then(function(refreshedToken) {
+          console.log('Token refreshed.');
+          // Indicate that the new Instance ID token has not yet been sent to the
+          // app server.
+          // Send Instance ID token to app server.
+          console.log(refreshedToken);
+          dataService.browserToken = refreshedToken;
+          dataService.saveNotificationToken(refreshedToken,true).then(()=>{
+            console.log('notification token saved');
+          })
+          // ...
+        }).catch(function(err) {
+          console.log('Unable to retrieve refreshed token ', err);
+        });
+      });
+    }
+
+        
       statusBar.styleDefault();
     });
 

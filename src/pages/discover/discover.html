@@ -6,4 +6,68 @@
 -->
 <ion-content padding>
 
+  <ion-segment [(ngModel)]="type" (click)="segmentChange()" >
+        <ion-segment-button value="username">
+          By Username
+        </ion-segment-button>
+        <ion-segment-button value="name">
+          By Name
+        </ion-segment-button>
+  </ion-segment>
+
+  
+  <div *ngIf="type == 'username'">
+      <ion-searchbar
+      placeholder="Search Username"
+      [showCancelButton]="shouldShowCancel"
+      [debounce]="700"
+      (ionChange)="userChange($event)"
+      (ionCancel)="onCancel($event)"
+      ></ion-searchbar>
+  </div>
+
+  <div *ngIf="type == 'name'">
+      <ion-searchbar
+      placeholder="Search Name"
+      [showCancelButton]="shouldShowCancel"
+      [debounce]="700"
+      (ionChange)="userChange($event)"
+      (ionCancel)="onCancel($event)"
+      ></ion-searchbar>
+  </div>
+
+  <div *ngIf="queryResults.length > 0 ">
+      <ion-item id="searchItem" *ngFor="let result of queryResults">
+        <ion-row no-padding>
+
+            <ion-col col-3 no-padding>
+              <img src="{{result?.val().coverPhoto}}" alt="">
+            </ion-col>
+
+            <ion-col col-9 padding-left>
+              <ion-row>
+                <div text-wrap> {{result.val().name}} </div>
+              </ion-row>
+              <ion-row>
+                <p text-wrap>{{result.val().username}}</p>
+              </ion-row>
+              <ion-row>
+                <button id="profile" ion-button outline (click)="goToProfile(result)"> View Profile</button>
+              </ion-row>
+            </ion-col>
+            
+        </ion-row>
+      </ion-item>
+    </div>
+
+    <ion-item *ngIf="queryResults.length === 0 && emptyResult && query !== '' ">
+        <ion-row justify-content-center>
+          <h4>No results found.</h4>
+        </ion-row>
+    </ion-item>
+
+
+  
+
+  
 </ion-content>

@@ -24,14 +24,10 @@
 
 <ion-content padding>
 
-    
-
-    <div *ngIf="loading">
-        <ion-grid style="height: 100%">
-            <ion-row justify-content-center align-items-center style="height: 100%">
-                    <ion-spinner name="crescent"></ion-spinner>
-            </ion-row>
-        </ion-grid>
+    <div *ngIf="loading" class="horizontal div1">
+            <div class="vertical">
+                <ion-spinner name="crescent"></ion-spinner>
+            </div>
     </div>
 
     <div *ngIf="!loading">

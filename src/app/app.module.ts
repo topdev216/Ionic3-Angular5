@@ -29,6 +29,9 @@ import { PopoverComponent } from '../components/popover/popover';
 import { DiscoverPage } from '../pages/discover/discover';
 import { GamelistPage } from '../pages/gamelist/gamelist';
 import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
+import { CreditFormPage } from '../pages/credit-form/credit-form';
+import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
+import { FCM } from '@ionic-native/fcm';
 
 
 const firebaseConfig = {
@@ -59,7 +62,9 @@ const firebaseConfig = {
     PopoverComponent,
     DiscoverPage,
     GamelistPage,
-    PaymentModalPage
+    PaymentModalPage,
+    CreditFormPage,
+    ConfirmPaymentPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -91,7 +96,9 @@ const firebaseConfig = {
     PopoverComponent,
     DiscoverPage,
     GamelistPage,
-    PaymentModalPage
+    PaymentModalPage,
+    CreditFormPage,
+    ConfirmPaymentPage
   ],
   providers: [
     StatusBar,
@@ -100,7 +107,8 @@ const firebaseConfig = {
     DataService,
     HttpClient,
     UrlEnvironment,
-    UsernameValidator
+    UsernameValidator,
+    FCM
   ]
 })
 export class AppModule {}

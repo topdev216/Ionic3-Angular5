@@ -199,9 +199,12 @@ export class ChatPage {
 
     }
     else{
-      this.dataService.createDirectChat(chat.username,chat.key).then(()=>{
-        this.navCtrl.push(MessagingPage,{title:chat.username,key:chat.key,username:this.user.username,condition:isDirect});
+      this.dataService.fetchUserKey(chat.username).then((snapshot)=>{
+        var key = Object.keys(snapshot.val())[0];
+      this.dataService.createDirectChat(chat.username,key).then((chatKey)=>{
+        this.navCtrl.push(MessagingPage,{title:chat.username,key:chatKey,username:this.dataService.username,condition:true});
       })
+    })
     }
   }
 

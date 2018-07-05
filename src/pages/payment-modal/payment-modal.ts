@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { CreditFormPage } from '../credit-form/credit-form';
 
 /**
  * Generated class for the PaymentModalPage page.
@@ -21,6 +22,10 @@ export class PaymentModalPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad PaymentModalPage');
+  }
+
+  showCredit(){
+    this.navCtrl.push(CreditFormPage);
   }
 
   dismiss(){

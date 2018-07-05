@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { ViewController, Events, NavParams } from 'ionic-angular';
+import { ViewController, Events, NavParams, AlertController, ToastController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
+import { WriteTreeCompleteChildSource } from '@firebase/database/dist/src/core/view/CompleteChildSource';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 /**
  * Generated class for the PopoverComponent component.
  *
@@ -17,16 +19,40 @@ export class PopoverComponent {
   chatKey:string;
   userID:string;
   username:string;
+  message:boolean = false;
+  chatroom:boolean=false;
+  friends:any [] = [];
+  chatrooms:any [] = [];
+  chatroomName:string;
 
   constructor(public viewCtrl: ViewController
     , public dataService: DataService
     , public events: Events
-    , public navParams: NavParams) {
+    , public navParams: NavParams
+    , public alertCtrl: AlertController
+    , public toastCtrl: ToastController) {
+
       this.chatKey = this.navParams.get('chatKey');
       this.userID = this.navParams.get('userId');
       this.username = this.navParams.get('username');
-    console.log('Hello PopoverComponent Component');
-    this.text = 'Hello World';
+      this.message = this.navParams.get('message');
+      this.chatroom = this.navParams.get('chatroom');
+      this.chatroomName = this.navParams.get('chatroomName');
+      console.log('Hello PopoverComponent Component');
+
+      this.dataService.getFriendsList().then((snap)=>{
+        snap.forEach((friend) =>{
+          this.friends.push(friend.val());
+          console.log(friend.val());
+        })
+      })
+
+      this.dataService.getUserPublicRooms().then((snap) =>{
+        snap.forEach((room) =>{
+          this.chatrooms.push({room:room.val(),key:room.key});
+        })
+      })
+    
   }
 
   leaveChatroom(): void {
@@ -39,6 +65,102 @@ export class PopoverComponent {
     // this.close();
   }
 
+  inviteChatroom():void{
+    // this.events.publish('invite room',this.username);
+    this.close();
+    let options = {
+      title:'Chatrooms List',
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler: () =>{
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text:'Ok',
+          handler: data =>{
+            console.log(data);
+            this.dataService.fetchUserKey(this.username).then((snapshot)=>{
+              var key = Object.keys(snapshot.val())[0];
+              this.dataService.inviteChatroom(this.username,key,data.name,data.key).subscribe((res)=>{
+                console.log(res);
+                let toast = this.toastCtrl.create({
+                  message:'Invitation has been sent successfully',
+                  duration: 3000,
+                  position:'top',
+                  cssClass:"toast-success",
+                  showCloseButton: true,
+                  closeButtonText: 'Close',
+                })
+                toast.present();
+              })
+            })
+          }
+          
+        }
+      ],
+      inputs:[]
+    }
+
+    for(let i = 0; i < this.chatrooms.length ; i++){
+      options.inputs.push({name:'options',value:{key:this.chatrooms[i].key,name:this.chatrooms[i].room.name},label:this.chatrooms[i].room.name,type:'radio'})
+    }
+
+    let alert = this.alertCtrl.create(options);
+    alert.present();
+
+
+
+  }
+
+  inviteFriend():void{
+    this.close();
+    let options = {
+      title: 'Friends List',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Ok',
+          handler: data => {
+            this.dataService.fetchUserKey(data).then((snapshot)=>{
+              var key = Object.keys(snapshot.val())[0];
+              this.dataService.inviteChatroom(data,key,this.chatroomName,this.chatKey).subscribe( (data) => {
+                console.log(data);
+              })
+            })
+            let toast = this.toastCtrl.create({
+              message:'Invitation has been sent successfully',
+              duration: 3000,
+              position:'top',
+              cssClass:"toast-success",
+              showCloseButton: true,
+              closeButtonText: 'Close',
+            })
+            toast.present();
+            console.log(data);
+          }
+        }
+      ],
+      inputs:[]
+    };
+
+
+    for(let i = 0; i < this.friends.length ; i++){
+      options.inputs.push({name:'options',value:this.friends[i].username,label:this.friends[i].username,type:'radio'})
+    }
+
+    let alert = this.alertCtrl.create(options);
+    alert.present();
+
+  }
 
   close() {
     this.viewCtrl.dismiss();

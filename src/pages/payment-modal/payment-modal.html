@@ -6,13 +6,37 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>payment-modal</ion-title>
+  <ion-navbar hideBackButton=true>
+    <ion-title>Current Plans</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-  <button ion-button outline (click)="dismiss()" >Close</button>
+
+    <ion-slides pager>
+
+        <ion-slide style="background-color: green">
+          <h2>Plan 1</h2>
+        </ion-slide>
+      
+        <ion-slide style="background-color: blue">
+          <h2>Plan 2</h2>
+        </ion-slide>
+      
+        <ion-slide style="background-color: red">
+          <h2>Plan 3</h2>
+        </ion-slide>
+      
+    </ion-slides>
+
+
+  <ion-row justify-content-center>
+      <button id="nextBtn" ion-button full (click)="showCredit()">NEXT <ion-icon id="next" name="arrow-forward" ></ion-icon></button>
+  </ion-row>
+
+  <ion-row>
+      <button ion-button outline (click)="dismiss()" >Close</button>
+  </ion-row>
 </ion-content>
