@@ -22,7 +22,7 @@ page-login {
             text-align: center;
         } 
         .item-input {
-            border-bottom: solid;
+            border-bottom: 1px solid color($colors,light);
         }
         .item-input ion-label {
             -webkit-box-flex: initial;
@@ -50,12 +50,12 @@ page-login {
         }
         .item {
             padding-left: 16px;
-            padding-left: 16px;
+            margin-bottom:20px;
             border-radius: 0;
             position: relative;
             font-size: 1.7rem;
-            color: #f5f1f1;
-            background-color: rgba($color: #000000, $alpha: 0.2);
+            color: color($colors,light);
+            background-color: transparent;
             -webkit-transition: background-color 200ms linear;
             transition: background-color 200ms linear;
         }
@@ -69,23 +69,34 @@ page-login {
             padding-bottom: 20px;
         }
         .item-inner {
-            border-bottom-color: #ffffff !important;
+            border-bottom-color:color($colors,light) !important;
             box-shadow: none !important;
         }
-        .submit-btn {
-            background: #51CFB1;
-            border-radius: 30px !important;
-            border: 1px solid #ffffff;
+
+        .button-md-facebook{
+            background:#3B5998;
         }
-        .register-btn {
-            color: #ffffff;
-            font-size: 0.8em;
+
+        .button-md-facebook:hover{
+            background:#3B5998;
         }
-        .button{
-            background:rgb(20, 20, 20);
-            outline:1px solid color($colors,primary);
-            color: color($colors,primary);
+
+        .button-md-twitter{
+            background:#1DA1F2;
         }
+
+        .button-md-twitter:hover{
+            background:#1DA1F2;
+        }
+
+        .button-md-google{
+            background:#DB4437;
+        }
+
+        .button-md-google:hover{
+            background:#DB4437;
+        }
+   
     }
     @media (min-width: 576px) {
         .grid[fixed] {
@@ -115,22 +126,4 @@ page-login {
         justify-content: center;
     }
 
-    // @media (min-width: 768px) {
-    //     .grid[fixed] {
-    //         width: 720px;
-    //         max-width: 100%;
-    //     }
-    // }
-    // @media (min-width: 992px) {
-    //     .grid[fixed] {
-    //         width: 960px;
-    //         max-width: 100%;
-    //     }
-    // }
-    // @media (min-width: 1200px) {
-    //     .grid[fixed] {
-    //         width: 1140px;
-    //         max-width: 100%;
-    //     }
-    // }
 }

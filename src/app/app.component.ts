@@ -10,6 +10,7 @@ import 'rxjs/add/operator/first';
 import { MessagingPage } from '../pages/messaging/messaging';
 import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
 import { FCM } from '@ionic-native/fcm';
+import { ProfilePage } from '../pages/profile/profile';
 
 @Component({
   templateUrl: 'app.html'
@@ -52,6 +53,10 @@ export class MyApp {
       
     })
 
+    this.events.subscribe('payment',(data)=>{
+      this.navCtrl.push(PaymentModalPage);
+    })
+
     this.events.subscribe('invite room', (data) =>{
       // dataService.sendInvitation(data).subscribe( (response) =>{
       //   console.log(response);
@@ -70,10 +75,9 @@ export class MyApp {
         dataService.updateOnlineStatus(true,user.uid).then(()=>{
           console.log('user is online');
         })
-
-        
         console.log("user: ", user);
         dataService.uid = user.uid;
+        dataService.fireUser = user;
         dataService.updateOnDisconnect(user.uid);
         this.menuCtrl.enable(true,'myMenu');
         console.log(platform);
@@ -217,7 +221,27 @@ export class MyApp {
               }
             ]
           });
-          alert.present();
+
+          let toast = toastCtrl.create({
+            message:data.body,
+            duration:3000,
+            position:'top',
+            showCloseButton: true,
+            closeButtonText: 'View'
+          })
+  
+          toast.onDidDismiss(() => {
+            this.navCtrl.push(ProfilePage,{user:JSON.parse(data.user),search:true})
+          });
+
+
+          if(data.type == "offering"){
+            toast.present();
+          }
+          else if(data.type == "chatroom"){
+            alert.present();
+          }
+
         };
       });
 
@@ -230,7 +254,7 @@ export class MyApp {
 
     else{
       //     Retrieve Firebase Messaging object.
-      this.messaging.onMessage(function(payload) {
+      this.messaging.onMessage((payload) => {
         console.log('Message received. ', payload);
         let alert = alertCtrl.create({
           title: 'Chatroom Invitation',
@@ -254,11 +278,31 @@ export class MyApp {
             }
           ]
         });
-        alert.present();
+
+        let toast = toastCtrl.create({
+          message:payload.notification.body,
+          duration:3000,
+          position:'top',
+          showCloseButton: true,
+          closeButtonText: 'View'
+        })
+
+        toast.onDidDismiss(() => {
+          this.navCtrl.push(ProfilePage,{user:JSON.parse(payload.data.user),search:true})
+        });
+
+        if(payload.data.type == "offering"){
+          toast.present();
+        }
+        else if(payload.data.type == "chatroom"){
+          alert.present();
+        }
+
+        
       });
 
-      this.messaging.onTokenRefresh(function() {
-        this.messaging.getToken().then(function(refreshedToken) {
+      this.messaging.onTokenRefresh(() => {
+        this.messaging.getToken().then((refreshedToken) => {
           console.log('Token refreshed.');
           // Indicate that the new Instance ID token has not yet been sent to the
           // app server.

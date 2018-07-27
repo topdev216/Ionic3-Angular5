@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="tradeupgames.david.duth" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.tradeupgames.tugapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>TUG</name>
     <description>TradeUpGames Application.</description>
     <author email="rfrancociavaldini@gmail.com" href="https://rodolfofranco.github.com">Rodolfo Franco</author>
@@ -20,13 +20,14 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <universal-links>
-        <host name="https://vyj9f.app.goo.gl" scheme="https" />
-        <host name="tradeupgames-dd.firebaseapp.com" scheme="https">
+        <host name="https://tradeupgames.page.link" scheme="https" />
+        <host name="tug-project-39442.firebaseapp.com" scheme="https">
             <path url="/__/auth/callback" />
         </host>
     </universal-links>
     <platform name="android">
         <preference name="AndroidLaunchMode" value="singleTask" />
+        <preference name="loadUrlTimeoutValue" value="700000" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />

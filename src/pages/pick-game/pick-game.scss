@@ -1,0 +1,20 @@
+page-pick-game {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      } 
+
+    .content{
+    background: #003470;  /* fallback for old browsers */
+    p{
+       color:rgb(78, 78, 78); 
+    }
+    }
+
+      .selected{
+          background:#48a7ff !important;
+      }
+
+    .item{
+        background: #003470;  /* fallback for old browsers */
+    }
+}

@@ -52,7 +52,7 @@
                 <p text-wrap>{{result.val().username}}</p>
               </ion-row>
               <ion-row>
-                <button id="profile" ion-button outline (click)="goToProfile(result)"> View Profile</button>
+                <button id="profile" ion-button outline (click)="goToProfile(result.val(),result.key)"> View Profile</button>
               </ion-row>
             </ion-col>
             

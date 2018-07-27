@@ -91,11 +91,11 @@ export class ProfilePage {
           modal.present();
         }
 
-        this.remainingDays = this.dataService.getRemainingDays(this.dataService.user);
+        this.remainingDays = this.dataService.getRemainingDays(this.dataService.fireUser);
         console.log(this.remainingDays);
-        this.emailAddress = this.dataService.email;
-        this.photoUrl = this.dataService.user.photoURL;
-        this.dataService.updateProfilePicture(this.dataService.user.photoURL).then(()=>{
+        this.emailAddress = user.val().email;
+        this.photoUrl = user.val().coverPhoto;
+        this.dataService.updateProfilePicture(this.dataService.fireUser.photoURL).then(()=>{
           this.loading = false;
         })
         this.loading = false;
@@ -104,15 +104,15 @@ export class ProfilePage {
 
     else{
       this.loading = false;
-      this.streetAddress = this.user.val().address.street;
-      this.city = this.user.val().address.city;
-      this.state = this.user.val().address.state;
-      this.zipCode = this.user.val().address.zipCode;
+      this.streetAddress = this.user.user.address.street;
+      this.city = this.user.user.address.city;
+      this.state = this.user.user.address.state;
+      this.zipCode = this.user.user.address.zipCode;
       this.country = "USA";
-      this.phoneNumber = this.user.val().phoneNumber;
-      this.username = this.user.val().username;
-      this.photoUrl = this.user.val().coverPhoto;
-      this.emailAddress = this.user.val().email;
+      this.phoneNumber = this.user.user.phoneNumber;
+      this.username = this.user.user.username;
+      this.photoUrl = this.user.user.coverPhoto;
+      this.emailAddress = this.user.user.email;
 
     }
     

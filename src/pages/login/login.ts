@@ -43,16 +43,6 @@ export class LoginPage {
       this.dataService.hideLoading();
       console.log('logged data: ',data);
       this.navCtrl.popToRoot();
-      // this.navCtrl.setRoot(TabsPage);
-      //returned with no username
-      // if(data == undefined){
-      //   let modal = this.modalCtrl.create(AddUsernamePage);
-      //   modal.present();
-      // }
-      // //has username so redirect to main app
-      // else{
-      // this.navCtrl.setRoot(TabsPage);
-      // }
     })
   }
 

@@ -102,8 +102,7 @@ export class MenuComponent {
   }
 
   private showPayment():void{
-    let modal = this.modalCtrl.create(PaymentModalPage);
-    modal.present();
+   this.events.publish('payment');
   }
 
   private createPrivate() :void{

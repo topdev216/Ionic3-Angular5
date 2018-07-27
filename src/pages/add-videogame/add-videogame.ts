@@ -145,7 +145,7 @@ export class AddVideogamePage {
     game.type = form.type;
     this.dataService.addVideogame(game,this.gameId).then(()=>{
 
-      if(game.type = "offer"){
+      if(game.type == "offer"){
         this.dataService.notifyUsers(this.gameId,game.title).subscribe(((data) =>{
           console.log(data);
         }))

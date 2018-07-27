@@ -32,15 +32,17 @@ import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
 import { CreditFormPage } from '../pages/credit-form/credit-form';
 import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
 import { FCM } from '@ionic-native/fcm';
+import { PickGamePage } from '../pages/pick-game/pick-game';
+import { ConfirmTradePage } from '../pages/confirm-trade/confirm-trade';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDioOfikgv6FjUXsC3kzWByLuJoKrh3OAY",
-  authDomain: "tradeupgames-dd.firebaseapp.com",
-  databaseURL: "https://tradeupgames-dd.firebaseio.com",
-  projectId: "tradeupgames-dd",
-  storageBucket: "tradeupgames-dd.appspot.com",
-  messagingSenderId: "22178731920"
+  apiKey: "AIzaSyA9RMaRNiybHZvMLsQcGB0aFR8bE7TYdcI",
+  authDomain: "tug-project-39442.firebaseapp.com",
+  databaseURL: "https://tug-project-39442.firebaseio.com",
+  projectId: "tug-project-39442",
+  storageBucket: "tug-project-39442.appspot.com",
+  messagingSenderId: "487644774277"
 };
 
 @NgModule({
@@ -64,7 +66,9 @@ const firebaseConfig = {
     GamelistPage,
     PaymentModalPage,
     CreditFormPage,
-    ConfirmPaymentPage
+    ConfirmPaymentPage,
+    PickGamePage,
+    ConfirmTradePage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -98,7 +102,9 @@ const firebaseConfig = {
     GamelistPage,
     PaymentModalPage,
     CreditFormPage,
-    ConfirmPaymentPage
+    ConfirmPaymentPage,
+    PickGamePage,
+    ConfirmTradePage
   ],
   providers: [
     StatusBar,

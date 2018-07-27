@@ -13,5 +13,24 @@ page-payment-modal {
         #nextBtn{
             margin-top:10px;
         }
+
+        .item{
+            background:transparent;
+        }
+
+        .card{
+
+            ion-card-title{
+                color:white;
+            }
+            background:transparent;
+            border:1px solid color($colors,primary);
+            border-radius:4px;
+            color:white;
+            h1{
+                color:white;
+                font-weight:bold;
+            }
+        }
     }
 }

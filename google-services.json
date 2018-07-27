@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "22178731920",
-    "firebase_url": "https://tradeupgames-dd.firebaseio.com",
-    "project_id": "tradeupgames-dd",
-    "storage_bucket": "tradeupgames-dd.appspot.com"
+    "project_number": "487644774277",
+    "firebase_url": "https://tug-project-39442.firebaseio.com",
+    "project_id": "tug-project-39442",
+    "storage_bucket": "tug-project-39442.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:22178731920:android:b39819df97e1755d",
+        "mobilesdk_app_id": "1:487644774277:android:99084a501d2345ec",
         "android_client_info": {
-          "package_name": "tradeupgames.david.duth"
+          "package_name": "com.tradeupgames.tugapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "22178731920-lk61mec69r3aul6j5625etepkhqpocok.apps.googleusercontent.com",
+          "client_id": "487644774277-lc9takp31574uhs0v91jtnq55s2kuqdm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "tradeupgames.david.duth",
+            "package_name": "com.tradeupgames.tugapp",
             "certificate_hash": "e0f7292704e662166a4cde593206ed0b4fd78c32"
           }
         },
         {
-          "client_id": "22178731920-uqorv9oj177k0kf2jgr58mbmh8s2bqqu.apps.googleusercontent.com",
+          "client_id": "487644774277-emh0r24s3u4hdfp0anb6ntdu1a8g29ll.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB-qsYxt3DDams6F9PlbHof18slR52OJgo"
+          "current_key": "AIzaSyDGKP-kWo3OKpBykxVf69lRtLYyvSWwkXM"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "22178731920-uqorv9oj177k0kf2jgr58mbmh8s2bqqu.apps.googleusercontent.com",
+              "client_id": "487644774277-emh0r24s3u4hdfp0anb6ntdu1a8g29ll.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

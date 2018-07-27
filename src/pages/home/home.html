@@ -33,7 +33,7 @@
             </div>
     </div>
 
-  <div *ngIf="!loading" style="height:80%;">
+  <div *ngIf="!loading" style="height:100%;">
       <!-- <ion-row justify-content-end>
           
             <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
@@ -42,9 +42,13 @@
           
       </ion-row> -->
         
-        <ion-grid style="height: 100%">
-            <ion-row justify-content-center align-items-center style="height: 100%">
+        <ion-grid fixed style="height:100%;">
+            <ion-row justify-content-center align-items-center style="height:30%;">
                 <ion-searchbar placeholder="Search Game"></ion-searchbar>
+            </ion-row>
+
+            <ion-row justify-content-center align-items-end style="height:70%;">
+                    <img src="assets/imgs/logoTU.png" alt="logo" class="cover">
             </ion-row>
         </ion-grid>
   </div>

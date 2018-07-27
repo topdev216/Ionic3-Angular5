@@ -84,8 +84,12 @@ export class DiscoverPage {
     
   }
 
-  goToProfile(user:any){
-    this.navCtrl.push(ProfilePage,{user:user,search:true})
+  goToProfile(user:any,userKey:string){
+    let json = {
+      user:user,
+      userKey:userKey
+    }
+    this.navCtrl.push(ProfilePage,{user:json,search:true})
   }
 
   onCancel(){

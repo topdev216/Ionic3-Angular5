@@ -1,16 +1,14 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable,NgZone } from '@angular/core';
-import { Platform, Config, LoadingController, Loading, ToastController} from 'ionic-angular';
+import { Platform, LoadingController, Loading, ToastController} from 'ionic-angular';
 import * as firebase from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
-import * as moment from 'moment';
 import { UrlEnvironment} from '../services/urlEnvironment';
 import { Observable } from 'rxjs/Observable';
 import { AddressInterface } from '../interfaces/addressInterface';  
-import { VideogameInterface } from '../interfaces/videogameInterface';
+// import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
-import { DEPRECATED_PLURAL_FN } from '@angular/common/src/i18n/localization';
 
 declare var Stripe:any;
 
@@ -30,7 +28,8 @@ export class DataService {
   public uid: string;
   public email: string;
   public authState: boolean;
-  public user: firebase.User;
+  public user: any;
+  public fireUser: firebase.User;
   public friends: any [] = [];
   public username:string;
   public activeChatroomID:string;
@@ -53,7 +52,7 @@ export class DataService {
 
   public initialiazeWebFCM():firebase.messaging.Messaging{
     const messaging = firebase.messaging();
-    messaging.usePublicVapidKey("BA7uaEvvGPS9gVgdhgfpb06_aBjOAaviJzglsJepYoxVHs_yTufUIh8aOmg5qdm_iLimp-Zhfct-7DYzt29Cnt8");
+    messaging.usePublicVapidKey("BNJKkIXoLQCgzWDYJeI41p89a7zcml_rsc6bbE5TVXvMHdsNxSCebW4iu8kv1GOcfnpKCKh5AwsfpnsgExuYiu8");
     return messaging;
   }
 
@@ -123,8 +122,8 @@ export class DataService {
     return this.socialSignIn(new firebase.auth.GoogleAuthProvider)
       .then((credential: any) => {
         let user = credential.user;
-
-        this.database.ref('/users/' + user.uid).once('value').then( (snapshot) => {
+        
+        this.database.ref('/users/' + user.uid+'/name').once('value').then( (snapshot) => {
           console.log(snapshot.val());
           //user is not registered on database...
           if(snapshot.val() == null){
@@ -176,6 +175,7 @@ export class DataService {
     return this.database.ref('users/'+uid).once('value', (userSnapshot) => {
       let user = {};
       user = userSnapshot.val();
+      this.user = user;
       return user;
     })
   }
@@ -279,6 +279,10 @@ export class DataService {
     return this.http.get(this.urlEnvironment.getGamesAPI())
   }
 
+  public fetchUserOfferGames(userKey:string):Promise<any>{
+    return this.database.ref('users/'+userKey+'/videogames/offer').once('value')
+  }
+
   public getGamesFirebase(): Promise<any>{
 
     return firebase.database().ref('/videogames/' + this.uid).once('value').then(function(snapshot) {
@@ -337,6 +341,10 @@ export class DataService {
 
   public getUserPublicRooms():Promise<any>{
     return this.database.ref('/chatrooms/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).once("value")
+  }
+
+  public fetchRoom(chatKey:string):Promise<any>{
+    return this.database.ref('/chatrooms/'+chatKey).once('value')
   }
 
   public getUserDirectChats():Promise<any>{
@@ -429,9 +437,10 @@ export class DataService {
   }
 
   public notifyUsers(topic:string,gameTitle:string):Observable<any>{
+    console.log('TOPIC ID:',topic);
     let json = {
       topic:topic,
-      user:this.username,
+      user:this.user,
       title:gameTitle
     }
     return this.http.post(this.urlEnvironment.getSendFCM(),json)
@@ -563,8 +572,8 @@ export class DataService {
   }
   public addFriend(friend:any) :Promise<any>{
     return this.database.ref('/users/'+this.uid+'/friends').update({
-      [friend.key]:{
-        username:friend.val().username
+      [friend.userKey]:{
+        username:friend.user.username
       }
     })
   }
@@ -636,13 +645,13 @@ export class DataService {
     })
   }
 
-  public createStripeCustomer(token:string):Observable<any>{
+  public createStripeCustomer(token:string,plan:any):Observable<any>{
 
     let json = {
       uid:this.uid,
       token:token,
       email:this.email,
-      amount:20
+      plan:plan
     }
     return this.http.post(this.urlEnvironment.getStripeCustomer(),json)
   }

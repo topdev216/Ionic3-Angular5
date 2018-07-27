@@ -1,0 +1,32 @@
+page-confirm-trade {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      } 
+
+    .content{
+    background: #006bcf;  /* fallback for old browsers */
+    p{
+       color:rgb(48, 48, 48); 
+    }
+    }
+
+      .selected{
+          background:#48a7ff !important;
+      }
+
+    .item{
+        background: #48a7ff;  /* fallback for old browsers */
+    }
+
+    .card{
+        background:#48a7ff;
+
+        ion-card-header{
+            font-size:25px;
+            i{
+                padding-left:20px;
+                font-size:30px;
+            }
+        }
+    }
+}

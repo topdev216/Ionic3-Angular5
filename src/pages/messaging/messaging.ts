@@ -1,4 +1,4 @@
-import { Component,ViewChild } from '@angular/core';
+import { Component,ViewChild, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import * as firebase from 'firebase/app';
 import { PopoverComponent } from '../../components/popover/popover';
@@ -27,7 +27,8 @@ export class MessagingPage {
   isDirect:boolean;
   chatTitle : string;
   tabBar : any;
-  constructor(public navCtrl: NavController, public navParams: NavParams,public popoverCtrl:PopoverController) {
+
+  constructor(public navCtrl: NavController, public navParams: NavParams,public popoverCtrl:PopoverController, public zone: NgZone) {
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.chatTitle = this.navParams.get('title');
     this.roomkey = this.navParams.get("key") as string;
@@ -35,7 +36,7 @@ export class MessagingPage {
     this.isDirect = this.navParams.get("condition") as boolean;
     this.data.type = 'message';
     this.data.username = this.username;
-
+    this.zone=new NgZone({enableLongStackTrace: false});
 
     if(!this.isDirect){
       firebase.database().ref('chatrooms/'+this.roomkey+'/chats').on('value', snapshot => {
@@ -43,7 +44,10 @@ export class MessagingPage {
         snapshot.forEach((childSnap)=>{
           let chat = childSnap.val();
           chat.key = childSnap.key;
-          this.chats.push(chat);
+          this.zone.run(()=>{
+            this.chats.push(chat);
+          })
+          console.log(chat);
         })
         
         setTimeout(() => {
@@ -63,7 +67,9 @@ export class MessagingPage {
         snapshot.forEach((childSnap)=>{
           let chat = childSnap.val();
           chat.key = childSnap.key;
-          this.chats.push(chat);
+          this.zone.run(()=>{
+            this.chats.push(chat);
+          })
         })
         
         setTimeout(() => {

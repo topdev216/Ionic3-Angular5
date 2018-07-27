@@ -9,12 +9,12 @@ importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDioOfikgv6FjUXsC3kzWByLuJoKrh3OAY",
-    authDomain: "tradeupgames-dd.firebaseapp.com",
-    databaseURL: "https://tradeupgames-dd.firebaseio.com",
-    projectId: "tradeupgames-dd",
-    storageBucket: "tradeupgames-dd.appspot.com",
-    messagingSenderId: "22178731920"
+  apiKey: "AIzaSyA9RMaRNiybHZvMLsQcGB0aFR8bE7TYdcI",
+  authDomain: "tug-project-39442.firebaseapp.com",
+  databaseURL: "https://tug-project-39442.firebaseio.com",
+  projectId: "tug-project-39442",
+  storageBucket: "tug-project-39442.appspot.com",
+  messagingSenderId: "487644774277"
 };
 
 firebase.initializeApp(firebaseConfig);

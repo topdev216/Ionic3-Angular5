@@ -27,15 +27,19 @@ export class CreditFormPage {
   private city:string;
   private country:string;
   private state:string;
+  private pickedPlan:any;
+
 
   constructor(public navCtrl: NavController, public navParams: NavParams
     , public urlEnvironment: UrlEnvironment
     , public dataService: DataService
    ) {
 
+    this.pickedPlan = this.navParams.get('plan');
+
     this.stripe = Stripe(this.urlEnvironment.getStripeAPI());
 
-    var elements = this.stripe.elements();
+    var elements = this.stripe.elements({locale:'en'});
 
     this.card = elements.create('card', {
       style: {
@@ -61,6 +65,11 @@ export class CreditFormPage {
     this.card.mount('#card-element');
   }
 
+  selectState(event:any){
+    console.log(event);
+    this.state = event;
+  }
+
   submit(){
     this.stripe.createToken(this.card,{
       name:this.cardHolderName,
@@ -76,7 +85,7 @@ export class CreditFormPage {
         console.log("result.token.id: ", result.token.id);
         this.dataService.saveStripeToken(result.token.id).then(()=>{
           console.log('token saved');
-          this.navCtrl.push(ConfirmPaymentPage,{token:result.token.id});
+          this.navCtrl.push(ConfirmPaymentPage,{token:result.token.id,plan:this.pickedPlan});
         })
         // if (result && result.token) {
         //   return this.contractorService.saveCreditCard(result.token.id)

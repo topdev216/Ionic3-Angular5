@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { ViewController, Events, NavParams, AlertController, ToastController } from 'ionic-angular';
+import { ViewController, Events, NavParams, AlertController, ToastController, ModalController, NavController, App } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
-import { WriteTreeCompleteChildSource } from '@firebase/database/dist/src/core/view/CompleteChildSource';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { PickGamePage } from '../../pages/pick-game/pick-game';
 /**
  * Generated class for the PopoverComponent component.
  *
@@ -23,14 +22,19 @@ export class PopoverComponent {
   chatroom:boolean=false;
   friends:any [] = [];
   chatrooms:any [] = [];
+  activeRoom:any;
   chatroomName:string;
+  gameArray:any [] = [];
 
   constructor(public viewCtrl: ViewController
     , public dataService: DataService
     , public events: Events
     , public navParams: NavParams
     , public alertCtrl: AlertController
-    , public toastCtrl: ToastController) {
+    , public toastCtrl: ToastController
+    , public modalCtrl: ModalController
+    , public navCtrl: NavController
+    , public appCtrl: App) {
 
       this.chatKey = this.navParams.get('chatKey');
       this.userID = this.navParams.get('userId');
@@ -52,6 +56,10 @@ export class PopoverComponent {
           this.chatrooms.push({room:room.val(),key:room.key});
         })
       })
+
+      this.dataService.fetchRoom(this.chatKey).then((snap)=>{
+        this.activeRoom = snap.val();
+      })
     
   }
 
@@ -64,6 +72,51 @@ export class PopoverComponent {
     this.events.publish('user text',this.username);
     // this.close();
   }
+
+  createTrade():void{
+    this.close();
+    let options = {
+      title:'Members',
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler:()=>{
+            console.log('cancel clicked');
+          }
+        },
+        {
+          text:'Ok',
+          handler:data =>{
+            console.log(data);
+            this.dataService.fetchUserOfferGames(data.key).then((snap)=>{
+              snap.forEach((game)=>{
+                this.gameArray.push(game.val());
+              })
+
+              this.viewCtrl.dismiss().then(() => {
+                this.appCtrl.getRootNav().push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false,pickedGames:[]});
+              });
+              // this.navCtrl.push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false});
+
+            })
+          }
+        }
+      ],
+      inputs:[]
+    }
+
+    for(let key in this.activeRoom.participants){
+      console.log(this.activeRoom.participants[key]);
+      console.log(this.dataService.username);
+      if(this.activeRoom.participants[key].username !== this.dataService.username){
+        options.inputs.push({name:'options',value:{key:key,name:this.activeRoom.participants[key].username},label:this.activeRoom.participants[key].username,type:'radio'})
+      }
+    }
+
+    let alert = this.alertCtrl.create(options);
+    alert.present();
+    }
 
   inviteChatroom():void{
     // this.events.publish('invite room',this.username);

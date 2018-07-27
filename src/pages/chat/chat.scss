@@ -36,6 +36,7 @@ page-chat {
 
     ion-card{
       outline:0.03rem solid color($colors,primary) ;
+      max-width:520px;
       .item{
         background-color:transparent;
         color:color($colors,primary);

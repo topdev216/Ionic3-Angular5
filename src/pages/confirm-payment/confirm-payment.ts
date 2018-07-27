@@ -17,11 +17,15 @@ import { DataService } from '../../providers/services/dataService';
 export class ConfirmPaymentPage {
 
   private stripeToken:string;
+  private pickedPlan:any;
+
 
   constructor(public navCtrl: NavController, public navParams: NavParams
     ,public dataService: DataService) {
 
+      this.pickedPlan = this.navParams.get('plan');
       this.stripeToken = this.navParams.get('token');
+
   }
 
   ionViewDidLoad() {
@@ -29,7 +33,7 @@ export class ConfirmPaymentPage {
   }
 
   pay(){
-    this.dataService.createStripeCustomer(this.stripeToken).subscribe( (data) =>{
+    this.dataService.createStripeCustomer(this.stripeToken,this.pickedPlan).subscribe( (data) =>{
       console.log(data);
       if(data.status == "succeeded"){
         this.navCtrl.popToRoot();

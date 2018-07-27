@@ -1,0 +1,52 @@
+<!--
+  Generated template for the PickGamePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Pick Game</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-row *ngIf="!isUser" justify-content-center>
+    <h1>{{username}}'s offering games </h1>
+  </ion-row>
+
+  <ion-row *ngIf="isUser" justify-content-center>
+      <h1>Your available games to trade </h1>
+  </ion-row>
+  <ion-list>
+    <ion-item *ngFor="let game of games" [class.selected]="game.selected" no-lines>
+        <ion-row no-padding align-items-center>
+
+          <ion-col col-3 no-padding>
+              <img src="https://{{game.coverPhoto}}" alt="">
+              <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
+            </ion-col>
+
+            <ion-col col-6 padding-left>
+              <div text-wrap> {{game.title}} </div>
+              <p text-wrap>{{game.platform}}</p>
+              <p text-wrap>{{game.genre}}</p>
+              <p text-wrap>{{game.releaseDate}}</p>
+            
+            </ion-col>
+
+            <ion-col col-2 no-padding>
+              <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button>
+              <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove-circle"></ion-icon></button>
+            </ion-col>
+        </ion-row> 
+    </ion-item>
+  </ion-list>
+
+  <button *ngIf="!isUser" ion-button block [disabled]="count == 0" (click)="next()">NEXT</button>
+  <button *ngIf="isUser" ion-button block [disabled]="count == 0" (click)="createTrade()">NEXT</button>
+
+</ion-content>

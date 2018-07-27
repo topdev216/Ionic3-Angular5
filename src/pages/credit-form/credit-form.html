@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Credit Card Details</ion-title>
+    <ion-title>Billing Information</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,37 +15,32 @@
 
 <ion-content padding>
 
-  <ion-row justify-content-center>
+
+  <ion-grid fixed>
+
+    <!-- <ion-row justify-content-center>
       <img src="./assets/imgs/stripe.png" alt="asdas">
-  </ion-row>
+    </ion-row> -->
 
   <form>
-    <div class="form-row">
-
-      <ion-card>
-          <ion-item>
+          <ion-item no-padding no-lines>
               <ion-label floating>Address Line 1</ion-label>
               <ion-input type="text" name="address_line_1" [(ngModel)]="addressOne"></ion-input>
-            </ion-item>
+          </ion-item>
   
-            <ion-item>
+          <ion-item no-padding no-lines>
                 <ion-label floating>Address Line 2</ion-label>
                 <ion-input type="text" name="address_line_2" [(ngModel)]="addressTwo"></ion-input>
-            </ion-item>
-  <!-- 
-            <ion-item>
-                <ion-label floating>Country</ion-label>
-                <ion-input type="text" name="country" [(ngModel)]="country"></ion-input>
-              </ion-item> -->
-  
-            <ion-item>
+          </ion-item>
+
+          <ion-item no-padding no-lines>
                 <ion-label floating>City</ion-label>
                 <ion-input type="text" name="city" [(ngModel)]="city"></ion-input>
-            </ion-item>
+          </ion-item>
             
-            <ion-item>
+          <ion-item no-padding no-lines>
                 <ion-label floating>State</ion-label>
-                <ion-select>
+                <ion-select [(ngModel)]="state" name="state" (ionChange)="selectState($event)">
                     <ion-option value="AL">Alabama</ion-option>
                     <ion-option value="AK">Alaska</ion-option>
                     <ion-option value="AZ">Arizona</ion-option>
@@ -99,28 +94,32 @@
                     <ion-option value="WY">Wyoming</ion-option>
                   </ion-select>				
                       
-            </ion-item>
-      </ion-card>
+          </ion-item>
           
-          <ion-item id="cardHolderName">
+          <ion-item no-padding no-lines id="cardHolderName">
             <ion-label floating>Cardholder Name</ion-label>
             <ion-input type="text" name="name" [(ngModel)]="cardHolderName"></ion-input>
           </ion-item>
 
 
-      <label style="color:white;font-size:16px" for="card-element">
-        Credit or debit card
-      </label>
-      <div id="card-element">
-        <!-- A Stripe Element will be inserted here. -->
-      </div>
+     
+          <ion-item id="stripe" no-padding no-lines>
+              <div id="card-element">
+                </div>
+          </ion-item>
+      
+
+      <!-- <ion-item>
+          <ion-label floating>Card</ion-label>
+          <ion-input id="card-element"></ion-input>
+      </ion-item> -->
+      
 
       <!-- Used to display Element errors. -->
       <div id="card-errors" role="alert"></div>
-    </div>
 
     <button ion-button full type="submit" (click)="submit()">NEXT</button>
   </form>
-  
+  </ion-grid>
 
 </ion-content>
