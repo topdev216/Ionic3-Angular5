@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController, App } from 'ionic-
 import { DataService } from '../../providers/services/dataService';
 import { ConfirmTradePage } from '../confirm-trade/confirm-trade';
 import { Navbar } from 'ionic-angular';
+import { ArrayType } from '@angular/compiler/src/output/output_ast';
 
 /**
  * Generated class for the PickGamePage page.
@@ -33,6 +34,7 @@ export class PickGamePage {
     this.games = this.navParams.get('games');
     this.pickedGames = this.navParams.get('pickedGames');
     this.username = this.navParams.get('username');
+
     this.isUser = this.navParams.get('isUser');
     this.count = 0;
   }
@@ -69,7 +71,13 @@ export class PickGamePage {
         this.games[i]["selected"] = false;
         this.count--;
       }
-    }    
+    }
+    
+    for(let j = 0 ; j < this.pickedGames.length ; j++){
+      if(this.pickedGames[j].game === game){
+        this.pickedGames.splice(j,1);
+      }
+    }
   }
 
   next(){
@@ -80,38 +88,57 @@ export class PickGamePage {
       })
 
       for(let i = 0; i < this.games.length; i++){
-        for(let j = 0; j < this.pickedGames.length; j++){
           if(this.games[i]["selected"] === true){
             if(this.isUser){
 
-              if(this.games[i].title !== this.pickedGames[j].game.title){
 
                 let obj = {
                   game:this.games[i],
                   type:'offering'
                 }
-                this.pickedGames.push(obj);
-              }
+                let count = 0;
+                for(let j = 0; j < this.pickedGames.length; j++){
+                  if(this.pickedGames[j].game.title === obj.game.title){
+                    count++;
+                  }      
+                }
+                if(count > 0){
+                  console.log('no repeated');
+                }
+                else{
+                  this.pickedGames.push(obj);
+                }
             }
+            
             else{
               let obj = {
                 game:this.games[i],
                 type:'interested'
               }
-              this.pickedGames.push(obj);
+              let count = 0;
+              for(let j = 0; j < this.pickedGames.length; j++){
+                if(this.pickedGames[j].game.title === obj.game.title){
+                  count++;
+                }      
+              }
+              if(count > 0){
+                console.log('no repeated');
+              }
+              else{
+                this.pickedGames.push(obj);
+              }
             }
           }
-        }
+        
       }
-      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames})
+      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username})
 
     })
   }
 
   createTrade(){
     for(let i = 0; i < this.games.length; i++){
-      for(let j = 0 ; j < this.pickedGames.length; j++){
-        if(this.games[i]["selected"] == true ){
+        if(this.games[i]["selected"] == true){
           if(this.isUser){
 
 
@@ -119,7 +146,19 @@ export class PickGamePage {
                 game:this.games[i],
                 type:'offering'
               }
-              this.pickedGames.push(obj);
+              let count = 0;
+              for(let j = 0; j < this.pickedGames.length; j++){
+                if(this.pickedGames[j].game.title === obj.game.title){
+                  count++;
+                }      
+              }
+              if(count > 0){
+                console.log('no repeated');
+              }
+              else{
+                this.pickedGames.push(obj);
+              }
+              
             
           }
           else{
@@ -127,13 +166,24 @@ export class PickGamePage {
               game:this.games[i],
               type:'interested'
             }
-            this.pickedGames.push(obj);
+
+            let count = 0;
+              for(let j = 0; j < this.pickedGames.length; j++){
+                if(this.pickedGames[j].game.title === obj.game.title){
+                  count++;
+                }      
+              }
+              if(count > 0){
+                console.log('no repeated');
+              }
+              else{
+                this.pickedGames.push(obj);
+              }
           }
         }
     }
-    }
 
-    this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames});
+    this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername')});
 
   }
 

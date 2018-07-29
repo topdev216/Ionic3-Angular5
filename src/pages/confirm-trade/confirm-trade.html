@@ -24,25 +24,50 @@
         <ion-card-header>Trade Details</ion-card-header>
     </ion-row>
       
-              <ion-row *ngFor="let game of games; let i=index; trackBy: trackById" no-padding>
+              <ion-row justify-content-center no-padding>
 
                 
 
-                      <ion-col col-3>
-                          <div *ngIf="game.type == 'interested'" text-wrap> You are getting</div>
-                          <div *ngIf="game.type == 'offering'" text-wrap> You are receiving</div>
+                      <ion-col *ngFor="let game of games">
+
+                        <div *ngIf="game.type == 'interested'">
+                            <img src="https://{{game.game.coverPhoto}}" alt="">
+                            <div text-wrap> {{game.game.title}} </div>
+                            <p text-wrap>{{game.game.platform}}</p>
+                        </div>
+                          <!-- <div *ngIf="game.type == 'interested'" text-wrap> You are getting</div>
+                          <div *ngIf="game.type == 'offering'" text-wrap> You are giving</div>
                           <img src="https://{{game.game.coverPhoto}}" alt="">
+                          <div text-wrap> {{game.game.title}} </div>
+                          <p text-wrap>{{game.game.platform}}</p> -->
                           <!-- <p text-wrap>{{game.game.genre}}</p>
                           <p text-wrap>{{game.game.releaseDate}}</p> -->
                       </ion-col>
 
-                      <ion-col col-9>
-                        <div text-wrap> {{game.game.title}} </div>
-                        <p text-wrap>{{game.game.platform}}</p>
+                      <ion-col align-items-center>
+                        <ion-icon id="swap" name="swap"></ion-icon>
                       </ion-col>
+
+                      <ion-col *ngFor="let game of games">
+
+                          <div *ngIf="game.type == 'offering'">
+                              <img src="https://{{game.game.coverPhoto}}" alt="">
+                              <div text-wrap> {{game.game.title}} </div>
+                              <p text-wrap>{{game.game.platform}}</p>
+                          </div>
+                        <!-- <div *ngIf="game.type == 'interested'" text-wrap> You are getting</div>
+                          <div *ngIf="game.type == 'offering'" text-wrap> You are giving</div>
+                          <img src="https://{{game.game.coverPhoto}}" alt="">
+                          <div text-wrap> {{game.game.title}} </div>
+                          <p text-wrap>{{game.game.platform}}</p> -->
+                          <!-- <p text-wrap>{{game.game.genre}}</p>
+                          <p text-wrap>{{game.game.releaseDate}}</p> -->
+                      </ion-col>
+
+                     
             
                     
-            </ion-row> 
+              </ion-row> 
 
 
             <ion-row>

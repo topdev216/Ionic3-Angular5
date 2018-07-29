@@ -413,9 +413,43 @@ export class DataService {
     return
   }
 
+  public createTrade(games:any,username: string):Promise<any>{
+
+    return this.fetchUserKey(username).then((snap) =>{
+
+      var key = Object.keys(snap.val())[0];
+      let gameA = [],gameB = [];
+
+      for(let i = 0 ; i < games.length; i++){
+        if(games[i].type === 'interested'){
+          gameA.push(games[i]);
+        }
+        else{
+          gameB.push(games[i]);
+        }
+      }
+      
+      let newTrade = this.database.ref('trades/').push();
+
+      return newTrade.set({
+        participants:{
+          [this.uid]:{
+            receivingGames:gameA
+          },
+          [key]:{
+            receivingGames:gameB
+          }
+        },
+        status:'pending',
+        creationTime:(new Date).getTime()
+      })
+    })
+    
+  }
+
   public searchGamesAPI(queryString: string,id:string):Observable<any>{
 
-   
+  
     let json = {
       query: queryString,
       platformID: id
