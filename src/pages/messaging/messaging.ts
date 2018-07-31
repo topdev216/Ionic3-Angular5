@@ -20,7 +20,7 @@ export class MessagingPage {
   @ViewChild(Content) content: Content;
 
   data = { type:'', username:'', message:'' };
-  chats = [];
+  chats:any[] = [];
   roomkey:string;
   username:string;
   offStatus:boolean = false;

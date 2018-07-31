@@ -1,0 +1,86 @@
+<!-- Generated template for the TradeCardComponent component -->
+<div>
+    <ion-card>
+
+        <ion-fab right top>
+          <h1 class="price" *ngIf="timer">{{timer.displayTime}}</h1>
+          </ion-fab>
+    
+      <ion-card-header>
+        <ion-row justify-content-center>
+            Trade Offer
+        </ion-row>
+      </ion-card-header>
+    
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col *ngFor="let game of games; let i=index; trackBy: trackById" >
+              <ion-row>
+                    <img src="https://{{game.coverPhoto}}" alt="asd">
+
+              </ion-row>
+              <ion-row justify-content-center>
+                <span>{{game.platform}}</span>
+              </ion-row>
+
+            <!-- </ion-col>
+                    <ion-icon *ngIf="i === 0" name="swap" size="large"></ion-icon>
+
+            <ion-col> -->
+
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    
+      <ion-row no-padding justify-content-end *ngIf="showButtons && !expired">
+        
+          
+              <button ion-button clear small icon-start (click)="acceptOrder()">
+                <ion-icon name='checkmark'></ion-icon>
+                Accept Trade
+              </button>
+            
+    
+          
+            <button ion-button clear small icon-start (click)="declineOrder()">
+              <ion-icon name='close'></ion-icon>
+              Decline Trade
+            </button>
+    
+      </ion-row>
+
+      <ion-row *ngIf="showWaitingMessage || expired" no-padding justify-content-center>
+          <span class="message">{{waitingMessage}}</span>
+      </ion-row>
+    
+    </ion-card>
+
+    <!-- <ion-card *ngIf="timer">
+        <ion-card-header>
+          <button ion-button *ngIf="timeInSeconds && timeInSeconds > 0" large block clear class="timer-button x-large">{{timer.displayTime}}</button>
+          <button ion-button *ngIf="!timeInSeconds || timeInSeconds == 0" large block clear class="timer-button">Timer set up incorrectly</button>
+        </ion-card-header>
+        <ion-item *ngIf="timeInSeconds && timeInSeconds > 0">
+          <button ion-button clear class="large" color="danger" (click)="initTimer()" item-start *ngIf="!timer.runTimer && (timer.hasStarted || timer.hasFinished) || timer.hasFinished">
+                  <ion-icon name="refresh"></ion-icon>
+                  Restart
+              </button>
+          <button ion-button clear class="large" (click)="pauseTimer()" item-end *ngIf="timer.runTimer && timer.hasStarted && !timer.hasFinished">
+                  <ion-icon name="pause"></ion-icon>
+                  Pause
+              </button>
+          <button ion-button clear class="large" (click)="resumeTimer()" item-end *ngIf="!timer.runTimer && timer.hasStarted && !timer.hasFinished">
+                  <ion-icon name="play"></ion-icon>
+                  Resume
+              </button>
+          <button ion-button clear class="large" (click)="startTimer()" item-end *ngIf="!timer.hasStarted">
+                  <ion-icon name="play"></ion-icon>
+                  Start
+              </button>
+        </ion-item>
+      </ion-card> -->
+    
+    
+</div>

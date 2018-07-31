@@ -95,7 +95,7 @@ export class PopoverComponent {
               })
 
               this.viewCtrl.dismiss().then(() => {
-                this.appCtrl.getRootNav().push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false,pickedGames:[]});
+                this.appCtrl.getRootNav().push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.chatKey});
               });
               // this.navCtrl.push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false});
 

@@ -38,6 +38,7 @@ export class DataService {
   public errorDismiss: boolean;
   public browserToken:string;
   public phoneToken:string;
+  public tradeKey:string;
 
   constructor(public http: HttpClient
   , public platform: Platform
@@ -178,6 +179,17 @@ export class DataService {
       this.user = user;
       return user;
     })
+  }
+
+  public fetchTrade(tradeKey:string): Promise<any>{
+    return this.database.ref('trades/'+tradeKey).once('value');
+  }
+
+  public sendTradeNotification(browserToken:string,phoneToken:string,username:string): Observable<any>{
+
+      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:this.tradeKey})
+
+    
   }
   
 
@@ -431,6 +443,9 @@ export class DataService {
       
       let newTrade = this.database.ref('trades/').push();
 
+      let tradeKey = newTrade.key;
+      this.tradeKey = tradeKey;
+
       return newTrade.set({
         participants:{
           [this.uid]:{
@@ -440,11 +455,35 @@ export class DataService {
             receivingGames:gameB
           }
         },
+        items:games,
         status:'pending',
         creationTime:(new Date).getTime()
       })
     })
     
+  }
+
+  public showTradeCard(chatKey:string,username:string):Promise<any>{
+
+    return this.fetchUserKey(username).then((snap)=>{
+
+      var key = Object.keys(snap.val())[0];
+
+      let newMessage = firebase.database().ref('chatrooms/'+chatKey+'/chats').push();
+
+      return newMessage.set({
+        type:'trade',
+        user:this.username,
+        sendDate:Date(),
+        tradeKey:this.tradeKey,
+        toUid:key,
+        fromUid:this.uid
+      })
+
+    })
+
+
+   
   }
 
   public searchGamesAPI(queryString: string,id:string):Observable<any>{

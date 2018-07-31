@@ -18,12 +18,17 @@ export class UrlEnvironment {
     private _sendFCM = this.baseUrl+"/messageTopic";
     private _sendInvitation = this.baseUrl+"/inviteUser";
     private _inviteChatroom = this.baseUrl+"/inviteChatroom";
+    private _sendTradeNotification = this.baseUrl+'/tradeNotification';
 
 
     
 
     constructor(public platformLocation: PlatformLocation) {        
         
+    }
+
+    public getTradeNotification():string{
+        return this._sendTradeNotification;
     }
 
     public getInviteChatroom():string{

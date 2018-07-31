@@ -34,6 +34,7 @@ import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
 import { FCM } from '@ionic-native/fcm';
 import { PickGamePage } from '../pages/pick-game/pick-game';
 import { ConfirmTradePage } from '../pages/confirm-trade/confirm-trade';
+import { TradeCardComponent } from '../components/trade-card/trade-card';
 
 
 const firebaseConfig = {
@@ -68,7 +69,8 @@ const firebaseConfig = {
     CreditFormPage,
     ConfirmPaymentPage,
     PickGamePage,
-    ConfirmTradePage
+    ConfirmTradePage,
+    TradeCardComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -104,7 +106,8 @@ const firebaseConfig = {
     CreditFormPage,
     ConfirmPaymentPage,
     PickGamePage,
-    ConfirmTradePage
+    ConfirmTradePage,
+    TradeCardComponent
   ],
   providers: [
     StatusBar,

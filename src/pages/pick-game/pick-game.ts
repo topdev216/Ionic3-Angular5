@@ -26,6 +26,9 @@ export class PickGamePage {
   private count:number;
   private selected:boolean = false;
   private isUser:boolean = false;
+  private chatKey:string;
+  private phoneToken:string;
+  private browserToken:string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
     , public dataService: DataService
@@ -34,7 +37,7 @@ export class PickGamePage {
     this.games = this.navParams.get('games');
     this.pickedGames = this.navParams.get('pickedGames');
     this.username = this.navParams.get('username');
-
+    this.chatKey = this.navParams.get('chatKey');
     this.isUser = this.navParams.get('isUser');
     this.count = 0;
   }
@@ -131,7 +134,7 @@ export class PickGamePage {
           }
         
       }
-      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username})
+      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username,chatKey:this.chatKey})
 
     })
   }
@@ -183,7 +186,12 @@ export class PickGamePage {
         }
     }
 
-    this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername')});
+    this.dataService.fetchUserKey(this.navParams.get('secondUsername')).then((snap)=>{
+      this.phoneToken = snap.val().phoneToken;
+      this.browserToken = snap.val().browserToken;
+      this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername'),chatKey:this.chatKey,phoneToken:this.phoneToken,browserToken:this.browserToken});
+    })
+
 
   }
 

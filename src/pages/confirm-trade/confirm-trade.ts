@@ -50,9 +50,17 @@ export class ConfirmTradePage {
             console.log('Confirm clicked');
             this.dataService.createTrade(this.games,this.navParams.get('username')).
             then(()=>{
-              console.log('trade created');
-              this.navCtrl.popToRoot();
-            })
+              console.log('trade created:');                
+                  this.navCtrl.popToRoot().then(()=>{
+                    this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.navParams.get('username'))
+                    .subscribe((res:any) =>{
+                      console.log(res);
+                      let chatKey = this.navParams.get('chatKey');
+                      this.dataService.showTradeCard(chatKey,this.navParams.get('username')).then(()=>{console.log('message sent')});
+                    })
+                })
+              })
+            
           }
         }
       ]
