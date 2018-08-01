@@ -22,7 +22,6 @@ trade-card {
         -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
         box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
         background:#025cc2;
-        width:100%;
         ion-card-header{
             font-weight:bold;
             font-size:3.5vh;
@@ -58,7 +57,7 @@ trade-card {
 
     @media (min-width: 576px) {
         .container{
-            width: 600px !important;
+            // width: 600px !important;
             max-width: 100%;
         }
 

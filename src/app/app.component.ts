@@ -247,6 +247,7 @@ export class MyApp {
 
       this.fcm.onTokenRefresh().subscribe(token => {
         dataService.saveNotificationToken(token,false).then(()=>{
+          dataService.phoneToken = token;
           console.log('token refreshed');
         })
       });

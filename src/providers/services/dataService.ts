@@ -6,6 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { UrlEnvironment} from '../services/urlEnvironment';
 import { Observable } from 'rxjs/Observable';
 import { AddressInterface } from '../interfaces/addressInterface';  
+import * as moment from 'moment';
 // import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
@@ -185,9 +186,34 @@ export class DataService {
     return this.database.ref('trades/'+tradeKey).once('value');
   }
 
-  public sendTradeNotification(browserToken:string,phoneToken:string,username:string): Observable<any>{
+  public acceptTradeOffer(tradeKey:string): Promise<any>{
+    return this.database.ref('trades/'+tradeKey).update({
+      status:'accepted'
+    })
+  }
 
-      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:this.tradeKey})
+  public declineTradeOffer(tradeKey:string):Promise<any>{
+    return this.database.ref('trades').child(tradeKey).remove();
+  }
+
+  public removeTradeMessage(tradeKey:string,isDirect:boolean,chatKey:string,messageKey:string):Promise<any>{
+
+    isDirect =  false;
+
+    console.log('CHAT:',chatKey);
+    console.log('MESSAGE:',messageKey);
+    if(!isDirect){
+      return this.database.ref('chatrooms/'+chatKey+'/chats/').child(messageKey).remove();
+    }
+    else{
+      return this.database.ref('directChats/'+chatKey+'/chats').child(messageKey).remove();
+    }
+
+  }
+
+  public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string): Observable<any>{
+
+      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:this.tradeKey,message:message})
 
     
   }
@@ -457,7 +483,7 @@ export class DataService {
         },
         items:games,
         status:'pending',
-        creationTime:(new Date).getTime()
+        creationTime: moment().utc().valueOf()
       })
     })
     
@@ -471,13 +497,18 @@ export class DataService {
 
       let newMessage = firebase.database().ref('chatrooms/'+chatKey+'/chats').push();
 
+      let messageKey = newMessage.key;
+
+      console.log('MESSAGE KEY:',messageKey);
+
       return newMessage.set({
         type:'trade',
         user:this.username,
         sendDate:Date(),
         tradeKey:this.tradeKey,
         toUid:key,
-        fromUid:this.uid
+        fromUid:this.uid,
+        messageKey:messageKey
       })
 
     })

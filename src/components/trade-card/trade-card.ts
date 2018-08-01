@@ -27,9 +27,11 @@ export interface CountdownTimer {
 export class TradeCardComponent implements OnInit {
 
   @Input() public message: any;
+  @Input() public chatKey: string;
   timeInSeconds: number;
   timer: CountdownTimer;
   tradeKey:string;
+  messageKey:string;
   receiverUid:string;
   fromUid:string;
   showButtons:boolean = false;
@@ -46,6 +48,7 @@ export class TradeCardComponent implements OnInit {
 
   ngOnInit() {
     this.tradeKey = this.message.tradeKey;
+    this.messageKey = this.message.messageKey;
     this.receiverUid = this.message.toUid;
     this.fromUid = this.message.fromUid;
     if(this.receiverUid === this.dataService.uid){
@@ -58,19 +61,26 @@ export class TradeCardComponent implements OnInit {
       if(snap.val() !== null){
 
         let games = snap.val().items;
-        let now = (new Date).getTime();
-        let timePassed = now - snap.val().creationTime;
-        let minutesPassed = Math.floor(timePassed / 60000);
+        let now = moment().utc().valueOf();
+        let test = moment().utc().valueOf();
 
-        let secondsPassed = Math.floor(timePassed / 1000);
+        let timePassed = now - snap.val().creationTime;
+        
+        let minutesPassed = timePassed / 60000;
+        let secondsPassed = timePassed / 1000;
+        console.log('creationTime:',snap.val().creationTime);
+        console.log('now:',test);
+        console.log('secondsPassed:',secondsPassed)
+        console.log('minutesPassed:',minutesPassed);
+        let remainingSeconds = 180 - secondsPassed;
 
         for(let i = 0; i < games.length ; i++){
           this.games.push(games[i].game);
         }
 
-        if(minutesPassed < 3){
-          this.timeInSeconds = 180 - secondsPassed;
-          this.initTimer();
+        if(minutesPassed <= 3){
+          // this.timeInSeconds = 180 - secondsPassed;
+          this.initTimer(remainingSeconds);
         }
         else{
           this.timeInSeconds = 0;
@@ -87,17 +97,17 @@ export class TradeCardComponent implements OnInit {
     return this.timer.hasFinished;
   }
 
-  initTimer() {
+  initTimer(remainingSeconds:number) {
     if (!this.timeInSeconds) { 
       this.timeInSeconds = 0; 
     }
 
     this.timer = <CountdownTimer>{
-      seconds: this.timeInSeconds,
+      seconds: 180,
       runTimer: false,
       hasStarted: false,
       hasFinished: false,
-      secondsRemaining: this.timeInSeconds,
+      secondsRemaining: remainingSeconds,
       tradeKey:this.tradeKey
     };
 
@@ -136,12 +146,36 @@ export class TradeCardComponent implements OnInit {
     }, 1000);
   }
 
-  accepTrade(){
+  acceptTrade(){
     
+    this.dataService.acceptTradeOffer(this.tradeKey).then(()=>{
+      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept').subscribe((data:any)=>{
+        console.log(data);
+
+        this.ngZone.run(() =>{
+          this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
+          this.showWaitingMessage = true;
+          this.showButtons = false;
+          this.timer.hasFinished = true;
+        })
+
+      })
+      
+    })
+
   }
 
   declineTrade(){
-
+    this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
+        console.log('trade declined and removed');
+        this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline').subscribe((data:any)=>{
+          console.log(data);
+          this.dataService.removeTradeMessage(this.tradeKey,false,this.chatKey,this.messageKey).then(()=>{
+            console.log('trade card message removed');
+        })
+      })
+     
+    })
   }
 
   getSecondsAsDigitalClock(inputSeconds: number) {
