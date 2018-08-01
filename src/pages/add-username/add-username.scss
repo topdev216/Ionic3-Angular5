@@ -7,7 +7,16 @@ page-add-username {
         h2{
             color:white;
         }
+
+        ion-grid{
+            height:100%;
+
+            ion-row{
+                height:70%;
+            }
+        }
     }
+
 
     .item-md {
         

@@ -6,13 +6,15 @@ trade-card {
 
     .price{
         padding:15px;
-        font-size:22px;
+        font-size:3vh;
         color:white;
     }
 
     .message{
-        font-size:15px;
+        font-size:2.7vh;
         font-weight:bold;
+        margin-top:10px;
+        padding-bottom:10px;
     }
 
     .card{
@@ -20,10 +22,19 @@ trade-card {
         -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
         box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
         background:#025cc2;
+        width:100%;
         ion-card-header{
             font-weight:bold;
-            font-size:16px;
+            font-size:3.5vh;
+        }
 
+        ion-grid{
+            height:100%;
+            // width:264px !important;
+            justify-content:center !important;
+            ion-row{
+                height:100%;
+            }
         }
     }
 
@@ -45,14 +56,17 @@ trade-card {
         color:white;
     }
 
-    ion-grid{
-        height:100%;
-        ion-row{
-            height:100%;
+    @media (min-width: 576px) {
+        .container{
+            width: 600px !important;
+            max-width: 100%;
+        }
+
+        .game-photo{
+            width:120px !important;
+            height:auto;
         }
     }
-
-   
 
   
 }

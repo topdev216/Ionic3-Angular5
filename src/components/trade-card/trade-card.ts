@@ -64,9 +64,7 @@ export class TradeCardComponent implements OnInit {
 
         let secondsPassed = Math.floor(timePassed / 1000);
 
-        console.log('NOW',now);
         for(let i = 0; i < games.length ; i++){
-          console.log('game',games[i]);
           this.games.push(games[i].game);
         }
 
@@ -76,11 +74,9 @@ export class TradeCardComponent implements OnInit {
         }
         else{
           this.timeInSeconds = 0;
-          this.ngZone.run(()=>{
-            this.waitingMessage = "Trade expired";
-          })
           this.showButtons = false;
           this.expired = true;
+          this.waitingMessage = "Trade expired";       
         }
       }
     })
@@ -132,8 +128,20 @@ export class TradeCardComponent implements OnInit {
         this.timerTick();
       } else {
         this.timer.hasFinished = true;
+        this.ngZone.run(()=>{
+          this.expired = true;
+          this.waitingMessage = "Trade expired";                                                                                                                                                                                                                                                                                              
+        })
       }
     }, 1000);
+  }
+
+  accepTrade(){
+    
+  }
+
+  declineTrade(){
+
   }
 
   getSecondsAsDigitalClock(inputSeconds: number) {

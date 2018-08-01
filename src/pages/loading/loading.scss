@@ -1,5 +1,13 @@
 page-loading {
 
+    ion-grid{
+      height:100%;
+      ion-row{
+        height:100%;
+      }
+    }
+
+
     .content{
       background:linear-gradient(to right,#005C97 ,#363795);
     }

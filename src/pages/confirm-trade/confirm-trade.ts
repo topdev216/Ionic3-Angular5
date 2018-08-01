@@ -52,7 +52,7 @@ export class ConfirmTradePage {
             then(()=>{
               console.log('trade created:');                
                   this.navCtrl.popToRoot().then(()=>{
-                    this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.navParams.get('username'))
+                    this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.dataService.username)
                     .subscribe((res:any) =>{
                       console.log(res);
                       let chatKey = this.navParams.get('chatKey');

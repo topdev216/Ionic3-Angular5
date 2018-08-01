@@ -106,7 +106,6 @@ export class PickGamePage {
                   }      
                 }
                 if(count > 0){
-                  console.log('no repeated');
                 }
                 else{
                   this.pickedGames.push(obj);
@@ -125,7 +124,6 @@ export class PickGamePage {
                 }      
               }
               if(count > 0){
-                console.log('no repeated');
               }
               else{
                 this.pickedGames.push(obj);
@@ -156,7 +154,6 @@ export class PickGamePage {
                 }      
               }
               if(count > 0){
-                console.log('no repeated');
               }
               else{
                 this.pickedGames.push(obj);
@@ -177,7 +174,6 @@ export class PickGamePage {
                 }      
               }
               if(count > 0){
-                console.log('no repeated');
               }
               else{
                 this.pickedGames.push(obj);
@@ -187,8 +183,11 @@ export class PickGamePage {
     }
 
     this.dataService.fetchUserKey(this.navParams.get('secondUsername')).then((snap)=>{
-      this.phoneToken = snap.val().phoneToken;
-      this.browserToken = snap.val().browserToken;
+     
+      var key = Object.keys(snap.val())[0];
+      this.phoneToken = snap.val()[key].phoneToken;
+      console.log('phone:',this.phoneToken);
+      this.browserToken = snap.val()[key].browserToken;
       this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername'),chatKey:this.chatKey,phoneToken:this.phoneToken,browserToken:this.browserToken});
     })
 

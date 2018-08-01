@@ -19,13 +19,7 @@
 <ion-content padding>
   
 
-    <!-- <div *ngIf="loading">
-        <ion-grid style="height: 100%">
-            <ion-row justify-content-center align-items-center style="height: 100%">
-                    <ion-spinner name="crescent"></ion-spinner>
-            </ion-row>
-        </ion-grid>
-    </div> -->
+  
 
     <div *ngIf="loading" class="horizontal div1">
             <div class="vertical">
@@ -33,21 +27,15 @@
             </div>
     </div>
 
-  <div *ngIf="!loading" style="height:100%;">
-      <!-- <ion-row justify-content-end>
-          
-            <button *ngIf="authState == false && authState !== undefined" ion-button outline (click)="goToLogin()">Sign In</button>
-            <button *ngIf="authState && authState !== undefined" ion-button outline (click)="logout()">Log Out</button>
-          
-          
-      </ion-row> -->
+  <div *ngIf="!loading" class="main-content">
+     
         
-        <ion-grid fixed style="height:100%;">
-            <ion-row justify-content-center align-items-center style="height:30%;">
+        <ion-grid fixed>
+            <ion-row class="searchbar" justify-content-center align-items-center>
                 <ion-searchbar placeholder="Search Game"></ion-searchbar>
             </ion-row>
 
-            <ion-row justify-content-center align-items-end style="height:70%;">
+            <ion-row class="logo" justify-content-center align-items-end>
                     <img src="assets/imgs/logoTU.png" alt="logo" class="cover">
             </ion-row>
         </ion-grid>

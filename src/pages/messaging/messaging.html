@@ -24,7 +24,9 @@
         <div class="chat-message" text-right *ngIf="chat.user !== username">
 
           <div class="right-bubble" *ngIf="chat.type === 'trade' && chat">
-            <trade-card [message]="chat" ></trade-card>
+            <ion-row justify-content-center no-padding>
+                <trade-card [message]="chat" ></trade-card>
+            </ion-row>
           </div>
           <div class="right-bubble" *ngIf="chat.type === 'message'">
             <span class="msg-name">{{chat.user}}</span>
@@ -34,7 +36,9 @@
         </div>
         <div class="chat-message" text-left *ngIf="chat.user == username">
           <div class="left-bubble" *ngIf="chat.type === 'trade' && chat">
-            <trade-card [message]="chat" ></trade-card>
+            <ion-row justify-content-center no-padding>
+                <trade-card [message]="chat" ></trade-card>
+            </ion-row>
           </div>
           <div class="left-bubble" *ngIf="chat.type === 'message'">
             <span class="msg-name">{{chat.user}}</span>
