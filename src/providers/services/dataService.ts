@@ -321,6 +321,16 @@ export class DataService {
     return this.database.ref('users/'+userKey+'/videogames/offer').once('value')
   }
 
+  public fetchUserInterestedGames(userKey:string):Promise<any>{
+    return this.database.ref('users/'+userKey+'/videogames/interested').once('value')
+  }
+
+  public removeGameFromList(gameId:string,list:string,userKey:string):Promise<any>{
+    return this.database.ref('users/'+userKey+'/videogames/'+list+'/'+gameId).remove()
+  }
+
+
+
   public getGamesFirebase(): Promise<any>{
 
     return firebase.database().ref('/videogames/' + this.uid).once('value').then(function(snapshot) {

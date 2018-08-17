@@ -1,17 +1,48 @@
 <ion-header>
   <ion-navbar>
-        <button ion-button menuToggle left>
-                <ion-icon name="menu"></ion-icon>
-        </button>
 
-        <ion-buttons end>
+        <!-- <button ion-button icon-only menuToggle left>
+                <ion-icon name="menu"></ion-icon>
+        </button> -->
+
+        <!-- <ion-row justify-content-center>
+                <h4>{{username}}</h4>
+        </ion-row> -->
+
+        <!-- <ion-buttons end>
                 <button *ngIf="authState == false && authState !== undefined" ion-button outline right (click)="goToLogin()">
                         Sign In
                     </button>
-                    <button *ngIf="authState && authState !== undefined" ion-button icon-only (click)="logout()" right>
-                        <ion-icon name="exit"></ion-icon>
-                    </button>
-        </ion-buttons>
+
+                    <div *ngIf="authState && authState !== undefined">
+                        <button ion-button icon-only (click)="logout()" right>
+                            <ion-icon name="exit"></ion-icon>
+                        </button>
+                    </div>
+                   
+        </ion-buttons> -->
+
+        <ion-toolbar>
+                <button *ngIf="authState" detail-none ion-button menuToggle left>
+                  <ion-icon name="menu"></ion-icon>
+                </button>
+
+                <ion-title text-center *ngIf="authState" (click)="goToProfile()">{{username}}</ion-title>
+                
+                <ion-buttons end>
+                    
+                  <button *ngIf="authState && !loading" detail-none icon-right ion-button (click)="showPopover($event)">
+                    <ion-icon name="more"></ion-icon>
+                  </button>
+
+                  <button *ngIf="!authState && !loading" ion-button icon-right outline (click)="goToLogin()">
+                        Sign in 
+                        <ion-icon name="log-in"></ion-icon>
+                </button>
+                 
+
+                </ion-buttons>
+        </ion-toolbar>
         
   </ion-navbar>
 </ion-header>
@@ -23,7 +54,13 @@
 
     <div *ngIf="loading" class="horizontal div1">
             <div class="vertical">
-                <ion-spinner name="crescent"></ion-spinner>
+                <ion-row justify-content-center>
+                                <ion-spinner name="crescent"></ion-spinner>
+                </ion-row>
+                <ion-row>
+                        <h4>Loading. Please wait...</h4>
+                </ion-row>
+                <!-- Loading. Please wait... -->
             </div>
     </div>
 

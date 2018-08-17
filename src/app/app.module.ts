@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, ComponentRef } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -35,6 +35,8 @@ import { FCM } from '@ionic-native/fcm';
 import { PickGamePage } from '../pages/pick-game/pick-game';
 import { ConfirmTradePage } from '../pages/confirm-trade/confirm-trade';
 import { TradeCardComponent } from '../components/trade-card/trade-card';
+import { PopoverHeaderComponent } from '../components/popover-header/popover-header';
+import { ActionPopoverComponent } from '../components/action-popover/action-popover';
 
 
 const firebaseConfig = {
@@ -70,7 +72,9 @@ const firebaseConfig = {
     ConfirmPaymentPage,
     PickGamePage,
     ConfirmTradePage,
-    TradeCardComponent
+    TradeCardComponent,
+    PopoverHeaderComponent,
+    ActionPopoverComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -107,7 +111,9 @@ const firebaseConfig = {
     ConfirmPaymentPage,
     PickGamePage,
     ConfirmTradePage,
-    TradeCardComponent
+    TradeCardComponent,
+    PopoverHeaderComponent,
+    ActionPopoverComponent
   ],
   providers: [
     StatusBar,

@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>gamelist</ion-title>
+    <ion-title>My List</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,4 +15,103 @@
 
 <ion-content padding>
 
+  <ion-row justify-content-center>
+
+  <div class="list-container">
+
+  
+    <ion-segment [(ngModel)]="type">
+        <ion-segment-button value="offer">
+          Offering
+        </ion-segment-button>
+        <ion-segment-button value="interested">
+          Interested
+        </ion-segment-button>
+        
+    </ion-segment>
+
+
+    <div [ngSwitch]="type">
+
+    <ion-list *ngSwitchCase="'interested'">
+        <ion-item *ngFor="let game of interestedGames" no-lines>
+            <ion-row no-padding align-items-center>
+    
+                <ion-col col-3 no-padding>
+                  <img src="https://{{game.game.coverPhoto}}" alt="cover">
+                  <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
+                </ion-col>
+    
+                <ion-col col-6 padding-left>
+                  <div text-wrap> {{game.game.title}} </div>
+                  <p text-wrap>{{game.game.platform}}</p>
+                  <p text-wrap>{{game.game.genre}}</p>
+                  <p text-wrap>{{game.game.releaseDate}}</p>
+                
+                </ion-col>
+    
+                <ion-col col-2 no-padding>
+                  <button ion-button (click)="showPopover($event,game)">Actions</button>
+                </ion-col>
+            </ion-row> 
+        </ion-item>
+
+        <ion-item *ngIf="interestedGames.length === 0">
+          <ion-row justify-content-center>
+            There are no games added to interested games list.
+          </ion-row>
+        </ion-item>
+
+        <ion-item>
+            <ion-row justify-content-center>
+                <button ion-button outline icon-left *ngIf="!condition" (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD VIDEOGAMES</button>
+              </ion-row>
+        </ion-item>
+    </ion-list>
+    
+
+    <ion-list *ngSwitchCase="'offer'">
+        <ion-item *ngFor="let game of offeringGames" no-lines>
+            <ion-row no-padding align-items-center>
+    
+                <ion-col col-3 no-padding>
+                  <img src="https://{{game.game.coverPhoto}}" alt="cover">
+                  <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
+                </ion-col>
+    
+                <ion-col col-6 padding-left>
+                  <div text-wrap> {{game.game.title}} </div>
+                  <p text-wrap>{{game.game.platform}}</p>
+                  <p text-wrap>{{game.game.genre}}</p>
+                  <p text-wrap>{{game.game.releaseDate}}</p>
+                
+                </ion-col>
+    
+                <ion-col col-2 no-padding>
+                    <button ion-button (click)="showPopover($event,game)">Actions</button>
+                </ion-col>
+            </ion-row> 
+        </ion-item>
+
+        <ion-item *ngIf="offeringGames.length === 0">
+            <ion-row justify-content-center>
+              There are no games added to offering games list.
+            </ion-row>
+        </ion-item>
+
+        <ion-item>
+            <ion-row justify-content-center>
+                <button ion-button outline icon-left *ngIf="!condition" (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD VIDEOGAMES</button>
+              </ion-row>
+        </ion-item>
+    </ion-list>
+
+  </div>
+
+
+</div>
+
+</ion-row>
+    
+  
 </ion-content>

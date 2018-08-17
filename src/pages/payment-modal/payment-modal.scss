@@ -14,22 +14,49 @@ page-payment-modal {
             margin-top:10px;
         }
 
-        .item{
-            background:transparent;
-        }
-
         .card{
-
-            ion-card-title{
-                color:white;
-            }
-            background:transparent;
-            border:1px solid color($colors,primary);
+            background:rgb(66, 66, 66);
             border-radius:4px;
-            color:white;
-            h1{
-                color:white;
-                font-weight:bold;
+            .card-header{
+                height:60px !important;
+                background:rgb(32, 32, 32) !important;
+                h2{
+                    font-size:17px;
+                    font-weight:bold;
+                    letter-spacing: 1.5px;
+                    color:white;
+                }
+            }
+
+            .card-price{
+                padding:10px;
+                background:transparent;
+                h1{
+                    font-size:28px;
+                    font-weight:bold;
+                    color:white;
+                }
+            }
+
+            .card-button{
+                background:transparent;
+                .button{
+                    font-size:15px;
+                    height:40px;
+                }
+            }
+
+            .card-content{
+                background:rgb(66, 66, 66);
+                // white-space: pre-wrap;      /* CSS3 */   
+                // white-space: -moz-pre-wrap; /* Firefox */    
+                // white-space: -pre-wrap;     /* Opera <7 */   
+                // white-space: -o-pre-wrap;   /* Opera 7 */    
+                // word-wrap: break-word;      /* IE */
+                p{
+                    font-size:15px;
+                    color:white;
+                }
             }
         }
     }

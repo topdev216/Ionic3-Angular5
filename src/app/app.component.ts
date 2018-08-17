@@ -11,6 +11,8 @@ import { MessagingPage } from '../pages/messaging/messaging';
 import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
 import { FCM } from '@ionic-native/fcm';
 import { ProfilePage } from '../pages/profile/profile';
+import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
+import { GamelistPage } from '../pages/gamelist/gamelist';
 
 @Component({
   templateUrl: 'app.html'
@@ -57,6 +59,10 @@ export class MyApp {
       this.navCtrl.push(PaymentModalPage);
     })
 
+    this.events.subscribe('myList',(data)=>{
+      this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid});
+    })
+
     this.events.subscribe('invite room', (data) =>{
       // dataService.sendInvitation(data).subscribe( (response) =>{
       //   console.log(response);
@@ -68,121 +74,133 @@ export class MyApp {
     })
     
 
-    firebase.auth().onAuthStateChanged((user: firebase.User) => {
-      let uid = null;
-      console.log('entered!');
-      if (user && user.uid) {
-        dataService.updateOnlineStatus(true,user.uid).then(()=>{
-          console.log('user is online');
-        })
-        console.log("user: ", user);
-        dataService.uid = user.uid;
-        dataService.fireUser = user;
-        dataService.updateOnDisconnect(user.uid);
-        this.menuCtrl.enable(true,'myMenu');
-        console.log(platform);
-        if(!platform.is('cordova')){
-          
-            this.messaging.requestPermission().then(() => {
-              console.log('Notification permission granted.');
-              this.messaging.getToken().then(function(currentToken) {
-                if (currentToken) {
-                console.log(currentToken)
-                dataService.browserToken = currentToken;
-                dataService.saveNotificationToken(currentToken,true).then(()=>{
-                  console.log('notification token saved');
-                })
+    platform.ready().then(() => {
 
-                } else {
-                  // Show permission request.
-                  console.log('No Instance ID token available. Request permission to generate one.');
-                  // Show permission UI.
-                
-                }
-              }).catch(function(err) {
-                console.log('An error occurred while retrieving token. ', err);
-                
-              });
-            
-            }).catch(function(err) {
-              console.log('Unable to get permission to notify.', err);
+
+      firebase.auth().onAuthStateChanged((user: firebase.User) => {
+        let uid = null;
+        console.log('entered!');
+        if (user && user.uid) {
+          dataService.updateOnlineStatus(true,user.uid).then(()=>{
+            console.log('user is online');
+            this.events.publish('user logged',{
+              condition:true
             });
-        }
-        else{
-          this.fcm.getToken().then((token)=>{
-            dataService.phoneToken = token;
-            dataService.saveNotificationToken(token,false).then(()=>{
-              console.log('token saved');
-            })
-            .catch((err)=>{
-              console.log('Something ocurred while saving token. ',err);
-            })
           })
-          .catch((error)=>{
-            console.log('Something ocurred while retrieving token. ',error)
+          console.log("user: ", user);
+          dataService.uid = user.uid;
+          dataService.fireUser = user;
+          dataService.updateOnDisconnect(user.uid);
+          this.menuCtrl.enable(true,'myMenu');
+          console.log(platform);
+          if(!platform.is('cordova')){
+            
+              this.messaging.requestPermission().then(() => {
+                console.log('Notification permission granted.');
+                this.messaging.getToken().then(function(currentToken) {
+                  if (currentToken) {
+                  console.log(currentToken)
+                  dataService.browserToken = currentToken;
+                  dataService.saveNotificationToken(currentToken,true).then(()=>{
+                    console.log('notification token saved');
+                  })
+  
+                  } else {
+                    // Show permission request.
+                    console.log('No Instance ID token available. Request permission to generate one.');
+                    // Show permission UI.
+                  
+                  }
+                }).catch(function(err) {
+                  console.log('An error occurred while retrieving token. ', err);
+                  
+                });
+              
+              }).catch(function(err) {
+                console.log('Unable to get permission to notify.', err);
+              });
+          }
+          else{
+            this.fcm.getToken().then((token)=>{
+              dataService.phoneToken = token;
+              dataService.saveNotificationToken(token,false).then(()=>{
+                console.log('token saved');
+              })
+              .catch((err)=>{
+                console.log('Something ocurred while saving token. ',err);
+              })
+            })
+            .catch((error)=>{
+              console.log('Something ocurred while retrieving token. ',error)
+            })
+            
+          }
+          dataService.email = user.email;
+          console.log("user.emailVerified: ", user.emailVerified);
+          uid = user.uid;
+          dataService.user = user;
+          dataService.fetchUserFromDatabase(user.uid).then((userDB)=>{
+            dataService.username = userDB.val().username;
+            this.events.publish('user logged2',{
+              condition:true,
+              username:userDB.val().username
+            });
+            dataService.getFriendsList().then((data)=>{
+              data.forEach((childSnap)=>{
+                let friend = childSnap.val();
+                friend.key = childSnap.key;
+                dataService.friends.push(friend);
+              })
+            })
+            this.username = userDB.val().username;
+  
           })
+  
           
-        }
-        dataService.email = user.email;
-        console.log("user.emailVerified: ", user.emailVerified);
-        uid = user.uid;
-        dataService.user = user;
-        dataService.fetchUserFromDatabase(user.uid).then((user)=>{
-          dataService.username = user.username;
-          dataService.getFriendsList().then((data)=>{
-            data.forEach((childSnap)=>{
-              let friend = childSnap.val();
-              friend.key = childSnap.key;
-              dataService.friends.push(friend);
+          if (user.emailVerified) {
+            this.events.publish('user logged',{
+              condition:true
             })
-          })
-          this.username = user.username;
-        })
-
-        
-        if (user.emailVerified) {
+            this.dataService.getConstants().then(()=>{
+            this.remainingDays = this.dataService.getRemainingDays(user);
+            if(this.remainingDays <= (this.dataService.trialEnd) ){
+              this.trialCondition = false;
+              console.log('Trial expired');
+              this.navCtrl.push(PaymentModalPage);
+              }
+            else{
+              this.trialCondition = true;
+              console.log(this.remainingDays);
+              console.log('User on trial..');
+              }
+            })
+            
+          }
+        }
+        if (user && user.uid && !user.emailVerified) {
+          uid = user.uid;
+          user.sendEmailVerification();
+          this.dataService.showToast("Verification email sent");
           this.events.publish('user logged',{
             condition:true
           })
-          this.dataService.getConstants().then(()=>{
-          this.remainingDays = this.dataService.getRemainingDays(user);
-          if(this.remainingDays <= (this.dataService.trialEnd) ){
-            this.trialCondition = false;
-            console.log('Trial expired');
-            this.navCtrl.push(PaymentModalPage);
-            }
-          else{
-            this.trialCondition = true;
-            console.log(this.remainingDays);
-            console.log('User on trial..');
-            }
-          })
-          
+        } else if (user == null) {
+          this.events.publish('user logged',{
+            condition:false
+          });
+          this.events.publish('user logged2',{
+            condition:false
+          });
+          this.menuCtrl.enable(false,'myMenu');
+          console.log("user == null? ", user == null);
+          console.log("nothing");
         }
-      }
-      if (user && user.uid && !user.emailVerified) {
-        uid = user.uid;
-        user.sendEmailVerification();
-        this.dataService.showToast("Verification email sent");
-        this.events.publish('user logged',{
-          condition:true
-        })
-      } else if (user == null) {
-        this.events.publish('user logged',{
-          condition:false
-        })
-        this.menuCtrl.enable(false,'myMenu');
-        console.log("user == null? ", user == null);
-        console.log("nothing");
-      }
-    });
-
-    
-    
-
-
-
-    platform.ready().then(() => {
+      });
+  
+      
+      
+  
+  
       
       
       // Okay, so the platform is ready and our plugins are available.

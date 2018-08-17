@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, AlertController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
+import { GamelistPage } from '../gamelist/gamelist';
 /**
  * Generated class for the AddVideogamePage page.
  *
@@ -35,12 +36,14 @@ export class AddVideogamePage {
   private esrbRating:string;
   private coverPhoto:string;
   private gamePicked: boolean = false;
+  private searchPlaceholder: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public formBuilder: FormBuilder
   , private dataService : DataService
   , public events: Events
-  , public toastCtrl: ToastController) {
+  , public toastCtrl: ToastController
+  , public alertCtrl: AlertController) {
     
 
     this.postForm = formBuilder.group({
@@ -99,6 +102,8 @@ export class AddVideogamePage {
     console.log('ionViewDidLoad AddVideogamePage');
     const inputs: any = document.getElementById("input").getElementsByTagName("INPUT");
     inputs[0].disabled=true;
+    this.searchPlaceholder = "Please select a platform first."
+    
   }
 
   parseRatings(rating:any){
@@ -155,16 +160,49 @@ export class AddVideogamePage {
           console.log(data);
         })
       }
+
+      let alert = this.alertCtrl.create({
+        title:'Confirmation',
+        message:'Do you want to add more games?',
+        buttons:[
+          {
+            text:'Done',
+            handler: data =>{
+              console.log('Done')
+              console.log('game submitted');
+              this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true});
+            }
+          },
+          {
+            text:'Add More',
+            handler: data =>{
+              console.log('pressed yes');
+            }
+          }
+
+        ]
+      })
+
+      alert.present();
       let toast = this.toastCtrl.create({
         message: 'Game was added successfully to your collection!',
         duration: 3000,
         position: 'top'
       })
       toast.present();
-      console.log('game submitted');
+
+      
+
+      
     })
   }
+
+  private goToList():void{
+    this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true});
+  }
+
   private platformChange(name:string):void{
+    this.searchPlaceholder = "Please wait..."
     this.gamePicked = false;
     const inputs: any = document.getElementById("input").getElementsByTagName("INPUT");
     inputs[0].disabled=true;
@@ -175,6 +213,7 @@ export class AddVideogamePage {
       console.log('data',data);
       this.platformID = data[0].id;
       inputs[0].disabled=false;
+      this.searchPlaceholder = "Search Games"
     })
     
 

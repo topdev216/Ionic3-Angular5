@@ -25,6 +25,12 @@ page-home {
     .toolbar-background {
       background-color:color($colors,primary);
     }
+
+    .toolbar{
+      ion-title{
+        cursor: pointer;
+      }
+    }
     .bar-button-default-ios{
       color:#002147;
     }
@@ -49,6 +55,8 @@ page-home {
       display: flex;
       flex-direction: column;
       justify-content: center;
+      color:color($colors,primary);
+      text-align: center;
     }
 
     ion-spinner{

@@ -14,6 +14,13 @@
 
 
 <ion-content padding>
+
+  <ion-row justify-content-center>
+
+
+  <div class="form-container">
+
+ 
     <form [formGroup]="postForm" (ngSubmit)="submitVideogame(postForm.value)">
 
         <ion-segment [(ngModel)]="type" formControlName="type">
@@ -27,10 +34,12 @@
         </ion-segment>
       
       <ion-list no-lines>
-          <ion-item>
-              <ion-label>Platform</ion-label>
+          <ion-item class="select-item">
+              <ion-label item-left text-wrap>Select Platform</ion-label>
               <ion-select
+              item-left
               [(ngModel)]="platform"
+              interface="action-sheet"
               formControlName="platform">
               <ion-option *ngFor="let platform of platforms" (ionSelect)="platformChange(platform.name)">{{platform.name}}</ion-option>
               </ion-select>
@@ -55,6 +64,7 @@
             <ion-searchbar
               id="input"
               [showCancelButton]="shouldShowCancel"
+              [placeholder]="searchPlaceholder"
               [debounce]="700"
               (ionChange)="gameChange($event)"
               (ionCancel)="onCancel($event)">
@@ -65,7 +75,7 @@
                 <ion-row no-padding>
 
                     <ion-col col-3 no-padding>
-                      <img src="https:{{game?.cover?.url}}" alt="">
+                      <img src="https://{{game?.cover?.url}}" alt="">
                       <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
                     </ion-col>
 
@@ -95,40 +105,49 @@
 
 
           <ion-card *ngIf="gamePicked">
+<ion-row>
+  <ion-col>
+    <img src="https://{{coverPhoto}}" alt="cover">
+  </ion-col>
 
-            <ion-row>
-              <ion-col text-wrap>
-              
-                  <ion-label>Title</ion-label>
-                  <ion-textarea [(ngModel)]="title" formControlName="title" [disabled]="true"></ion-textarea>
+  <ion-col>
+      <ion-row>
+
+          <ion-col>
+          
+              <ion-label>Title</ion-label>
+              <ion-textarea text-wrap [(ngModel)]="title" formControlName="title" [disabled]="true"></ion-textarea>
+        
+          </ion-col>
+
+          <ion-col>
+        
+              <ion-label>Release Date</ion-label>
+              <ion-input text-wrap [(ngModel)]="releaseDate" formControlName="releaseDate" [disabled]="true"></ion-input>
+          
+          </ion-col>
+
+        </ion-row>
+
+
+        <ion-row>
+          <ion-col>
+          
+              <ion-label>Genre</ion-label>
+              <ion-input [(ngModel)]="genre" formControlName="genre" [disabled]="true"></ion-input>
+          
+        </ion-col>
+
+        <ion-col>
+          
+              <ion-label>ESRB Rating</ion-label>
+              <ion-input [(ngModel)]="esrbRating" formControlName="esrbRating" [disabled]="true"></ion-input>
+          
+        </ion-col>
+        </ion-row>
+  </ion-col>
+</ion-row>
             
-              </ion-col>
-
-              <ion-col>
-            
-                  <ion-label>Release Date</ion-label>
-                  <ion-input [(ngModel)]="releaseDate" formControlName="releaseDate" [disabled]="true"></ion-input>
-              
-              </ion-col>
-
-            </ion-row>
-
-
-            <ion-row>
-              <ion-col>
-              
-                  <ion-label>Genre</ion-label>
-                  <ion-input [(ngModel)]="genre" formControlName="genre" [disabled]="true"></ion-input>
-              
-            </ion-col>
-
-            <ion-col>
-              
-                  <ion-label>ESRB Rating</ion-label>
-                  <ion-input [(ngModel)]="esrbRating" formControlName="esrbRating" [disabled]="true"></ion-input>
-              
-            </ion-col>
-            </ion-row>
 
         </ion-card>
           
@@ -138,7 +157,12 @@
       
             
       
-        <button ion-button full type="submit">Submit</button>
-      
+        <button ion-button full type="submit">Submit</button>      
         </form>
+        <button ion-button icon-right full (click)="goToList()" color="secondary">Done <ion-icon name="checkmark"></ion-icon></button>
+
+
+      </div>
+
+    </ion-row>
 </ion-content>

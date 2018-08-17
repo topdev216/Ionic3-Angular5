@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 export class UrlEnvironment {
 
     
-    private baseUrl = "http://tradeupgames.ngrok.io";
+    private baseUrl = "https://tradeupgames.ngrok.io";
     private _getUserLocation = "https://www.googleapis.com/geolocation/v1/geolocate?key="
     private _getUserAddress = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
     private _getGamesAPI = this.baseUrl+"/getGames";

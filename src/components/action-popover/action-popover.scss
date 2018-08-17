@@ -1,0 +1,16 @@
+action-popover {
+    .list-container{
+        height:100% !important;
+        background:red;
+    }
+    .item{
+        background:transparent !important;
+    }
+}
+
+.popover-content{
+    .list{
+        height:100% !important;
+        margin-bottom:0 !important
+    }
+}

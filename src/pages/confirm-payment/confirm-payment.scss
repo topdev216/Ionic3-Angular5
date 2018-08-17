@@ -4,5 +4,104 @@ page-confirm-payment {
     }
     .content{
         background:#002147;
+
+        ion-spinner{
+            width:68px;
+            height:68px;
+            margin-top:50%;
+            * {
+              stroke: #FFA400 !important;
+            }
+        
+            &.spinner-circles circle,
+            &.spinner-bubbles circle,
+            &.spinner-dots circle {
+              fill: #FFA400 !important;
+            }
+        }
+
+        div.horizontal {
+        display: flex;
+        justify-content: center;
+        height:100%;
+        }
+
+        .main{
+            height:480px;
+            display:flex;
+            flex-direction:row;
+            justify-content:center;
+            ion-card{
+                width:510px;
+            }
+        }
+
+        div.vertical {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card{
+            background:rgb(51, 51, 51);
+        }
+        .card-summary{
+            ion-card-header{
+                border-bottom:1px solid white;
+                font-weight:bold;
+                letter-spacing: 1.5px;
+                color:white;
+            }
+
+            background:transparent;
+        }
+
+        .discount-border{
+            padding-bottom:10px;
+            border-bottom:1px solid white;
+        }
+
+        .card-content{
+            background:transparent;
+            color:white;
+        }
+
+        .card-total{
+            background:transparent;
+            ion-card-title{
+                color:white;
+                font-weight:bold;
+                font-size:20px;
+                letter-spacing:0.8px;
+            }
+        }
+
+        .pay-button{
+            padding-top:10px;
+            padding-bottom:20px;
+            display:flex;
+            flex-direction:row;
+            justify-content:center;
+            align-items:center;
+            
+            button{
+                width:80%
+            }
+        }
+
+        .right-col{
+            font-weight:bold;
+        }
+
+        img{
+            width:220px;
+        }
+
+        .image-container{
+            display:flex;
+            height:50px;
+            flex-direction:row;
+            justify-content:center;
+        }
     }
 }

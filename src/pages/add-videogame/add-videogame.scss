@@ -25,14 +25,27 @@ page-add-videogame {
     ion-card{
         background-color:color($colors,primary) !important;
     }
+
+    .form-container{
+        width:620px;
+    }
   
     
     
 
     ion-select{
-        min-width:80% !important;
+        // min-width:82% !important;
         color:white;
     }
+
+    // .select-item{
+    //     ion-label {
+    //         min-width: 25%;
+    //       }
+    //       ion-select {
+    //         min-width: 70%;
+    //       }
+    // }
 
 
     ion-segment{
@@ -48,3 +61,21 @@ page-add-videogame {
         color:#002147;
     }
 }   
+
+.action-sheet-options, .action-sheet-group {
+    background: rgba(27, 27, 27, 0.952) !important;
+
+    .action-sheet-title{
+        color:white;
+        font-weight:bold;
+    }
+
+    .action-sheet-button{
+        color:color($colors,primary);
+    }
+}
+
+.platform-android .action-sheet-group {
+    background: rgba(27, 27, 27, 0.952) !important;
+    color:color($colors,primary) !important;
+}

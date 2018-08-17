@@ -1,0 +1,27 @@
+<!-- Generated template for the ActionPopoverComponent component -->
+
+<div class="list container">
+  <ion-list>
+        <button ion-item (click)="removeGame()">
+          <ion-icon name="trash" item-end></ion-icon>
+          <div text-center>Remove from List</div>
+        </button>
+
+        <button *ngIf="type == 'offer' "ion-item>
+            <ion-icon name="send" item-end></ion-icon>
+            <div text-center>Offer Trade</div>
+        </button>
+
+        <button *ngIf="type == 'interested' " ion-item>
+          <ion-icon name="search" item-end></ion-icon>
+          <div text-center>Search Trade</div>
+        </button>
+        
+        <button ion-item>
+            <ion-icon name="logo-game-controller-b" item-end></ion-icon>
+            <div text-center>View Game</div>
+        </button>
+
+    </ion-list>
+</div>
+  

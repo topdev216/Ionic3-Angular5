@@ -1,10 +1,12 @@
-import { Component,Input,ViewChild } from '@angular/core';
+import { Component,Input,ViewChild, ApplicationRef } from '@angular/core';
 import { AlertController,NavController,NavParams, Events, PopoverController, Nav, MenuController, Popover, ToastController, ModalController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { MessagingPage } from '../../pages/messaging/messaging';
 import { PopoverComponent } from '../../components/popover/popover'; 
 import * as firebase from 'firebase/app';
 import { PaymentModalPage } from '../../pages/payment-modal/payment-modal';
+import { GamelistPage } from '../../pages/gamelist/gamelist';
+import { ProfilePage } from '../../pages/profile/profile';
 /**
  * Generated class for the MenuComponent component.
  *
@@ -31,7 +33,8 @@ export class MenuComponent {
     , public popoverCtrl: PopoverController
     , public menuCtrl: MenuController
     , public toastCtrl: ToastController
-    , public modalCtrl: ModalController) {
+    , public modalCtrl: ModalController
+    ) {
     console.log('Hello MenuComponent Component');
     this.text = 'Hello World';
          
@@ -103,6 +106,10 @@ export class MenuComponent {
 
   private showPayment():void{
    this.events.publish('payment');
+  }
+
+  private goToList():void{
+    this.events.publish('myList');
   }
 
   private createPrivate() :void{

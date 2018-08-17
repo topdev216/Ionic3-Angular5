@@ -31,10 +31,9 @@ export class PaymentModalPage {
     console.log('ionViewDidLoad PaymentModalPage');
   }
 
-  showCredit(){
-    let currentIndex = this.slides.getActiveIndex();
-    console.log('Current index is', currentIndex);
-    this.navCtrl.push(CreditFormPage,{plan:currentIndex});
+  showCredit(plan:string){
+    console.log(plan);
+    this.navCtrl.push(CreditFormPage,{plan:plan});
   }
 
   dismiss(){
