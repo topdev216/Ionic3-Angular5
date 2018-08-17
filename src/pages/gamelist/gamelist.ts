@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events } from 'ionic-angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
 import { AddVideogamePage } from '../add-videogame/add-videogame';
@@ -20,20 +20,24 @@ import { ActionPopoverComponent } from '../../components/action-popover/action-p
 })
 export class GamelistPage{
 
+  @ViewChild(Navbar) navBar: Navbar;
+
+
   private type:string = "offer";
   private offeringGames: any [] = [];
   private interestedGames: any [] = [];
-  private condition:boolean = false;
+  private condition:boolean =false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService
     , public alertCtrl: AlertController
     , public popoverCtrl: PopoverController
-    , public events: Events) {
+    , public events: Events
+    , public viewCtrl: ViewController) {
 
     console.log('called constructor!');
 
     
-      this.condition = this.navParams.get('condition');
+    this.condition = this.navParams.get('condition');
 
     let userKey = this.navParams.get('userKey');
 
@@ -108,6 +112,7 @@ export class GamelistPage{
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad GamelistPage');
+    this.setBackButtonAction();
   }
 
   showPopover(myEvent,game):void{
@@ -116,6 +121,17 @@ export class GamelistPage{
       ev:myEvent
     });
   }
+
+  //Method to override the default back button action
+  setBackButtonAction(){
+
+    if(this.condition){
+      this.navBar.backButtonClick = () => {
+      //Write here wherever you wanna do
+        this.navCtrl.popToRoot();
+      }
+    }
+ }
 
   removeGame(game:any,list:string) {
 

@@ -60,7 +60,7 @@ export class MyApp {
     })
 
     this.events.subscribe('myList',(data)=>{
-      this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid});
+      this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:false});
     })
 
     this.events.subscribe('invite room', (data) =>{
