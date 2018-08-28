@@ -37,6 +37,10 @@ import { ConfirmTradePage } from '../pages/confirm-trade/confirm-trade';
 import { TradeCardComponent } from '../components/trade-card/trade-card';
 import { PopoverHeaderComponent } from '../components/popover-header/popover-header';
 import { ActionPopoverComponent } from '../components/action-popover/action-popover';
+import { NotificationPage } from '../pages/notification/notification';
+import { AccordionComponent } from '../components/accordion/accordion';
+import {TimeAgoPipe} from 'time-ago-pipe';
+
 
 
 const firebaseConfig = {
@@ -74,7 +78,10 @@ const firebaseConfig = {
     ConfirmTradePage,
     TradeCardComponent,
     PopoverHeaderComponent,
-    ActionPopoverComponent
+    ActionPopoverComponent,
+    NotificationPage,
+    AccordionComponent,
+    TimeAgoPipe
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -113,7 +120,10 @@ const firebaseConfig = {
     ConfirmTradePage,
     TradeCardComponent,
     PopoverHeaderComponent,
-    ActionPopoverComponent
+    ActionPopoverComponent,
+    NotificationPage,
+    AccordionComponent
+    
   ],
   providers: [
     StatusBar,

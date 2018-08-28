@@ -10,6 +10,7 @@ import * as moment from 'moment';
 // import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import { Reference } from '@firebase/database-types';
 
 declare var Stripe:any;
 
@@ -40,6 +41,7 @@ export class DataService {
   public browserToken:string;
   public phoneToken:string;
   public tradeKey:string;
+  public games: any [] = [];
 
   constructor(public http: HttpClient
   , public platform: Platform
@@ -187,9 +189,7 @@ export class DataService {
   }
 
   public acceptTradeOffer(tradeKey:string): Promise<any>{
-    return this.database.ref('trades/'+tradeKey).update({
-      status:'accepted'
-    })
+    return this.database.ref('trades/'+tradeKey+'/status').set('accepted');
   }
 
   public declineTradeOffer(tradeKey:string):Promise<any>{
@@ -211,11 +211,15 @@ export class DataService {
 
   }
 
-  public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string): Observable<any>{
+  public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string,tradeKey:string): Observable<any>{
 
-      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:this.tradeKey,message:message})
+      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:tradeKey,message:message,games:this.games})
 
     
+  }
+
+  public deleteNotification(notificationKey:string):Promise<any>{
+    return this.database.ref('/notifications/'+this.uid+'/'+notificationKey).remove();
   }
   
 
@@ -463,6 +467,8 @@ export class DataService {
 
   public createTrade(games:any,username: string):Promise<any>{
 
+    this.games = games;
+
     return this.fetchUserKey(username).then((snap) =>{
 
       var key = Object.keys(snap.val())[0];
@@ -483,6 +489,7 @@ export class DataService {
       this.tradeKey = tradeKey;
 
       return newTrade.set({
+        proposer:this.uid,
         participants:{
           [this.uid]:{
             receivingGames:gameA
@@ -497,6 +504,14 @@ export class DataService {
       })
     })
     
+  }
+
+  public checkTradeStatus(tradeKey:string):Promise<any>{
+    return this.database.ref('/trades/'+tradeKey).once('value')
+  }
+
+  public updateTradeStatus(tradeKey:string,status:string):Promise<any>{
+    return this.database.ref('/trades/'+tradeKey+'/status').set(status);
   }
 
   public showTradeCard(chatKey:string,username:string):Promise<any>{
@@ -560,13 +575,25 @@ export class DataService {
     return this.http.post(this.urlEnvironment.getSendFCM(),json)
   }
 
+  
+
   public subscribeToGame(topic:string):Observable<any>{
     let json = {
       topic:topic,
       browserToken:this.browserToken,
-      phoneToken:this.phoneToken
+      phoneToken:this.phoneToken,
+      uid:this.uid,
+      username:this.username
     }
     return this.http.post(this.urlEnvironment.getSubscribeFCM(),json)
+  }
+
+  public saveReceivedNotification(notification:any):Promise<any>{
+    let obj = {
+      data:notification
+    }
+    let ref = this.database.ref('/notifications/'+this.uid).push();
+    return ref.set(obj);
   }
 
   public sendInvitation():Observable<any>{
@@ -687,9 +714,17 @@ export class DataService {
   public addFriend(friend:any) :Promise<any>{
     return this.database.ref('/users/'+this.uid+'/friends').update({
       [friend.userKey]:{
-        username:friend.user.username
+        username:friend.username
       }
     })
+  }
+
+  public sendFriendNotification(userKey:string) :Observable<any>{
+    return this.http.post(this.urlEnvironment.getFriendNotification(),{username:this.username,userKey:userKey,uid:this.uid})
+  }
+
+  public getNotifications() :Reference{
+    return this.database.ref('/notifications/'+this.uid);
   }
 
   public getFriendsList():Promise<any>{

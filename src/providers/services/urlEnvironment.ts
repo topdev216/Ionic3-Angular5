@@ -19,12 +19,17 @@ export class UrlEnvironment {
     private _sendInvitation = this.baseUrl+"/inviteUser";
     private _inviteChatroom = this.baseUrl+"/inviteChatroom";
     private _sendTradeNotification = this.baseUrl+'/tradeNotification';
+    private _sendFriendNotification = this.baseUrl+'/friendNotification';
 
 
     
 
     constructor(public platformLocation: PlatformLocation) {        
         
+    }
+
+    public getFriendNotification():string{
+        return this._sendFriendNotification;
     }
 
     public getTradeNotification():string{

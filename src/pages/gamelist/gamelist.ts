@@ -36,14 +36,11 @@ export class GamelistPage{
 
     console.log('called constructor!');
 
+    this.type = this.navParams.get('segment') || 'offer';
     
     this.condition = this.navParams.get('condition');
 
     let userKey = this.navParams.get('userKey');
-
-    this.events.subscribe('removeGame', (data) =>{
-      this.removeGame(data.game,data.list);
-    })
 
     firebase.database().ref('users/'+userKey+'/videogames/offer').on('value', (snap) =>{
       this.offeringGames = [];
@@ -115,6 +112,16 @@ export class GamelistPage{
     this.setBackButtonAction();
   }
 
+  ionViewWillEnter(){
+    this.events.subscribe('removeGame', (data) =>{
+      this.removeGame(data.game,data.list);
+    })
+  }
+
+  ionViewWillLeave(){
+    this.events.unsubscribe('removeGame');
+  }
+
   showPopover(myEvent,game):void{
     let popover = this.popoverCtrl.create(ActionPopoverComponent,{game:game,list:this.type});
     popover.present({
@@ -165,7 +172,16 @@ export class GamelistPage{
   }
 
   goToAddGames(){
-    this.navCtrl.push(AddVideogamePage);
+
+    console.log('clicked button!');
+    console.log('LAST',this.navCtrl.getPrevious().name);
+    if(this.navCtrl.getPrevious().name === 'AddVideogamePage'){
+      this.navCtrl.getPrevious().data.segment = this.type;
+      this.navCtrl.pop();
+    }
+    else{
+      this.navCtrl.push(AddVideogamePage,{segment:this.type});
+    }
   }
 
 }

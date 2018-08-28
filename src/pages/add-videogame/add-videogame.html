@@ -32,18 +32,24 @@
             </ion-segment-button>
             
         </ion-segment>
-      
+        
+
+        <ion-row justify-content-center>
+          <h2 id="platformText">{{platform}}</h2>
+        </ion-row>
+        <button ion-button type="button" full (click)="openPlatforms()" id="platformButton">{{platformPlaceholder}}</button>
+
       <ion-list no-lines>
-          <ion-item class="select-item">
-              <ion-label item-left text-wrap>Select Platform</ion-label>
+          <!-- <ion-item class="select-item"> -->
+              <!-- <ion-label item-left text-wrap>Select Platform</ion-label>
               <ion-select
               item-left
               [(ngModel)]="platform"
               interface="action-sheet"
               formControlName="platform">
               <ion-option *ngFor="let platform of platforms" (ionSelect)="platformChange(platform.name)">{{platform.name}}</ion-option>
-              </ion-select>
-          </ion-item>
+              </ion-select> -->
+          <!-- </ion-item> -->
 
 
 
@@ -63,12 +69,18 @@
               </select-searchable> -->
             <ion-searchbar
               id="input"
-              [showCancelButton]="shouldShowCancel"
+              [showCancelButton]="true"
               [placeholder]="searchPlaceholder"
               [debounce]="700"
               (ionChange)="gameChange($event)"
+              (ionInput)="onSearchInput($event)"
+              (ionClear)="onClear($event)"
               (ionCancel)="onCancel($event)">
             </ion-searchbar>
+
+            <div *ngIf="searching" class="spinner-container">
+              <ion-spinner></ion-spinner>
+            </div>
 
             <div *ngIf="gameList.length > 0 && !gamePicked">
               <ion-item id="searchItem" *ngFor="let game of gameList" (click)="selectedGame(game)">
@@ -98,6 +110,7 @@
           </ion-list>
 
           
+
 
             
 
@@ -157,7 +170,7 @@
       
             
       
-        <button ion-button full type="submit">Submit</button>      
+        <button ion-button full type="submit">{{submitPlaceholder}}</button>      
         </form>
         <button ion-button full (click)="goToList()" color="secondary">Go to My List</button>
 

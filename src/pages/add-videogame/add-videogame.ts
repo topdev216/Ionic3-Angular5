@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
@@ -36,14 +36,19 @@ export class AddVideogamePage {
   private esrbRating:string;
   private coverPhoto:string;
   private gamePicked: boolean = false;
+  private searching: boolean = false;
   private searchPlaceholder: string;
+  private submitPlaceholder: string = "Search";
+  private platformPlaceholder: string = "Select Platform"
+  private platformSelected:boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public formBuilder: FormBuilder
   , private dataService : DataService
   , public events: Events
   , public toastCtrl: ToastController
-  , public alertCtrl: AlertController) {
+  , public alertCtrl: AlertController
+  , public actionCtrl: ActionSheetController) {
     
 
     this.postForm = formBuilder.group({
@@ -56,7 +61,7 @@ export class AddVideogamePage {
       type: ['', Validators.compose([Validators.required])],
     });
 
-    this.type = "offer";
+    this.type = this.navParams.get('segment') || 'offer';
 
   
     this.platforms = [
@@ -95,15 +100,25 @@ export class AddVideogamePage {
   }
 
   ionViewWillEnter(){
-   
+    this.type = this.navParams.get('segment') || 'offer';
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddVideogamePage');
     const inputs: any = document.getElementById("input").getElementsByTagName("INPUT");
     inputs[0].disabled=true;
-    this.searchPlaceholder = "Please select a platform first."
-    
+    this.searchPlaceholder = "Select a platform first."
+    this.submitPlaceholder = "Search";
+    this.platformPlaceholder = "Select Platform"
+  }
+
+  onSearchInput(event:any){
+    if(event.data){
+      this.searching = true
+    }
+    else{
+      this.searching = false;
+    }
   }
 
   parseRatings(rating:any){
@@ -198,7 +213,37 @@ export class AddVideogamePage {
   }
 
   private goToList():void{
-    this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true});
+    this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true,segment:this.type});
+  }
+
+  private openPlatforms():void{
+
+    let array = [];
+
+    for(let i = 0 ; i < this.platforms.length; i ++){
+      array.push({
+        text:this.platforms[i].name,
+        handler: () => {
+          this.platformChange(this.platforms[i].name);
+        }
+      })
+    }
+
+    array.push({
+      text: 'Cancel',
+      role: 'cancel', // will always sort to be on the bottom
+      handler: () => {
+        console.log('Cancel clicked');
+      }
+      });
+
+
+    let actionSheet = this.actionCtrl.create({
+      title:'Platforms',
+      buttons: array
+    });
+
+    actionSheet.present();
   }
 
   private platformChange(name:string):void{
@@ -212,14 +257,31 @@ export class AddVideogamePage {
     this.dataService.searchPlatformsAPI(name).subscribe((data:any)=>{
       console.log('data',data);
       this.platformID = data[0].id;
+      this.platformSelected = true;
       inputs[0].disabled=false;
-      this.searchPlaceholder = "Search Games"
+      
+      this.searchPlaceholder = "Search Games";
+      this.submitPlaceholder = "Add";
+      this.platformPlaceholder = "Change Platform";
     })
     
 
   }
 
   private onCancel(event:any):void{
+    console.log('CANCELED!');
+    this.searching = false;
+    this.gameList = [];
+    this.genres = [];
+    this.title = "";
+    this.genre = "";
+    this.releaseDate = "";
+    this.esrbRating = "";
+  }
+
+  private onClear(event:any):void{
+    console.log('CANCELED!');
+    this.searching = false;
     this.gameList = [];
     this.genres = [];
     this.title = "";
@@ -232,8 +294,14 @@ export class AddVideogamePage {
     this.gamePicked = false;
     console.log(title.value);
     this.gameList = [];
+    if(title.value === ''){
+      this.searching = false;
+      return title;
+    }
+    else{
     this.dataService.searchGamesAPI(title.value,this.platformID).subscribe((data:any) =>{
       this.gameList = data;
+      this.searching = false;
       for(let i = 0; i < data.length ; i++){
         let date = moment(this.gameList[i].first_release_date).format("MMM Do YYYY");
         this.gameList[i].first_release_date = date;
@@ -247,6 +315,7 @@ export class AddVideogamePage {
       }
       console.log(data);
     })
+  }
 }
 
 private selectedGame(game:any):void{

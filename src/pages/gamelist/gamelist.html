@@ -51,7 +51,7 @@
                 </ion-col>
     
                 <ion-col col-2 no-padding>
-                  <button ion-button (click)="showPopover($event,game)">Actions</button>
+                    <button ion-button outline icon-only id="moreButton" (click)="showPopover($event,game)"><ion-icon name="more"></ion-icon></button>
                 </ion-col>
             </ion-row> 
         </ion-item>
@@ -64,7 +64,7 @@
 
         <ion-item>
             <ion-row justify-content-center>
-                <button ion-button outline icon-left *ngIf="!condition" (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD VIDEOGAMES</button>
+                <button ion-button outline icon-left (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD VIDEOGAMES</button>
               </ion-row>
         </ion-item>
     </ion-list>
@@ -88,7 +88,7 @@
                 </ion-col>
     
                 <ion-col col-2 no-padding>
-                    <button ion-button (click)="showPopover($event,game)">Actions</button>
+                    <button ion-button outline icon-only id="moreButton" (click)="showPopover($event,game)"><ion-icon name="more"></ion-icon></button>
                 </ion-col>
             </ion-row> 
         </ion-item>
@@ -101,7 +101,7 @@
 
         <ion-item>
             <ion-row justify-content-center>
-                <button ion-button outline icon-left *ngIf="!condition" (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD VIDEOGAMES</button>
+                <button ion-button outline icon-left (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD VIDEOGAMES</button>
               </ion-row>
         </ion-item>
     </ion-list>

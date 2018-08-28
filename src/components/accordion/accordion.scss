@@ -1,0 +1,13 @@
+accordion {
+    .expand-wrapper {
+        transition: 0.3s ease;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+ 
+    .collapsed {
+        height: 0 !important;
+        display:block;
+    }
+}

@@ -85,8 +85,10 @@ export class TradeCardComponent implements OnInit {
         else{
           this.timeInSeconds = 0;
           this.showButtons = false;
-          this.expired = true;
-          this.waitingMessage = "Trade expired";       
+          this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
+            this.expired = true;
+            this.waitingMessage = "Trade expired";  
+          })           
         }
       }
     })
@@ -139,8 +141,12 @@ export class TradeCardComponent implements OnInit {
       } else {
         this.timer.hasFinished = true;
         this.ngZone.run(()=>{
-          this.expired = true;
-          this.waitingMessage = "Trade expired";                                                                                                                                                                                                                                                                                              
+          
+          this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
+            this.expired = true;
+            this.waitingMessage = "Trade expired";  
+            this.showButtons = false;
+          })                                                                                                                                                                                                                                                                                        
         })
       }
     }, 1000);
@@ -149,7 +155,7 @@ export class TradeCardComponent implements OnInit {
   acceptTrade(){
     
     this.dataService.acceptTradeOffer(this.tradeKey).then(()=>{
-      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept').subscribe((data:any)=>{
+      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',this.tradeKey).subscribe((data:any)=>{
         console.log(data);
 
         this.ngZone.run(() =>{
@@ -166,13 +172,14 @@ export class TradeCardComponent implements OnInit {
   }
 
   declineTrade(){
-    this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
-        console.log('trade declined and removed');
-        this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline').subscribe((data:any)=>{
+    
+        this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',this.tradeKey).subscribe((data:any)=>{
           console.log(data);
-          this.dataService.removeTradeMessage(this.tradeKey,false,this.chatKey,this.messageKey).then(()=>{
-            console.log('trade card message removed');
-        })
+          this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
+            console.log('trade declined and removed');
+            this.dataService.removeTradeMessage(this.tradeKey,false,this.chatKey,this.messageKey).then(()=>{
+              console.log('trade card message removed');
+          })
       })
      
     })

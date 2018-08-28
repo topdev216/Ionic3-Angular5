@@ -112,6 +112,10 @@ export class MenuComponent {
     this.events.publish('myList');
   }
 
+  private goToNotification():void{
+    this.events.publish('notification page');
+  }
+
   private createPrivate() :void{
     let alert = this.alertCtrl.create({
       title: 'Private Chatroom',

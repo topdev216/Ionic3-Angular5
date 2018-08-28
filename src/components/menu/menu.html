@@ -7,24 +7,35 @@
       </ion-list-header>
       <ion-item no-padding>
         <button detail-none menuClose ion-item outline text-wrap (click)="createPublic()"><ion-icon name="people" item-end></ion-icon>
-          CREATE PUBLIC ROOM</button>
+          Create Public Chat</button>
       </ion-item>
       <ion-item no-padding>
         <button detail-none menuClose ion-item outline text-wrap (click)="createPrivate()"><ion-icon name="key" item-end></ion-icon>
-          CREATE PRIVATE ROOM</button>
+          Create Private Chat</button>
       </ion-item>
       <ion-item no-padding>
             <button detail-none menuClose ion-item outline text-wrap (click)="showPayment()"><ion-icon name="card" item-end></ion-icon>
-              SET UP PAYMENT</button>
+              Set up payment</button>
           </ion-item>
         <ion-item no-padding>
             <button detail-none menuClose ion-item outline text-wrap (click)="goToList()"><ion-icon name="list" item-end></ion-icon>
-             MY LIST</button>
+             My Games List</button>
           </ion-item>
+          <ion-item no-padding>
+            <button detail-none menuClose ion-item outline text-wrap (click)="goToNotification()"><ion-icon name="notifications" item-end></ion-icon>
+             Notifications</button>
+          </ion-item>
+
+          <ion-item no-padding>
+                <button detail-none menuClose ion-item outline text-wrap><ion-icon name="contacts" item-end></ion-icon>
+                 My Friends</button>
+              </ion-item>
+
+        
 
     </ion-list>
 
-    <ion-list no-lines> 
+    <!-- <ion-list no-lines> 
 
         <ion-list-header no-lines>
               <ion-icon name="contacts"></ion-icon>Friends
@@ -44,7 +55,7 @@
             </ion-row>
         </ion-item>
         
-    </ion-list>
+    </ion-list> -->
 
 </div>
 

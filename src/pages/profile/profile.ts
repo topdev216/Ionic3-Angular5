@@ -81,72 +81,6 @@ export class ProfilePage {
 
   ionViewWillEnter(){
     this.comingFromSearch = this.navParams.get('search');
-
-    // this.loading = true;
-    // this.user = this.navParams.get('user');
-    // this.comingFromSearch = this.navParams.get('search');
-    // if(this.user == undefined){
-    //   this.dataService.fetchUserFromDatabase(this.dataService.uid).then((user) => {
-    //     if(user.val().address){
-    //       let address = user.val().address;
-    //       console.log(address.street);
-    //       this.streetAddress = address.street;
-    //       this.city = address.city;
-    //       this.state = address.state;
-    //       this.zipCode = address.zipCode;
-    //       this.country = "USA"
-          
-    //     }
-    //     else{
-    //       this.streetAddress = "Please set your address";
-    //       this.city = "";
-    //       this.state = "";
-    //       this.zipCode = "";
-    //       this.country = "";
-          
-    //     }
-    //     if(user.val().phoneNumber){
-    //       let phoneNumber = user.val().phoneNumber;
-    //       this.phoneNumber = phoneNumber;
-    //     }
-    //     else{
-    //       this.phoneNumber = "Please set your phone number"; 
-    //     }
-    //     if(user.val().username){
-    //       this.username = user.val().username;
-    //     }
-    //     else{
-    //       this.username = "";
-    //       console.log('no username');
-    //       let modal = this.modalCtrl.create(AddUsernamePage);
-    //       modal.present();
-    //     }
-
-    //     this.remainingDays = this.dataService.getRemainingDays(this.dataService.fireUser);
-    //     console.log(this.remainingDays);
-    //     this.emailAddress = user.val().email;
-    //     this.photoUrl = user.val().coverPhoto;
-    //     this.dataService.updateProfilePicture(this.dataService.fireUser.photoURL).then(()=>{
-    //       this.loading = false;
-    //     })
-    //     this.loading = false;
-    //   });
-    // }
-
-    // else{
-    //   this.loading = false;
-    //   this.streetAddress = this.user.user.address.street;
-    //   this.city = this.user.user.address.city;
-    //   this.state = this.user.user.address.state;
-    //   this.zipCode = this.user.user.address.zipCode;
-    //   this.country = "USA";
-    //   this.phoneNumber = this.user.user.phoneNumber;
-    //   this.username = this.user.user.username;
-    //   this.photoUrl = this.user.user.coverPhoto;
-    //   this.emailAddress = this.user.user.email;
-
-    // }
-    
     
   }
 
@@ -224,13 +158,19 @@ export class ProfilePage {
   }
 
   addFriend(friend:any){
+    console.log(friend);
+    friend.userKey = this.paramKey;
     this.dataService.addFriend(friend).then(()=>{
-      let toast = this.toastCtrl.create({
-        message: 'User was added successfully',
-        duration: 3000,
-        position: 'top'
+
+      this.dataService.sendFriendNotification(this.paramKey).subscribe((data) => {
+        console.log(data);
+        let toast = this.toastCtrl.create({
+          message: 'User was added successfully',
+          duration: 3000,
+          position: 'top'
+        })
+        toast.present();
       })
-      toast.present();
     })
   }
 

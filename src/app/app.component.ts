@@ -13,6 +13,7 @@ import { FCM } from '@ionic-native/fcm';
 import { ProfilePage } from '../pages/profile/profile';
 import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
 import { GamelistPage } from '../pages/gamelist/gamelist';
+import { NotificationPage } from '../pages/notification/notification';
 
 @Component({
   templateUrl: 'app.html'
@@ -61,6 +62,10 @@ export class MyApp {
 
     this.events.subscribe('myList',(data)=>{
       this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:false});
+    })
+
+    this.events.subscribe('notification page', (data) => {
+      this.navCtrl.push(NotificationPage);
     })
 
     this.events.subscribe('invite room', (data) =>{
@@ -275,45 +280,48 @@ export class MyApp {
       //     Retrieve Firebase Messaging object.
       this.messaging.onMessage((payload) => {
         console.log('Message received. ', payload);
-        let alert = alertCtrl.create({
-          title: 'Chatroom Invitation',
-          message: payload.notification.body,
-          buttons: [
-            {
-              text: 'Decline',
-              role: 'cancel',
-              handler: () => {
-                console.log('Cancel clicked');
-              }
-            },
-            {
-              text: 'Accept',
-              handler: () => {
-                console.log('Invitation accepted')
-                dataService.joinPublicRoom(payload.data.chatKey,dataService.username,false).then(()=>{
-                  this.navCtrl.push(MessagingPage,{title:'',key:payload.data.chatKey,condition:false,username:dataService.username})
-                })
-              }
-            }
-          ]
-        });
-
-        let toast = toastCtrl.create({
-          message:payload.notification.body,
-          duration:3000,
-          position:'top',
-          showCloseButton: true,
-          closeButtonText: 'View'
-        })
-
-        toast.onDidDismiss(() => {
-          this.navCtrl.push(ProfilePage,{user:JSON.parse(payload.data.user),search:true})
-        });
 
         if(payload.data.type == "offering"){
-          toast.present();
+
+          let toast = toastCtrl.create({
+            message:payload.data.body,
+            duration:3000,
+            position:'top',
+            showCloseButton: true,
+            closeButtonText: 'View'
+          })
+  
+          toast.onDidDismiss(() => {
+            this.navCtrl.push(ProfilePage,{user:JSON.parse(payload.data.user),search:true})
+          });
+
+          this.dataService.saveReceivedNotification(payload.data).then(()=>{
+            toast.present();
+          })
         }
         else if(payload.data.type == "chatroom"){
+          let alert = alertCtrl.create({
+            title: 'Chatroom Invitation',
+            message: payload.notification.body,
+            buttons: [
+              {
+                text: 'Decline',
+                role: 'cancel',
+                handler: () => {
+                  console.log('Cancel clicked');
+                }
+              },
+              {
+                text: 'Accept',
+                handler: () => {
+                  console.log('Invitation accepted')
+                  dataService.joinPublicRoom(payload.data.chatKey,dataService.username,false).then(()=>{
+                    this.navCtrl.push(MessagingPage,{title:'',key:payload.data.chatKey,condition:false,username:dataService.username})
+                  })
+                }
+              }
+            ]
+          });
           alert.present();
         }
 

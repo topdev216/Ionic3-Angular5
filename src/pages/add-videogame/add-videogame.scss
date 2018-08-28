@@ -29,7 +29,35 @@ page-add-videogame {
     .form-container{
         width:620px;
     }
-  
+
+    #platformText{
+        color:white;
+    }
+
+    .spinner-container {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    ion-spinner{
+        width:68px;
+        height:68px;
+        * {
+          stroke: #FFA400 !important;
+        }
+    
+        &.spinner-circles circle,
+        &.spinner-bubbles circle,
+        &.spinner-dots circle {
+          fill: #FFA400 !important;;
+        }
+      }
+    
+    .searchbar{
+        padding-right:0;
+        padding-left:0;
+    }
     
     
 
