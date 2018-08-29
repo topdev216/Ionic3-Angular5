@@ -1,0 +1,38 @@
+<!--
+  Generated template for the PlatformSelectionPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Platform</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-item-group>
+    <ion-item-divider color="light">
+      CURRENT
+    </ion-item-divider>
+    <button ion-item *ngFor="let platform of currentPlatforms" (click)="select(platform.name)">
+     
+        {{platform.name}}
+      
+    </button>
+  </ion-item-group>
+
+  <ion-item-group>
+      <ion-item-divider color="light">
+        OLDSCHOOL
+      </ion-item-divider>
+      <button ion-item *ngFor="let platform of oldPlatforms" (click)="select(platform.name)">
+       
+          {{platform.name}}
+        
+      </button>
+    </ion-item-group>
+</ion-content>

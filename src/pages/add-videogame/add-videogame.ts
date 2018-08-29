@@ -6,6 +6,7 @@ import { VideogameInterface } from '../../providers/interfaces/videogameInterfac
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
 import { GamelistPage } from '../gamelist/gamelist';
+import { PlatformSelectionPage } from '../platform-selection/platform-selection';
 /**
  * Generated class for the AddVideogamePage page.
  *
@@ -67,32 +68,100 @@ export class AddVideogamePage {
     this.platforms = [
       
       {
-      name:"PC"
+        name:"PC",
+        old:false
       },
       {
-      name:"PlayStation 3"
+        name:"PlayStation",
+        old:true
       },
       {
-      name: "PlayStation 4",
+        name:"PlayStation 2",
+        old:false
       },
+      {
+        name:"PlayStation Portable",
+        old:false
+      },
+      {
+        name:"PlayStation 3",
+        old:false
+      },
+      {
+        name:"PlayStation Vita",
+        old:false
+      },
+      {
+        name: "PlayStation 4",
+        old:false
+      },
+      {
+        name:"Xbox",
+        old:false
+        },
       {
         name: "Xbox 360",
+        old:false
       },
       {
         name: "Xbox One",
+        old:false
+      },
+      {
+        name:"Game Boy",
+        old:true
+      },
+      {
+        name:"Game Boy Color",
+        old:true
+      },
+      {
+        name:"Game Boy Advance",
+        old:false
+      },
+      {
+        name: "Super Nintendo Entertainment System (SNES)",
+        old:true
+      },
+      {
+        name:"Nintendo 64",
+        old:true
+      },
+
+      {
+        name:"Nintendo GameCube",
+        old:false
+      },
+      {
+        name:"Nintendo DS",
+        old:false
+      },
+      {
+        name:"New Nintendo 3DS",
+        old:false
       },
       {
         name: "Wii",
+        old:false
       },
       {
         name: "Wii U",
+        old:false
       },
       {
         name: "Nintendo Switch",
+        old:false
       },
       {
-        name:"Nintendo GameCube"
-      }
+        name: "Dreamcast",
+        old:true
+      },
+      {
+        name: "Mac",
+        old:false
+      },
+
+
     ]
     
 
@@ -101,6 +170,10 @@ export class AddVideogamePage {
 
   ionViewWillEnter(){
     this.type = this.navParams.get('segment') || 'offer';
+    let obj = this.navParams.get('platform') || null;
+    if(obj !== null){
+      this.platformChange(obj);
+    }
   }
 
   ionViewDidLoad() {
@@ -218,35 +291,38 @@ export class AddVideogamePage {
 
   private openPlatforms():void{
 
-    let array = [];
+    this.navCtrl.push(PlatformSelectionPage,{platforms:this.platforms})
 
-    for(let i = 0 ; i < this.platforms.length; i ++){
-      array.push({
-        text:this.platforms[i].name,
-        handler: () => {
-          this.platformChange(this.platforms[i].name);
-        }
-      })
-    }
+    // let array = [];
 
-    array.push({
-      text: 'Cancel',
-      role: 'cancel', // will always sort to be on the bottom
-      handler: () => {
-        console.log('Cancel clicked');
-      }
-      });
+    // for(let i = 0 ; i < this.platforms.length; i ++){
+    //   array.push({
+    //     text:this.platforms[i].name,
+    //     handler: () => {
+    //       this.platformChange(this.platforms[i].name);
+    //     }
+    //   })
+    // }
+
+    // array.push({
+    //   text: 'Cancel',
+    //   role: 'cancel', // will always sort to be on the bottom
+    //   handler: () => {
+    //     console.log('Cancel clicked');
+    //   }
+    //   });
 
 
-    let actionSheet = this.actionCtrl.create({
-      title:'Platforms',
-      buttons: array
-    });
+    // let actionSheet = this.actionCtrl.create({
+    //   title:'Platforms',
+    //   buttons: array
+    // });
 
-    actionSheet.present();
+    // actionSheet.present();
   }
 
   private platformChange(name:string):void{
+    this.searching = true;
     this.searchPlaceholder = "Please wait..."
     this.gamePicked = false;
     const inputs: any = document.getElementById("input").getElementsByTagName("INPUT");
@@ -256,6 +332,7 @@ export class AddVideogamePage {
     console.log('platform:',name);
     this.dataService.searchPlatformsAPI(name).subscribe((data:any)=>{
       console.log('data',data);
+      this.searching = false;
       this.platformID = data[0].id;
       this.platformSelected = true;
       inputs[0].disabled=false;

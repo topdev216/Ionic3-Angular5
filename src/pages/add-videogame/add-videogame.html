@@ -69,6 +69,7 @@
               </select-searchable> -->
             <ion-searchbar
               id="input"
+              *ngIf="!searching"
               [showCancelButton]="true"
               [placeholder]="searchPlaceholder"
               [debounce]="700"
@@ -170,9 +171,9 @@
       
             
       
-        <button ion-button full type="submit">{{submitPlaceholder}}</button>      
+        <button ion-button full id="bottomBtn" type="submit">{{submitPlaceholder}}</button>      
         </form>
-        <button ion-button full (click)="goToList()" color="secondary">Go to My List</button>
+        <button ion-button full id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>
 
 
       </div>
