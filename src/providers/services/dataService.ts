@@ -567,6 +567,17 @@ export class DataService {
     return this.http.post(this.urlEnvironment.getGamesAPI(),json);
   }
 
+  public checkExistingVideogame(id:any,list:string): Promise<any>{
+    let checkType = '';
+    if(list == 'offer'){
+      checkType = 'interested'
+    }
+    else{
+      checkType = 'offer';
+    }
+    return this.database.ref('users/'+this.uid+'/videogames/'+checkType+'/'+id).once('value')
+  }
+
   public addVideogame(game:any,id:any):Promise<any>{
     return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
       title:game.title,

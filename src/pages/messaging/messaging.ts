@@ -92,24 +92,35 @@ export class MessagingPage {
   private sendMessage() :void {
 
     if(!this.isDirect){
-      let newData = firebase.database().ref('chatrooms/'+this.roomkey+'/chats').push();
-      newData.set({
-        type:this.data.type,
-        user:this.data.username,
-        message:this.data.message,
-        sendDate:Date()
-      });
-      this.data.message = '';
+      if(this.data.message.trim() == ''){
+        return 
+      }
+      else{
+        let newData = firebase.database().ref('chatrooms/'+this.roomkey+'/chats').push();
+        newData.set({
+          type:this.data.type,
+          user:this.data.username,
+          message:this.data.message,
+          sendDate:Date()
+        });
+        this.data.message = '';
+      }
     }
     else{
-      let newData = firebase.database().ref('directChats/'+this.roomkey+'/chats').push();
-      newData.set({
-        type:this.data.type,
-        user:this.data.username,
-        message:this.data.message,
-        sendDate:Date()
-      });
-      this.data.message = '';
+      if(this.data.message == ''){
+        return
+      }
+      else{
+
+        let newData = firebase.database().ref('directChats/'+this.roomkey+'/chats').push();
+        newData.set({
+          type:this.data.type,
+          user:this.data.username,
+          message:this.data.message,
+          sendDate:Date()
+        });
+        this.data.message = '';
+      }
     }
   }
 

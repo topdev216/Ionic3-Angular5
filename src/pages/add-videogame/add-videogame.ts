@@ -240,53 +240,81 @@ export class AddVideogamePage {
     game.esrbRating = form.esrbRating;
     game.coverPhoto = this.coverPhoto;
     game.type = form.type;
-    this.dataService.addVideogame(game,this.gameId).then(()=>{
+    
 
-      if(game.type == "offer"){
-        this.dataService.notifyUsers(this.gameId,game.title).subscribe(((data) =>{
-          console.log(data);
-        }))
-      }
-      else{
-        this.dataService.subscribeToGame(this.gameId).subscribe((data)=>{
-          console.log(data);
+    this.dataService.checkExistingVideogame(this.gameId,game.type).then((snap) =>{
+      if(snap.val() == null){
+        this.dataService.addVideogame(game,this.gameId).then(()=>{
+
+          if(game.type == "offer"){
+            this.dataService.notifyUsers(this.gameId,game.title).subscribe(((data) =>{
+              console.log(data);
+            }))
+          }
+          else{
+            this.dataService.subscribeToGame(this.gameId).subscribe((data)=>{
+              console.log(data);
+            })
+          }
+    
+          let alert = this.alertCtrl.create({
+            title:'Confirmation',
+            message:'Do you want to add more games?',
+            buttons:[
+              {
+                text:'Done',
+                handler: data =>{
+                  console.log('Done')
+                  console.log('game submitted');
+                  this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true,segment:game.type});
+                }
+              },
+              {
+                text:'Add More',
+                handler: data =>{
+                  console.log('pressed yes');
+                }
+              }
+    
+            ]
+          })
+    
+          alert.present();
+          let toast = this.toastCtrl.create({
+            message: 'Game was added successfully to your collection!',
+            duration: 3000,
+            position: 'top'
+          })
+          toast.present();
+          
         })
       }
-
-      let alert = this.alertCtrl.create({
-        title:'Confirmation',
-        message:'Do you want to add more games?',
-        buttons:[
-          {
-            text:'Done',
-            handler: data =>{
-              console.log('Done')
-              console.log('game submitted');
-              this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true});
+      else{
+        let alert = this.alertCtrl.create({
+          title:'Error',
+          message:"You can't have the same game in both lists! Please remove from either list and add again",
+          buttons:[
+            {
+              text:'Go to List',
+              handler: data =>{
+                this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true,segment:game.type});
+              }
+            },
+            {
+              text:'Cancel',
+              role:'cancel',
+              handler: data =>{
+                
+              }
             }
-          },
-          {
-            text:'Add More',
-            handler: data =>{
-              console.log('pressed yes');
-            }
-          }
-
-        ]
-      })
-
-      alert.present();
-      let toast = this.toastCtrl.create({
-        message: 'Game was added successfully to your collection!',
-        duration: 3000,
-        position: 'top'
-      })
-      toast.present();
-
-      
-
-      
+  
+          ]
+        })
+  
+        alert.present();
+      }
     })
+    
   }
 
   private goToList():void{
