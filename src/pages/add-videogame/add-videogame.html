@@ -173,7 +173,7 @@
        
       
             
-        <button ion-button full [disabled]="gamePicked" type="button" id="bottomBtn" (click)="doSearch()">search</button>
+        <button ion-button full [disabled]="gamePicked || searching" type="button" id="bottomBtn" (click)="doSearch()">search</button>
         <button ion-button full id="bottomBtn" [disabled]="!gamePicked" type="submit">add</button>      
         </form>
         <button ion-button full id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>
