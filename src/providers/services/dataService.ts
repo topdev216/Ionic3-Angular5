@@ -189,7 +189,9 @@ export class DataService {
   }
 
   public acceptTradeOffer(tradeKey:string): Promise<any>{
-    return this.database.ref('trades/'+tradeKey+'/status').set('accepted');
+    return this.database.ref('trades/'+tradeKey).update({
+      status:'accepted'
+    });
   }
 
   public declineTradeOffer(tradeKey:string):Promise<any>{
@@ -220,6 +222,10 @@ export class DataService {
 
   public deleteNotification(notificationKey:string):Promise<any>{
     return this.database.ref('/notifications/'+this.uid+'/'+notificationKey).remove();
+  }
+
+  public checkPaidMembership(): Promise<any>{
+    return this.database.ref('users/'+this.uid+'/paidMember').once('value');
   }
   
 
@@ -506,12 +512,20 @@ export class DataService {
     
   }
 
+  // public updateTradeNotificationStatus(notificationKey:string): Promise<any>{
+  //   return this.database.ref('/notifications/'+notificationKey).update({
+
+  //   })
+  // }
+
   public checkTradeStatus(tradeKey:string):Promise<any>{
     return this.database.ref('/trades/'+tradeKey).once('value')
   }
 
   public updateTradeStatus(tradeKey:string,status:string):Promise<any>{
-    return this.database.ref('/trades/'+tradeKey+'/status').set(status);
+    return this.database.ref('/trades/'+tradeKey).update({
+      status: status
+    });
   }
 
   public showTradeCard(chatKey:string,username:string):Promise<any>{
@@ -570,6 +584,7 @@ export class DataService {
     let json = {
       topic:topic,
       user:this.user,
+      uid:this.uid,
       title:gameTitle
     }
     return this.http.post(this.urlEnvironment.getSendFCM(),json)

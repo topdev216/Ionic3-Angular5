@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController, Searchbar } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
@@ -42,6 +42,8 @@ export class AddVideogamePage {
   private submitPlaceholder: string = "Search";
   private platformPlaceholder: string = "Select Platform"
   private platformSelected:boolean = false;
+  @ViewChild ('mySearch') searchbar: Searchbar;
+
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public formBuilder: FormBuilder
@@ -186,12 +188,13 @@ export class AddVideogamePage {
   }
 
   onSearchInput(event:any){
-    if(event.data){
-      this.searching = true
-    }
-    else{
-      this.searching = false;
-    }
+    // console.log('search input!');
+    // if(event.data){
+    //   this.searching = true
+    // }
+    // else{
+    //   this.searching = false;
+    // }
   }
 
   parseRatings(rating:any){
@@ -225,6 +228,7 @@ export class AddVideogamePage {
   
 
   private submitVideogame(form: any) :void{
+
     console.log(form);
     console.log(this.coverPhoto);
     let game = {} as VideogameInterface;
@@ -395,6 +399,40 @@ export class AddVideogamePage {
   }
 }
 
+private doSearch(){
+    this.searching = true;
+    let input = this.searchbar.value;
+    console.log('da input',input);
+    this.gamePicked = false;
+    this.gameList = [];
+    if(input === ''){
+      this.searching = false;
+      return input;
+    }
+    else{
+    this.dataService.searchGamesAPI(input,this.platformID).subscribe((data:any) =>{
+      this.gameList = data;
+      this.searching = false;
+      for(let i = 0; i < data.length ; i++){
+        let date = moment(this.gameList[i].first_release_date).format("MMM Do YYYY");
+        this.gameList[i].first_release_date = date;
+        if(data[i].genres !== undefined){
+          this.genres[i] = {
+            genreId:data[i].genres[0],
+          }
+          
+        }
+        console.log(this.genres[i]);
+      }
+      console.log(data);
+    })
+  }
+}
+
+private backToList(){
+  this.gamePicked = false;
+}
+
 private selectedGame(game:any):void{
   this.title = game.name;
   this.gameId = game.id;
@@ -421,7 +459,7 @@ private selectedGame(game:any):void{
   }
 
 
-  this.gameList = [];
+  // this.gameList = [];
   this.gamePicked = true;
 
   console.log('cover photo',this.coverPhoto);

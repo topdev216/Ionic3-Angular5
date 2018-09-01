@@ -1,0 +1,26 @@
+<!-- Generated template for the NotificationPopoverComponent component -->
+
+<div class="list container">
+    <ion-list>
+          <button ion-item (click)="remove()">
+            <ion-icon name="trash" item-end></ion-icon>
+            <div text-center>Remove</div>
+          </button>
+  
+          <button ion-item *ngIf="type !== 'trade' " (click)="goProfile()">
+              <ion-icon name="person" item-end></ion-icon>
+              <div text-center>View Profile</div>
+          </button>
+  
+          <button ion-item *ngIf="type !== 'trade' " (click)="sendMessage()">
+            <ion-icon name="chatboxes" item-end></ion-icon>
+            <div text-center>Start Chatting</div>
+          </button>
+          
+          <!-- <button ion-item>
+              <ion-icon name="logo-game-controller-b" item-end></ion-icon>
+              <div text-center>View Game</div>
+          </button> -->
+  
+      </ion-list>
+  </div>

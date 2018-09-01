@@ -53,10 +53,10 @@ export class MenuComponent {
       })
     })
 
-    this.events.subscribe('user text',(data)=>{
-      this.menuCtrl.close();  
-      this.popover.dismiss();
-    })
+    // this.events.subscribe('user text',(data)=>{
+    //   this.menuCtrl.close();  
+    //   this.popover.dismiss();
+    // })
 
   }
 

@@ -85,10 +85,26 @@ export class TradeCardComponent implements OnInit {
         else{
           this.timeInSeconds = 0;
           this.showButtons = false;
-          this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
-            this.expired = true;
-            this.waitingMessage = "Trade expired";  
-          })           
+          this.dataService.checkTradeStatus(this.tradeKey).then((snap) =>{
+            if(snap.val() !== null){
+              if(snap.val().status !== 'accepted'){
+                this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
+                  this.expired = true;
+                  this.waitingMessage = "Trade expired";  
+                  this.dataService.removeTradeMessage(this.tradeKey,false,this.chatKey,this.messageKey).then(()=>{
+                    console.log('message removed');
+                  })
+                })   
+              }
+              else{
+                this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
+                this.showWaitingMessage = true;
+                this.showButtons = false;
+                this.timer.hasFinished = true;
+              }
+            }
+          })
+                  
         }
       }
     })

@@ -68,12 +68,11 @@
                   </ng-template>
               </select-searchable> -->
             <ion-searchbar
+              #mySearch
               id="input"
-              *ngIf="!searching"
               [showCancelButton]="true"
               [placeholder]="searchPlaceholder"
               [debounce]="700"
-              (ionChange)="gameChange($event)"
               (ionInput)="onSearchInput($event)"
               (ionClear)="onClear($event)"
               (ionCancel)="onCancel($event)">
@@ -119,6 +118,10 @@
 
 
           <ion-card *ngIf="gamePicked">
+
+              <ion-row justify-content-start>
+                  <button ion-button outline (click)="backToList()">Back to List</button>
+                </ion-row>
 <ion-row>
   <ion-col>
     <img src="https://{{coverPhoto}}" alt="cover">
@@ -170,8 +173,8 @@
        
       
             
-      
-        <button ion-button full id="bottomBtn" type="submit">{{submitPlaceholder}}</button>      
+        <button ion-button full type="button" id="bottomBtn" (click)="doSearch()">search</button>
+        <button ion-button full id="bottomBtn" [disabled]="!gamePicked" type="submit">add</button>      
         </form>
         <button ion-button full id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>
 

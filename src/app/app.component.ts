@@ -167,17 +167,46 @@ export class MyApp {
               condition:true
             })
             this.dataService.getConstants().then(()=>{
-            this.remainingDays = this.dataService.getRemainingDays(user);
-            if(this.remainingDays <= (this.dataService.trialEnd) ){
-              this.trialCondition = false;
-              console.log('Trial expired');
-              this.navCtrl.push(PaymentModalPage);
-              }
-            else{
-              this.trialCondition = true;
-              console.log(this.remainingDays);
-              console.log('User on trial..');
-              }
+              this.dataService.checkPaidMembership().then((snap) =>{
+                if(snap.val()!== null){
+                  if(snap.val()){
+                            console.log('user has paid!')
+                          }
+                  else{
+                            this.navCtrl.push(PaymentModalPage);
+                          }
+                }
+                else{
+                  this.remainingDays = this.dataService.getRemainingDays(user);
+                  if(this.remainingDays <= (this.dataService.trialEnd) ){
+                    this.navCtrl.push(PaymentModalPage);
+                  }
+                  else{
+                    console.log('user on trial')
+                  }
+                }
+              })
+            // this.remainingDays = this.dataService.getRemainingDays(user);
+            // if(this.remainingDays <= (this.dataService.trialEnd) ){
+            //   this.trialCondition = false;
+            //   console.log('Trial expired');
+            //   this.dataService.checkPaidMembership().then((snap) =>{
+            //     if(snap.val()!== null){
+            //       if(snap.val()){
+            //         console.log('user has paid!')
+            //       }
+            //       else{
+            //         this.navCtrl.push(PaymentModalPage);
+            //       }
+            //     }
+            //   })
+            //   this.navCtrl.push(PaymentModalPage);
+            //   }
+            // else{
+            //   this.trialCondition = true;
+            //   console.log(this.remainingDays);
+            //   console.log('User on trial..');
+            //   }
             })
             
           }
@@ -220,6 +249,8 @@ export class MyApp {
       this.fcm.onNotification().subscribe(data => {
         if(data.wasTapped){
           console.log("Received in background");
+          console.log('THE DATA',data);
+          this.navCtrl.push(NotificationPage);
         } else {
           console.log('Message received. ', JSON.stringify(data));
           let alert = alertCtrl.create({
@@ -294,10 +325,6 @@ export class MyApp {
           toast.onDidDismiss(() => {
             this.navCtrl.push(ProfilePage,{user:JSON.parse(payload.data.user),search:true})
           });
-
-          this.dataService.saveReceivedNotification(payload.data).then(()=>{
-            toast.present();
-          })
         }
         else if(payload.data.type == "chatroom"){
           let alert = alertCtrl.create({

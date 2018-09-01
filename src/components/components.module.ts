@@ -6,6 +6,7 @@ import { TradeCardComponent } from './trade-card/trade-card';
 import { PopoverHeaderComponent } from './popover-header/popover-header';
 import { ActionPopoverComponent } from './action-popover/action-popover';
 import { AccordionComponent } from './accordion/accordion';
+import { NotificationPopoverComponent } from './notification-popover/notification-popover';
 @NgModule({
 	declarations: [ErrorCardComponent,
     MenuComponent,
@@ -13,7 +14,8 @@ import { AccordionComponent } from './accordion/accordion';
     TradeCardComponent,
     PopoverHeaderComponent,
     ActionPopoverComponent,
-    AccordionComponent],
+    AccordionComponent,
+    NotificationPopoverComponent],
 	imports: [],
 	exports: [ErrorCardComponent,
     MenuComponent,
@@ -21,6 +23,7 @@ import { AccordionComponent } from './accordion/accordion';
     TradeCardComponent,
     PopoverHeaderComponent,
     ActionPopoverComponent,
-    AccordionComponent]
+    AccordionComponent,
+    NotificationPopoverComponent]
 })
 export class ComponentsModule {}
