@@ -116,6 +116,8 @@ export class GamelistPage{
     this.events.subscribe('removeGame', (data) =>{
       this.removeGame(data.game,data.list);
     })
+
+    this.type = this.navParams.get('segment') || 'offer';
   }
 
   ionViewWillLeave(){

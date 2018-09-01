@@ -236,7 +236,7 @@ export class AddVideogamePage {
     game.title = form.title;
     game.releaseDate = form.releaseDate;
     game.genre = form.genre;
-    game.platform = form.platform;
+    game.platform = this.platform;
     game.esrbRating = form.esrbRating;
     game.coverPhoto = this.coverPhoto;
     game.type = form.type;
