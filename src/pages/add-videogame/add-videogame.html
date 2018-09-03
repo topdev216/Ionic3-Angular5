@@ -71,6 +71,7 @@
               #mySearch
               id="input"
               [showCancelButton]="true"
+              (keyup.enter)="doSearch()"
               [placeholder]="searchPlaceholder"
               [debounce]="700"
               (ionInput)="onSearchInput($event)"
@@ -83,7 +84,7 @@
             </div>
 
             <div *ngIf="gameList.length > 0 && !gamePicked">
-              <ion-item id="searchItem" *ngFor="let game of gameList" (click)="selectedGame(game)">
+              <ion-item detail-push id="searchItem" *ngFor="let game of gameList" (click)="selectedGame(game)">
                 <ion-row no-padding>
 
                     <ion-col col-3 no-padding>

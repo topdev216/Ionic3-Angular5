@@ -17,6 +17,7 @@ page-add-videogame {
 
     .item#searchItem{
         background:color($colors,primary);
+        border-bottom:1px solid gray;
         #imageInput{
             display:none;
         }
