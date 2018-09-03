@@ -21,7 +21,7 @@
   <div class="form-container">
 
  
-    <form [formGroup]="postForm" (ngSubmit)="submitVideogame(postForm.value)">
+    <form [formGroup]="postForm" #gameForm="ngForm" (ngSubmit)="submitVideogame(postForm.value)">
 
         <ion-segment [(ngModel)]="type" formControlName="type">
             <ion-segment-button value="offer">
@@ -73,7 +73,7 @@
               [showCancelButton]="true"
               (keyup.enter)="doSearch()"
               [placeholder]="searchPlaceholder"
-              [debounce]="700"
+              [debounce]="100"
               (ionInput)="onSearchInput($event)"
               (ionClear)="onClear($event)"
               (ionCancel)="onCancel($event)">
@@ -120,9 +120,9 @@
 
           <ion-card *ngIf="gamePicked">
 
-              <ion-row justify-content-start>
+              <!-- <ion-row justify-content-start>
                   <button ion-button outline (click)="backToList()">Back to List</button>
-                </ion-row>
+                </ion-row> -->
 <ion-row>
   <ion-col>
     <img src="https://{{coverPhoto}}" alt="cover">
@@ -174,8 +174,8 @@
        
       
             
-        <button ion-button full [disabled]="gamePicked || searching" type="button" id="bottomBtn" (click)="doSearch()">search</button>
-        <button ion-button full id="bottomBtn" [disabled]="!gamePicked" type="submit">add</button>      
+        <button ion-button full *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" type="button" id="bottomBtn" (click)="doSearch()">search</button>
+        <!-- <button ion-button full id="bottomBtn" [disabled]="!gamePicked" type="submit">add</button>       -->
         </form>
         <button ion-button full id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>
 
@@ -184,3 +184,14 @@
 
     </ion-row>
 </ion-content>
+
+
+<ion-footer padding>
+    <ion-row *ngIf="gamePicked" justify-content-center>
+        <button ion-button block (click)="backToList()">Back to List</button>
+    </ion-row>
+
+    <ion-row *ngIf="gamePicked" justify-content-center>
+        <button ion-button block id="bottomBtn" (click)="gameForm.ngSubmit.emit()">add</button>      
+    </ion-row>
+</ion-footer>

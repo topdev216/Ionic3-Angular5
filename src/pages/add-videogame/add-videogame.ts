@@ -1,12 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController, Searchbar } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController, Searchbar, Keyboard, Platform } from 'ionic-angular';
+import { FormBuilder, FormGroup, Validators, FormGroupDirective } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
 import { GamelistPage } from '../gamelist/gamelist';
 import { PlatformSelectionPage } from '../platform-selection/platform-selection';
+
 /**
  * Generated class for the AddVideogamePage page.
  *
@@ -42,7 +43,10 @@ export class AddVideogamePage {
   private submitPlaceholder: string = "Search";
   private platformPlaceholder: string = "Select Platform"
   private platformSelected:boolean = false;
+  private searchCondition:boolean = false;
   @ViewChild ('mySearch') searchbar: Searchbar;
+  @ViewChild('gameForm') documentEditForm: FormGroupDirective;
+
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams
@@ -51,7 +55,9 @@ export class AddVideogamePage {
   , public events: Events
   , public toastCtrl: ToastController
   , public alertCtrl: AlertController
-  , public actionCtrl: ActionSheetController) {
+  , public actionCtrl: ActionSheetController
+  , public keyboard: Keyboard
+  , public appPlatform: Platform) {
     
 
     this.postForm = formBuilder.group({
@@ -188,6 +194,13 @@ export class AddVideogamePage {
   }
 
   onSearchInput(event:any){
+
+    if(event.target.value && event.target.value.trim() !== ''){
+      this.searchCondition = true;
+    }
+    else{
+      this.searchCondition = false;
+    }
     // console.log('search input!');
     // if(event.data){
     //   this.searching = true
@@ -229,7 +242,12 @@ export class AddVideogamePage {
 
   private submitVideogame(form: any) :void{
 
+
+    if(this.gamePicked){
     console.log(form);
+    if(form.title === ""){
+      return form;
+    }
     console.log(this.coverPhoto);
     let game = {} as VideogameInterface;
 
@@ -290,6 +308,16 @@ export class AddVideogamePage {
         })
       }
       else{
+
+        let correctSegment = {};
+
+        if(game.type === 'offer'){
+          correctSegment = 'interested';
+        }
+        else{
+          correctSegment = 'offer'
+        }
+
         let alert = this.alertCtrl.create({
           title:'Error',
           message:"You can't have the same game in both lists! Please remove from either list and add again",
@@ -297,7 +325,7 @@ export class AddVideogamePage {
             {
               text:'Go to List',
               handler: data =>{
-                this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true,segment:game.type});
+                this.navCtrl.push(GamelistPage,{userKey:this.dataService.uid,condition:true,segment:correctSegment});
               }
             },
             {
@@ -314,6 +342,8 @@ export class AddVideogamePage {
         alert.present();
       }
     })
+
+  }
     
   }
 
@@ -378,6 +408,7 @@ export class AddVideogamePage {
   }
 
   private onCancel(event:any):void{
+    this.searchCondition = false;
     console.log('CANCELED!');
     this.searching = false;
     this.gameList = [];
@@ -389,6 +420,7 @@ export class AddVideogamePage {
   }
 
   private onClear(event:any):void{
+    this.searchCondition = false;
     console.log('CANCELED!');
     this.searching = false;
     this.gameList = [];
@@ -428,6 +460,10 @@ export class AddVideogamePage {
 }
 
 private doSearch(){
+  
+    if(this.appPlatform.is('cordova')){
+      this.keyboard.close();
+    }
     this.searching = true;
     let input = this.searchbar.value;
     console.log('da input',input);

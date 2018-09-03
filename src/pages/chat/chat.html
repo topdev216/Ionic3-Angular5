@@ -41,7 +41,7 @@
                         Rooms
                         </ion-list-header>
 
-                        <ion-item *ngFor="let room of rooms" no-padding> 
+                        <ion-item *ngFor="let room of rooms" (click)="enterChat(room,false)" no-padding> 
                             
                             <ion-row no-padding>
                                     <ion-col col-8 no-padding>
