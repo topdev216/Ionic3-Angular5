@@ -25,22 +25,42 @@
     <ion-item *ngFor="let game of games" [class.selected]="game.selected" no-lines>
         <ion-row no-padding align-items-center>
 
-          <ion-col col-3 no-padding>
+            <ion-col col-3 no-padding>
               <img src="https://{{game.coverPhoto}}" alt="">
               <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
             </ion-col>
 
-            <ion-col col-6 padding-left>
+            <ion-col col-5 padding-left> 
+
               <div text-wrap> {{game.title}} </div>
               <p text-wrap>{{game.platform}}</p>
               <p text-wrap>{{game.genre}}</p>
               <p text-wrap>{{game.releaseDate}}</p>
+              <p style="font-weight:bold;">Available units: <span>{{game.quantity}}</span></p>
             
             </ion-col>
 
-            <ion-col col-2 no-padding>
-              <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button>
-              <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove-circle"></ion-icon></button>
+            <ion-col col-4 no-padding>
+
+              <ion-row justify-content-start align-items-center no-padding>
+
+                <ion-col col-4 no-padding>
+                    <button ion-button outline icon-only id="moreButton" (click)="gameRemoved(game)"><ion-icon name="remove-circle"></ion-icon></button>
+                </ion-col>
+
+                <ion-col class="mediaQuery" col-4 no-padding>
+                  <ion-row justify-content-center>
+                      {{game.pickedGames}} picked
+                  </ion-row>
+                </ion-col>
+
+                <ion-col col-4 no-padding>
+                   <button ion-button outline icon-only id="moreButton" (click)="gameSelected(game)"><ion-icon name="add-circle"></ion-icon></button>
+                </ion-col>
+                  <!-- <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove"></ion-icon></button> -->
+                  <!-- <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button> -->
+              </ion-row>
+              
             </ion-col>
         </ion-row> 
     </ion-item>

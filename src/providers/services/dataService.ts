@@ -208,14 +208,14 @@ export class DataService {
       return this.database.ref('chatrooms/'+chatKey+'/chats/').child(messageKey).remove();
     }
     else{
-      return this.database.ref('directChats/'+chatKey+'/chats').child(messageKey).remove();
+      return this.database.ref('directChats/'+chatKey+'/chats/').child(messageKey).remove();
     }
 
   }
 
-  public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string,tradeKey:string): Observable<any>{
+  public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string,tradeKey:string,chatKey:string): Observable<any>{
 
-      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:tradeKey,message:message,games:this.games})
+      return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:tradeKey,message:message,games:this.games,chatKey:chatKey})
 
     
   }
@@ -471,7 +471,7 @@ export class DataService {
     return
   }
 
-  public createTrade(games:any,username: string):Promise<any>{
+  public createTrade(games:any,username: string,chatKey:string):Promise<any>{
 
     this.games = games;
 
@@ -496,6 +496,8 @@ export class DataService {
 
       return newTrade.set({
         proposer:this.uid,
+        receiver:key,
+        chatKey:chatKey,
         participants:{
           [this.uid]:{
             receivingGames:gameA
@@ -511,6 +513,19 @@ export class DataService {
     })
     
   }
+
+  public cancelTradeMessage(chatKey:string,tradeKey:string): Promise<any>{
+    return this.database.ref('chatrooms/'+chatKey+'/chats').orderByChild('tradeKey').equalTo(tradeKey).once('value').then((snap) =>{
+      if(snap.val() !== null){
+        snap.forEach((result) =>{
+          let messageKey = result.val().messageKey;
+          this.database.ref('chatrooms/'+chatKey+'/chats/').child(messageKey).remove();
+        })
+      }
+    })
+  }
+
+ 
 
   // public updateTradeNotificationStatus(notificationKey:string): Promise<any>{
   //   return this.database.ref('/notifications/'+notificationKey).update({
@@ -579,15 +594,81 @@ export class DataService {
   }
 
   public addVideogame(game:any,id:any):Promise<any>{
-    return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
-      title:game.title,
-      genre:game.genre,
-      releaseDate:game.releaseDate,
-      coverPhoto:game.coverPhoto,
-      esrbRating:game.esrbRating,
-      platform:game.platform
+
+    return this.database.ref('/users/'+this.uid+'/videogames/'+game.type+'/'+id).once('value').then((snap)=>{
+      if(snap.val() !== null){
+        let count = snap.val().quantity;
+        if(game.type === "offer"){
+        return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).update({
+          quantity:count+1
+        });
+        }
+        else{
+          return game;
+        }
+      }
+      else{
+
+
+        if(game.type === "offer"){
+          return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
+            title:game.title,
+            genre:game.genre,
+            releaseDate:game.releaseDate,
+            coverPhoto:game.coverPhoto,
+            esrbRating:game.esrbRating,
+            platform:game.platform,
+            quantity: 1
+          });
+        }
+        else{
+          return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
+            title:game.title,
+            genre:game.genre,
+            releaseDate:game.releaseDate,
+            coverPhoto:game.coverPhoto,
+            esrbRating:game.esrbRating,
+            platform:game.platform
+          });
+        }
+      }
     })
     
+    
+  }
+
+  public increaseGameQuantity(id:any,type:string) :Promise<any>{
+
+    
+    return this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id+'/quantity').once('value').then((snap) =>{
+
+      let quantity = snap.val();
+
+      this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id).update({
+        quantity: quantity + 1
+      })
+      
+    })
+  }
+
+  public decreaseGameQuantity(id:any,type:string) :Promise<any>{
+
+    
+    return this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id+'/quantity').once('value').then((snap) =>{
+
+      let quantity = snap.val();
+
+      if(quantity === 1){
+        return this.removeGameFromList(id,type,this.uid);
+      }
+
+      else{
+        return this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id).update({
+          quantity: quantity - 1
+        })
+      }
+      
+    })
   }
 
   public notifyUsers(topic:string,gameTitle:string):Observable<any>{
@@ -745,12 +826,20 @@ export class DataService {
     })
   }
 
+  public removeFriend(friend:any) :Promise<any>{
+    return this.database.ref('/users/'+this.uid+'/friends/'+friend.userKey).remove();
+  }
+
   public sendFriendNotification(userKey:string) :Observable<any>{
     return this.http.post(this.urlEnvironment.getFriendNotification(),{username:this.username,userKey:userKey,uid:this.uid})
   }
 
   public getNotifications() :Reference{
     return this.database.ref('/notifications/'+this.uid);
+  }
+
+  public getLiveTradeStatus(tradeKey:string): Reference{
+    return this.database.ref('/trades/'+tradeKey);
   }
 
   public getFriendsList():Promise<any>{

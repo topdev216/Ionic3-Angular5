@@ -42,6 +42,7 @@ import { AccordionComponent } from '../components/accordion/accordion';
 import {TimeAgoPipe} from 'time-ago-pipe';
 import { PlatformSelectionPage } from '../pages/platform-selection/platform-selection';
 import { NotificationPopoverComponent } from '../components/notification-popover/notification-popover';
+import { TradeDetailsPage } from '../pages/trade-details/trade-details';
 
 
 
@@ -85,7 +86,8 @@ const firebaseConfig = {
     AccordionComponent,
     TimeAgoPipe,
     PlatformSelectionPage,
-    NotificationPopoverComponent
+    NotificationPopoverComponent,
+    TradeDetailsPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -128,7 +130,8 @@ const firebaseConfig = {
     NotificationPage,
     AccordionComponent,
     PlatformSelectionPage,
-    NotificationPopoverComponent
+    NotificationPopoverComponent,
+    TradeDetailsPage
     
   ],
   providers: [

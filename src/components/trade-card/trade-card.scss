@@ -22,19 +22,17 @@ trade-card {
         -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
         box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
         background:#025cc2;
+
+        .game-photo{
+            height:120px;
+            width:auto;
+        }
         ion-card-header{
             font-weight:bold;
             font-size:3.5vh;
         }
 
-        ion-grid{
-            height:100%;
-            // width:264px !important;
-            justify-content:center !important;
-            ion-row{
-                height:100%;
-            }
-        }
+        
     }
 
     .card:before, .card:after{
@@ -62,8 +60,8 @@ trade-card {
         }
 
         .game-photo{
-            width:120px !important;
-            height:auto;
+            width:auto !important;
+            height:100px !important;
         }
     }
 

@@ -1,5 +1,11 @@
 page-gamelist {
 
+    @media only screen and (max-width: 380px) {
+        .mediaQuery{
+            display:none;
+        }
+    }
+
     .list-container{
         width:620px;        
     }

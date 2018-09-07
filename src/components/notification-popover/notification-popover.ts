@@ -38,8 +38,9 @@ export class NotificationPopoverComponent {
   }
 
   goProfile(){
-      this.navCtrl.push(ProfilePage,{user:{userKey:this.data.uid},search:true})
+      // this.navCtrl.push(ProfilePage,{user:{userKey:this.data.uid},search:true})
       this.viewCtrl.dismiss();
+      this.events.publish('open profile',{data:this.navParams.get('data')});
   }
 
   sendMessage(){

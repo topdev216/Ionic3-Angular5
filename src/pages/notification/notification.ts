@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, Events, Gesture, PopoverController
 import { DataService } from '../../providers/services/dataService';
 import { ProfilePage } from '../profile/profile';
 import { NotificationPopoverComponent } from '../../components/notification-popover/notification-popover';
+import { TradeDetailsPage } from '../trade-details/trade-details';
 
 /**
  * Generated class for the NotificationPage page.
@@ -23,6 +24,7 @@ export class NotificationPage {
   loading: boolean;
   type:string = "trading";
   notificationData: any;
+  buttonCondition:boolean = false;
 
 
   socialNotifications: any [] = [];
@@ -34,7 +36,7 @@ export class NotificationPage {
     , private events: Events
     , private popoverCtrl: PopoverController) {
       this.loading = true;
-    this.dataService.getNotifications().on('value',(data)=>{
+      this.dataService.getNotifications().on('value',(data)=>{
       this.loading = true;
       this.socialNotifications = [];
       this.tradeNotifications = [];
@@ -163,6 +165,11 @@ export class NotificationPage {
   }
 
   ionViewWillEnter() {
+
+    this.events.subscribe('open profile',(data) =>{
+      console.log('received',data);
+      this.viewProfile(data.data);
+    })
     this.notificationData = this.navParams.get('data') || null;
     if(this.notificationData !== null){
       if(this.notificationData.type === 'offering' || this.notificationData.type === 'interested' ){
@@ -178,6 +185,10 @@ export class NotificationPage {
     }
   }
 
+  ionViewWillLeave(){
+    this.events.unsubscribe('open profile');
+  }
+
   showPopover(myEvent:any,notification:any){
     console.log('HELLO')
     let popover = this.popoverCtrl.create(NotificationPopoverComponent,{data:notification})
@@ -185,6 +196,12 @@ export class NotificationPage {
       ev: myEvent
     });
 
+  }
+
+  viewDetails(notification:any){
+    let tradeKey = notification.notification.data.key;
+    let chatKey = notification.notification.data.chatKey;
+    this.navCtrl.push(TradeDetailsPage,{tradeKey:tradeKey,chatKey:chatKey,notificationKey:notification.notificationKey})
   }
 
   expand(notification:any){
@@ -259,9 +276,11 @@ export class NotificationPage {
 
   acceptTrade(notification:any){
     let tradeKey = notification.notification.data.key;
+    let chatKey = notification.notification.data.chatKey;
     this.dataService.acceptTradeOffer(tradeKey).then(()=>{
-      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',tradeKey).subscribe((data:any)=>{
+      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',tradeKey,chatKey).subscribe((data:any)=>{
         console.log(data)
+        this.buttonCondition = true;
         for(let i = 0 ; i < this.tradeNotifications.length ; i++){
           if(this.tradeNotifications[i].notificationKey === notification.notificationKey){
               this.tradeNotifications[i].tradeStatus = 'accepted'
@@ -275,11 +294,15 @@ export class NotificationPage {
 
   declineTrade(notification:any){
     let tradeKey = notification.notification.data.key;
-    this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',tradeKey).subscribe((data:any)=>{
+    let chatKey = notification.notification.data.chatKey
+    this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',tradeKey,chatKey).subscribe((data:any)=>{
       console.log(data);
+      this.buttonCondition = true;
       this.dataService.declineTradeOffer(tradeKey).then(()=>{
-        console.log('trade declined and removed');
-        this.delete(notification);
+        this.dataService.cancelTradeMessage(chatKey,tradeKey).then(() =>{
+          console.log('trade declined and removed');
+          this.delete(notification);
+        })
   })
  
 })

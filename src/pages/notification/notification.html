@@ -115,7 +115,9 @@
 
               <div text-wrap *ngIf="notification.notification.data.type == 'trade' "> 
                 <ion-row justify-content-center> <h3>Status: {{notification.tradeStatus}}</h3></ion-row>
-                
+
+
+                <div *ngIf="notification.games.length === 2; else elseBlock">
                   <ion-row justify-content-center align-items-center>
                     
                     <ion-col *ngFor="let game of notification.games | slice:0:1; index as i;">
@@ -138,21 +140,33 @@
 
 
                   </ion-row>
+
+                  <ion-row justify-content-start>
+                      <ion-col>
+                        <button [disabled]="!notification.buttonCondition || buttonCondition" ion-button block icon-start color="secondary" (click)="acceptTrade(notification)">
+                            <ion-icon id="iconButton" name='checkmark'></ion-icon>
+                            Accept</button>
+                      </ion-col>
+                      <ion-col>
+                        <button [disabled]="!notification.buttonCondition || buttonCondition" ion-button block icon-start color="danger" (click)="declineTrade(notification)" >
+                            <ion-icon id="iconButton" name='close'></ion-icon>
+                            Decline</button>
+                      </ion-col>
+                    </ion-row>
+                </div>
+
+                <ng-template #elseBlock>
+                    <ion-row justify-content-center>
+                        <img src="../../assets/imgs/logoTU.png" alt="logo" class="game-photo">
+                    </ion-row>
+                    <ion-row justify-content-center>
+                        <button ion-button outline (click)="viewDetails(notification)">view details</button>
+                    </ion-row>
+                </ng-template>
                   <!-- <ion-row *ngIf="game.type == 'interested'" justify-content-start></ion-row>
                   <ion-row *ngIf="game.type == 'offering'" justify-content-start></ion-row> -->
                 
-                  <ion-row justify-content-start>
-                    <ion-col>
-                      <button [disabled]="!notification.buttonCondition" ion-button block icon-start color="secondary" (click)="acceptTrade(notification)">
-                          <ion-icon id="iconButton" name='checkmark'></ion-icon>
-                          Accept</button>
-                    </ion-col>
-                    <ion-col>
-                      <button [disabled]="!notification.buttonCondition" ion-button block icon-start color="danger" (click)="declineTrade(notification)" >
-                          <ion-icon id="iconButton" name='close'></ion-icon>
-                          Decline</button>
-                    </ion-col>
-                  </ion-row>
+                  
               </div>
 
   

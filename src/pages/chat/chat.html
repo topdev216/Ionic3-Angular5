@@ -41,11 +41,11 @@
                         Rooms
                         </ion-list-header>
 
-                        <ion-item *ngFor="let room of rooms" (click)="enterChat(room,false)" no-padding> 
+                        <ion-item *ngFor="let room of rooms" no-padding> 
                             
                             <ion-row no-padding>
                                     <ion-col col-8 no-padding>
-                                        <button detail-none ion-item outline text-wrap icon-only right>{{room.name}}<ion-icon *ngIf="room.type == 'private' " name="key" item-end></ion-icon></button>
+                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(room,false)">{{room.name}}<ion-icon *ngIf="room.type == 'private' " name="key" item-end></ion-icon></button>
                                     </ion-col>
 
                                     <ion-col col-2 no-padding>

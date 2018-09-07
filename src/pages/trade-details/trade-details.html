@@ -1,0 +1,87 @@
+
+<ion-header>
+
+    <ion-navbar>
+      <ion-title>Trade Details</ion-title>
+    </ion-navbar>
+  
+  </ion-header>
+  
+  
+  <ion-content padding>
+  
+    <ion-row justify-content-center>
+  
+    
+    <div class="list-container">
+  
+  
+    <ion-list>
+      <ion-row justify-content-center>
+          <h2>Items you get</h2>
+      </ion-row>
+      <ion-item *ngFor="let game of receivingGames">
+        <ion-row>
+  
+       
+        <ion-col col-4>
+          <img src="https://{{game.coverPhoto}}" alt="cover">
+        </ion-col>
+  
+        <ion-col col-8>
+            <div text-wrap> {{game.title}} </div>
+            <p text-wrap>{{game.platform}}</p>
+            <p text-wrap>{{game.genre}}</p>
+            <p text-wrap>{{game.releaseDate}}</p>
+            <p style="font-weight:bold;">Amount receiving: <span>{{game.pickedGames}} units</span></p>
+        </ion-col>
+  
+      </ion-row>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-row justify-content-center>
+          <h2>Items you give</h2>
+      </ion-row>
+      <ion-item *ngFor="let game of givingGames">
+        <ion-row>
+          <ion-col col-4>
+              <img src="https://{{game.coverPhoto}}" alt="cover">
+          </ion-col>
+  
+          <ion-col col-8>
+              <div text-wrap> {{game.title}} </div>
+              <p text-wrap>{{game.platform}}</p>
+              <p text-wrap>{{game.genre}}</p>
+              <p text-wrap>{{game.releaseDate}}</p>
+              <p style="font-weight:bold;">Amount giving: <span>{{game.pickedGames}} units</span></p>
+          </ion-col>
+        </ion-row>
+        </ion-item>
+    </ion-list>
+  
+    
+      <ion-row *ngIf="isReceiver && !accepted">
+          <ion-col>
+              <button ion-button block icon-start (click)="acceptTrade()">
+                  <ion-icon name='checkmark'></ion-icon>
+                  Accept Trade
+                </button>
+          </ion-col>
+                
+      
+            <ion-col>
+                <button ion-button block icon-start (click)="declineTrade()">
+                    <ion-icon name='close'></ion-icon>
+                    Cancel Trade
+                  </button>
+            </ion-col>
+      </ion-row>
+  
+  
+    </div>
+  
+  </ion-row>
+  
+  </ion-content>
+  

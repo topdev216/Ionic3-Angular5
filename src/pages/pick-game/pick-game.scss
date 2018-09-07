@@ -3,18 +3,31 @@ page-pick-game {
         background-color:color($colors,primary);
       } 
 
-    .content{
-    background: #003470;  /* fallback for old browsers */
-    p{
-       color:rgb(78, 78, 78); 
+    @media only screen and (max-width: 460px) {
+        .mediaQuery{
+            display:none !important;
+        }
     }
+
+    .content{
+        background: #003470;  /* fallback for old browsers */
+        color:white;
+        p{
+        color:rgb(158, 158, 158)
+        }  
+        
+        #moreButton{
+            border:0;
+        }
+        
     }
 
       .selected{
-          background:#48a7ff !important;
+          background:#0061bb !important;
       }
 
     .item{
         background: #003470;  /* fallback for old browsers */
+        color:white;
     }
 }

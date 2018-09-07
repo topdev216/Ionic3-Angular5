@@ -177,7 +177,7 @@
         <button ion-button full *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" type="button" id="bottomBtn" (click)="doSearch()">search</button>
         <!-- <button ion-button full id="bottomBtn" [disabled]="!gamePicked" type="submit">add</button>       -->
         </form>
-        <button ion-button full id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>
+        <button ion-button full *ngIf="!gamePicked" id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>
 
 
       </div>
@@ -188,10 +188,10 @@
 
 <ion-footer padding>
     <ion-row *ngIf="gamePicked" justify-content-center>
-        <button ion-button block (click)="backToList()">Back to List</button>
+        <button ion-button block id="bottomBtn" (click)="gameForm.ngSubmit.emit()">add</button>      
     </ion-row>
 
     <ion-row *ngIf="gamePicked" justify-content-center>
-        <button ion-button block id="bottomBtn" (click)="gameForm.ngSubmit.emit()">add</button>      
+        <button ion-button block (click)="backToList()">Back to List</button>
     </ion-row>
 </ion-footer>

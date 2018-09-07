@@ -35,6 +35,7 @@ export class ProfilePage {
   country:string = null;
   disabled:boolean = true;
   loading: boolean;
+  isFriend:boolean = false;
   comingFromSearch:boolean = false;
   paramKey:string;
 
@@ -66,6 +67,15 @@ export class ProfilePage {
 
       let paramUser = this.navParams.get('user');
       this.loading = true;
+
+      firebase.database().ref('users/'+this.dataService.uid+'/friends').once('value').then((snap) =>{
+        let friends  = snap;
+        friends.forEach((friend) =>{
+          if(friend.key === paramUser.userKey){
+            this.isFriend = true;
+          }
+        });
+      });
       firebase.database().ref('users/'+paramUser.userKey).on('value',(snap)=>{
         console.log('PROFILE LISTENER:',snap.val());
           this.user = snap.val();
@@ -80,13 +90,12 @@ export class ProfilePage {
   }
 
   ionViewWillEnter(){
-    this.comingFromSearch = this.navParams.get('search');
-    
+    this.comingFromSearch = this.navParams.get('search') || false;
   }
 
   openGameList(){
 
-      this.navCtrl.push(GamelistPage,{userKey:this.paramKey});
+      this.navCtrl.push(GamelistPage,{userKey:this.paramKey,condition:false});
 
   }
 
@@ -161,8 +170,8 @@ export class ProfilePage {
     console.log(friend);
     friend.userKey = this.paramKey;
     this.dataService.addFriend(friend).then(()=>{
-
       this.dataService.sendFriendNotification(this.paramKey).subscribe((data) => {
+        this.isFriend = true;
         console.log(data);
         let toast = this.toastCtrl.create({
           message: 'User was added successfully',
@@ -171,6 +180,21 @@ export class ProfilePage {
         })
         toast.present();
       })
+    })
+  }
+
+  removeFriend(friend:any){
+    console.log(friend);
+    friend.userKey = this.paramKey;
+    this.dataService.removeFriend(friend).then(()=>{
+        this.isFriend = false;
+        let toast = this.toastCtrl.create({
+          message: 'User was removed successfully',
+          duration: 3000,
+          position: 'top'
+        })
+        toast.present();
+      
     })
   }
 

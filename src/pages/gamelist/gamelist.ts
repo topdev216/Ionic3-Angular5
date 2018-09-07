@@ -26,7 +26,9 @@ export class GamelistPage{
   private type:string = "offer";
   private offeringGames: any [] = [];
   private interestedGames: any [] = [];
-  private condition:boolean =false;
+  private condition:boolean = false;
+  private isOwnUser:boolean = false;
+  private username:string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService
     , public alertCtrl: AlertController
@@ -41,6 +43,18 @@ export class GamelistPage{
     this.condition = this.navParams.get('condition');
 
     let userKey = this.navParams.get('userKey');
+
+    firebase.database().ref('users/'+userKey).once('value').then((snap)=>{
+      if(snap.val().username !== null){
+        this.username = snap.val().username;
+      }
+    })
+    
+    console.log('USER KEY PASSED:',userKey);
+    console.log('UID:',this.dataService.uid);
+    if(userKey === this.dataService.uid){
+      this.isOwnUser = true;
+    }
 
     firebase.database().ref('users/'+userKey+'/videogames/offer').on('value', (snap) =>{
       this.offeringGames = [];
@@ -133,7 +147,6 @@ export class GamelistPage{
 
   //Method to override the default back button action
   setBackButtonAction(){
-
     if(this.condition){
       this.navBar.backButtonClick = () => {
       //Write here wherever you wanna do
@@ -141,6 +154,56 @@ export class GamelistPage{
       }
     }
  }
+
+ addGame(gameId:any){
+
+   let alert = this.alertCtrl.create({
+     
+    title:'Confirmation',
+      message:'Are you sure you want to add another copy of this game to your list?',
+      buttons:[
+        {
+          text:'Accept',
+          handler: data => {
+            this.dataService.increaseGameQuantity(gameId,this.type);
+          }
+        },
+        {
+          text:'Cancel',
+          handler: data =>{
+            console.log('cancel');
+          }
+        }
+      ]
+    });
+    alert.present();
+
+ }
+
+ decreaseGame(gameId:any){
+
+  let alert = this.alertCtrl.create({
+    
+   title:'Confirmation',
+     message:'Are you sure you want to substract a copy of this game from your list?',
+     buttons:[
+       {
+         text:'Accept',
+         handler: data => {
+           this.dataService.decreaseGameQuantity(gameId,this.type);
+         }
+       },
+       {
+         text:'Cancel',
+         handler: data =>{
+           console.log('cancel');
+         }
+       }
+     ]
+   });
+   alert.present();
+
+}
 
   removeGame(game:any,list:string) {
 

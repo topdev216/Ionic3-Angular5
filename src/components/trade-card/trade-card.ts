@@ -1,6 +1,9 @@
 import { Component, Input, OnInit, NgZone } from '@angular/core';
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
+import { TradeDetailsPage } from '../../pages/trade-details/trade-details';
+import { NavController } from 'ionic-angular';
+import * as firebase from 'firebase';
 
 /**
  * Generated class for the TradeCardComponent component.
@@ -41,71 +44,96 @@ export class TradeCardComponent implements OnInit {
   text: string;
   games:any [] = [];
 
-  constructor(public dataService: DataService,public ngZone: NgZone) {
+  constructor(public dataService: DataService,public ngZone: NgZone, public navCtrl: NavController) {
     console.log('Hello TradeCardComponent Component asdasdas');
     this.text = 'Hello World';
   }
 
+  ionViewWillEnter(){
+    
+  }
+
   ngOnInit() {
+
+    this.dataService.getLiveTradeStatus(this.message.tradeKey).on('value',(snap) =>{
+      if(snap.val() !== null){
+        if(snap.val().status === 'accepted'){
+          if(this.timer !== undefined){
+            console.log('timer not undefined');
+            this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
+            this.showWaitingMessage = true;
+            this.showButtons = false;
+            this.timer.hasFinished = true;
+          }
+          else{
+            console.log('timer undefined!');
+            this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
+            this.showWaitingMessage = true;
+            this.showButtons = false;
+          }
+        }
+      }
+    });
+
     this.tradeKey = this.message.tradeKey;
     this.messageKey = this.message.messageKey;
     this.receiverUid = this.message.toUid;
     this.fromUid = this.message.fromUid;
-    if(this.receiverUid === this.dataService.uid){
-      this.showButtons = true;
-    }
-    if(this.fromUid === this.dataService.uid){
-      this.showWaitingMessage = true;
-    }
     this.dataService.fetchTrade(this.tradeKey).then((snap)=>{
       if(snap.val() !== null){
 
-        let games = snap.val().items;
-        let now = moment().utc().valueOf();
-        let test = moment().utc().valueOf();
-
-        let timePassed = now - snap.val().creationTime;
-        
-        let minutesPassed = timePassed / 60000;
-        let secondsPassed = timePassed / 1000;
-        console.log('creationTime:',snap.val().creationTime);
-        console.log('now:',test);
-        console.log('secondsPassed:',secondsPassed)
-        console.log('minutesPassed:',minutesPassed);
-        let remainingSeconds = 180 - secondsPassed;
-
-        for(let i = 0; i < games.length ; i++){
-          this.games.push(games[i].game);
+        if(snap.val().status === 'accepted'){
+          let games = snap.val().items;
+          for(let i = 0; i < games.length ; i++){
+            this.games.push(games[i].game);
+          }
+          this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
+          this.showWaitingMessage = true;
+          this.showButtons = false;
+          this.initTimer(0);
         }
-
-        if(minutesPassed <= 3){
-          // this.timeInSeconds = 180 - secondsPassed;
-          this.initTimer(remainingSeconds);
+        else if(snap.val().status === 'declined'){
+          this.waitingMessage = "Trade has been declined! Please try another trade";
+          this.showWaitingMessage = true;
+          this.showButtons = false;
         }
         else{
-          this.timeInSeconds = 0;
-          this.showButtons = false;
-          this.dataService.checkTradeStatus(this.tradeKey).then((snap) =>{
-            if(snap.val() !== null){
-              if(snap.val().status !== 'accepted'){
-                this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
-                  this.expired = true;
-                  this.waitingMessage = "Trade expired";  
-                  this.dataService.removeTradeMessage(this.tradeKey,false,this.chatKey,this.messageKey).then(()=>{
-                    console.log('message removed');
-                  })
-                })   
-              }
-              else{
-                this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
-                this.showWaitingMessage = true;
-                this.showButtons = false;
-                this.timer.hasFinished = true;
-              }
-            }
-          })
-                  
+          if(this.receiverUid === this.dataService.uid){
+            this.showButtons = true;
+          }
+          if(this.fromUid === this.dataService.uid){
+            this.showWaitingMessage = true;
+          }
+          let games = snap.val().items;
+          let now = moment().utc().valueOf();
+          let test = moment().utc().valueOf();
+  
+          let timePassed = now - snap.val().creationTime;
+          
+          let minutesPassed = timePassed / 60000;
+          let secondsPassed = timePassed / 1000;
+          console.log('creationTime:',snap.val().creationTime);
+          console.log('now:',test);
+          console.log('secondsPassed:',secondsPassed)
+          console.log('minutesPassed:',minutesPassed);
+          let remainingSeconds = 180 - secondsPassed;
+  
+          for(let i = 0; i < games.length ; i++){
+            this.games.push(games[i].game);
+          }
+  
+          if(minutesPassed <= 3){
+            // this.timeInSeconds = 180 - secondsPassed;
+            this.initTimer(remainingSeconds);
+          }
+          else{
+            this.timeInSeconds = 0;
+            this.showButtons = false;
+            this.showWaitingMessage = true;        
+          }
         }
+
+        
       }
     })
     console.log('Passed down',this.message);
@@ -113,6 +141,10 @@ export class TradeCardComponent implements OnInit {
 
   hasFinished() {
     return this.timer.hasFinished;
+  }
+
+  viewDetails(){
+    this.navCtrl.push(TradeDetailsPage,{tradeKey:this.tradeKey,chatKey:this.chatKey,messageKey:this.messageKey})
   }
 
   initTimer(remainingSeconds:number) {
@@ -158,11 +190,19 @@ export class TradeCardComponent implements OnInit {
         this.timer.hasFinished = true;
         this.ngZone.run(()=>{
           
-          this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
-            this.expired = true;
-            this.waitingMessage = "Trade expired";  
-            this.showButtons = false;
-          })                                                                                                                                                                                                                                                                                        
+
+          this.dataService.checkTradeStatus(this.tradeKey).then((snap) =>{
+            if(snap.val() !== null){
+              if(snap.val().status !== 'accepted'){
+                this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
+                  this.expired = true;
+                  this.waitingMessage = "Trade expired";  
+                  this.showButtons = false;
+                })     
+              }
+            }
+          })
+                                                                                                                                                                                                                                                                                            
         })
       }
     }, 1000);
@@ -171,14 +211,14 @@ export class TradeCardComponent implements OnInit {
   acceptTrade(){
     
     this.dataService.acceptTradeOffer(this.tradeKey).then(()=>{
-      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',this.tradeKey).subscribe((data:any)=>{
+      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',this.tradeKey,this.chatKey).subscribe((data:any)=>{
         console.log(data);
 
         this.ngZone.run(() =>{
           this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
           this.showWaitingMessage = true;
           this.showButtons = false;
-          this.timer.hasFinished = true;
+          this.timer.secondsRemaining = 0;
         })
 
       })
@@ -189,7 +229,7 @@ export class TradeCardComponent implements OnInit {
 
   declineTrade(){
     
-        this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',this.tradeKey).subscribe((data:any)=>{
+        this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',this.tradeKey,this.chatKey).subscribe((data:any)=>{
           console.log(data);
           this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
             console.log('trade declined and removed');

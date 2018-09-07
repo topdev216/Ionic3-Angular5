@@ -7,7 +7,12 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>My List</ion-title>
+    <ion-title *ngIf="isOwnUser; else otherBlock">My List</ion-title>
+    <ng-template #otherBlock>
+      <ion-title>
+        {{username}} List
+      </ion-title>
+    </ng-template>
   </ion-navbar>
 
 </ion-header>
@@ -37,22 +42,44 @@
         <ion-item *ngFor="let game of interestedGames" no-lines>
             <ion-row no-padding align-items-center>
     
-                <ion-col col-3 no-padding>
+                <ion-col col-2 no-padding>
                   <img src="https://{{game.game.coverPhoto}}" alt="cover">
                   <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
                 </ion-col>
     
-                <ion-col col-6 padding-left>
+                <ion-col col-4 padding-left>
                   <div text-wrap> {{game.game.title}} </div>
                   <p text-wrap>{{game.game.platform}}</p>
                   <p text-wrap>{{game.game.genre}}</p>
                   <p text-wrap>{{game.game.releaseDate}}</p>
+                  <!-- <p style="font-weight:bold;">Quantity: <span>{{game.game.quantity}}</span></p> -->
+                </ion-col>
                 
+                <ion-col col-6 no-padding>
+
+                  <ion-row *ngIf="isOwnUser" justify-content-end>
+                    <!-- <ion-col col-3 no-padding>
+                        <button ion-button outline icon-only id="moreButton" (click)="decreaseGame(game.key)"><ion-icon name="remove-circle"></ion-icon></button>
+                    </ion-col>
+
+                    <ion-col col-3 no-padding >
+                      <ion-row no-padding justify-content-center>
+                        {{game.game.quantity}} copy
+                      </ion-row>
+                    </ion-col>
+        
+                    <ion-col col-3 no-padding>
+                            <button ion-button outline icon-only id="moreButton" (click)="addGame(game.key)"><ion-icon name="add-circle"></ion-icon></button>
+                    </ion-col> -->
+                    
+                    
+                            <button ion-button outline icon-only id="moreButton" (click)="showPopover($event,game)"><ion-icon name="more"></ion-icon></button>
+                  
+                  </ion-row>
+
                 </ion-col>
-    
-                <ion-col col-2 no-padding>
-                    <button ion-button outline icon-only id="moreButton" (click)="showPopover($event,game)"><ion-icon name="more"></ion-icon></button>
-                </ion-col>
+
+                
             </ion-row> 
         </ion-item>
 
@@ -74,22 +101,49 @@
         <ion-item *ngFor="let game of offeringGames" no-lines>
             <ion-row no-padding align-items-center>
     
-                <ion-col col-3 no-padding>
+                <ion-col col-2 no-padding>
                   <img src="https://{{game.game.coverPhoto}}" alt="cover">
                   <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
                 </ion-col>
     
-                <ion-col col-6 padding-left>
-                  <div text-wrap> {{game.game.title}} </div>
-                  <p text-wrap>{{game.game.platform}}</p>
-                  <p text-wrap>{{game.game.genre}}</p>
-                  <p text-wrap>{{game.game.releaseDate}}</p>
-                
-                </ion-col>
-    
-                <ion-col col-2 no-padding>
-                    <button ion-button outline icon-only id="moreButton" (click)="showPopover($event,game)"><ion-icon name="more"></ion-icon></button>
-                </ion-col>
+                <ion-col col-4 padding-left>
+                    <div text-wrap> {{game.game.title}} </div>
+                    <p text-wrap>{{game.game.platform}}</p>
+                    <p text-wrap>{{game.game.genre}}</p>
+                    <p text-wrap>{{game.game.releaseDate}}</p>
+                    <p style="font-weight:bold;">Available units: <span>{{game.game.quantity}}</span></p>
+                  </ion-col>
+                  
+                  <ion-col col-6 no-padding>
+  
+                    <ion-row align-items-center *ngIf="isOwnUser">
+                      <ion-col col-3 no-padding>
+                          <button ion-button outline icon-only id="moreButton" (click)="decreaseGame(game.key)"><ion-icon name="remove-circle"></ion-icon></button>
+                      </ion-col>
+  
+                      <ion-col class="mediaQuery" col-3 no-padding >
+                        <ion-row *ngIf="game.game.quantity === 1; else other" no-padding justify-content-center>
+                          {{game.game.quantity}} unit
+                        </ion-row>
+
+                        <ng-template #other>
+                            <ion-row no-padding justify-content-center>
+                                {{game.game.quantity}} units
+                              </ion-row>
+                        </ng-template>
+                      </ion-col>
+          
+                      <ion-col col-3 no-padding>
+                              <button ion-button outline icon-only id="moreButton" (click)="addGame(game.key)"><ion-icon name="add-circle"></ion-icon></button>
+                      </ion-col>
+                      
+                      <ion-col col-3 no-padding>
+                              <button ion-button outline icon-only id="moreButton" (click)="showPopover($event,game)"><ion-icon name="more"></ion-icon></button>
+                      </ion-col>
+                    </ion-row>
+                    
+                  </ion-col>
+  
             </ion-row> 
         </ion-item>
 
@@ -116,7 +170,7 @@
   
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="isOwnUser">
   <ion-row justify-content-center>
     <button ion-button outline icon-left (click)="goToAddGames()"><ion-icon name="add"></ion-icon>ADD GAMES</button>
   </ion-row>

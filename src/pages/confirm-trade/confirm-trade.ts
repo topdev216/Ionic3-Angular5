@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, ViewController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
+import { MessagingPage } from '../messaging/messaging';
 
 /**
  * Generated class for the ConfirmTradePage page.
@@ -17,11 +18,23 @@ import { DataService } from '../../providers/services/dataService';
 export class ConfirmTradePage {
 
   private games:any [] = [];
+  private receivingGames:any[] = [];
+  private givingGames:any [] = [];
   private chatKey:string;
   constructor(public navCtrl: NavController, public navParams: NavParams
     , public alertCtrl: AlertController
-    , public dataService: DataService) {
+    , public dataService: DataService
+    , public viewCtrl: ViewController) {
     this.games = this.navParams.get('games');
+
+    for(let i = 0 ; i < this.games.length ; i++) {
+      if(this.games[i].type == "offering"){
+        this.givingGames.push(this.games[i].game);
+      }
+      else{
+        this.receivingGames.push(this.games[i].game);
+      }
+    }
     this.chatKey = this.navParams.get('chatKey');
     // this.games.sort(function(a,b) {return (a.type > b.type) ? 1 : ((b.type > a.type) ? -1 : 0);} ); 
 
@@ -50,18 +63,24 @@ export class ConfirmTradePage {
           text: 'Confirm',
           handler: () => {
             console.log('Confirm clicked');
-            this.dataService.createTrade(this.games,this.navParams.get('username')).
+            let chatKey = this.navParams.get('chatKey');
+            this.dataService.createTrade(this.games,this.navParams.get('username'),chatKey).
             then(()=>{
-              console.log('trade created:');                
-                  this.navCtrl.popToRoot().then(()=>{
-                    this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.dataService.username,'create',this.dataService.tradeKey)
-                    .subscribe((res:any) =>{
-                      console.log(res);
-                      let chatKey = this.navParams.get('chatKey');
-                      this.dataService.showTradeCard(chatKey,this.navParams.get('username')).then(()=>{console.log('message sent')});
-                    })
-                })
-              })
+              console.log('trade created:');   
+              this.navCtrl.getViews().forEach(element => {
+                if(element.name == 'MessagingPage'){
+                     this.navCtrl.popTo(element)
+                     .then(()=>{
+                        this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.dataService.username,'create',this.dataService.tradeKey,chatKey)
+                        .subscribe((res:any) =>{
+                          console.log(res);
+                          this.dataService.showTradeCard(chatKey,this.navParams.get('username')).then(()=>{console.log('message sent')});
+                        })
+                      })
+                }
+              });             
+                  
+            })
             
           }
         }

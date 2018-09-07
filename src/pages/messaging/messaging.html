@@ -59,16 +59,33 @@
           <ion-icon name="paper-plane"></ion-icon>
         </ion-col>
       </ion-row>
-      <ion-row justify-content-center>
-        <ion-col col-4 (click)="presentPopover($event)">
+      <ion-row justify-content-center align-items-center>
+        <!-- <ion-col col-4 (click)="presentPopover($event)">
           <ion-icon name="add-circle"></ion-icon>
-        </ion-col>
-        <ion-col col-4>
-          <ion-icon name="image"></ion-icon>
-        </ion-col>
-          <ion-icon name="happy"></ion-icon>
-        <ion-col col-4>
+        </ion-col> -->
 
+        <ion-col col-3>
+            <ion-row (click)="inviteChatroom()" justify-content-center>
+                <ion-icon name="add-circle"></ion-icon>
+            </ion-row>
+        </ion-col>
+
+        <ion-col col-3>
+          <ion-row (click)="createTrade()" justify-content-center>
+              <ion-icon name="swap"></ion-icon>
+          </ion-row>
+        </ion-col>
+
+        <ion-col col-3>
+          <ion-row justify-content-center>
+              <ion-icon name="image"></ion-icon>
+          </ion-row>
+        </ion-col>
+
+        <ion-col col-3>
+          <ion-row justify-content-center>
+              <ion-icon name="happy"></ion-icon>
+          </ion-row>
         </ion-col>
       </ion-row>
     </ion-grid>

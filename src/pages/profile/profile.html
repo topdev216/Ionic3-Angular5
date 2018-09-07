@@ -86,7 +86,9 @@
     <ion-row justify-content-center>
       <button ion-button outline icon-left *ngIf="!comingFromSearch" (click)="addVideogame()"><ion-icon name="add"></ion-icon>ADD GAMES</button>
       <button ion-button outline icon-left (click)="openGameList()"><ion-icon name="game-controller-b"></ion-icon>VIEW GAMES</button>
-      <button *ngIf="comingFromSearch" ion-button outline icon-left (click)="addFriend(user)"><ion-icon name="add"></ion-icon>ADD FRIEND</button>
+      <button *ngIf="comingFromSearch && !isFriend" ion-button outline icon-left (click)="addFriend(user)"><ion-icon name="add"></ion-icon>ADD FRIEND</button>
+      <button *ngIf="comingFromSearch && isFriend" ion-button outline icon-left (click)="removeFriend(user)"><ion-icon name="remove-circle"></ion-icon>remove friend</button>
+
     </ion-row>
   </div>
 
