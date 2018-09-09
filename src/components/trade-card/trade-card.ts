@@ -1,9 +1,11 @@
-import { Component, Input, OnInit, NgZone } from '@angular/core';
+import { Component, Input, OnInit, NgZone, ViewChild } from '@angular/core';
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
 import { TradeDetailsPage } from '../../pages/trade-details/trade-details';
 import { NavController } from 'ionic-angular';
 import * as firebase from 'firebase';
+import { Slides } from 'ionic-angular';
+
 
 /**
  * Generated class for the TradeCardComponent component.
@@ -31,6 +33,10 @@ export class TradeCardComponent implements OnInit {
 
   @Input() public message: any;
   @Input() public chatKey: string;
+  @ViewChild('offeringSlides') offeringSlides: Slides;
+  @ViewChild('receivingSlides') receivingSlides: Slides;
+
+
   timeInSeconds: number;
   timer: CountdownTimer;
   tradeKey:string;
@@ -39,10 +45,13 @@ export class TradeCardComponent implements OnInit {
   fromUid:string;
   showButtons:boolean = false;
   showWaitingMessage = false;
-  waitingMessage:string = "Waiting for approval...";
+  waitingMessage:string = null;
   expired:boolean = false;
   text: string;
   games:any [] = [];
+  proposerUsername:string;
+  offeringGames: any [] = [];
+  receivingGames: any[] = [];
 
   constructor(public dataService: DataService,public ngZone: NgZone, public navCtrl: NavController) {
     console.log('Hello TradeCardComponent Component asdasdas');
@@ -53,7 +62,25 @@ export class TradeCardComponent implements OnInit {
     
   }
 
+  nextOffering() {
+    this.offeringSlides.slideNext();
+  }
+
+  prevOffering() {
+    this.offeringSlides.slidePrev();
+  }
+
+  nextReceiving() {
+    this.receivingSlides.slideNext();
+  }
+
+  prevReceiving() {
+    this.receivingSlides.slidePrev();
+  }
+
   ngOnInit() {
+
+    
 
     this.dataService.getLiveTradeStatus(this.message.tradeKey).on('value',(snap) =>{
       if(snap.val() !== null){
@@ -72,6 +99,21 @@ export class TradeCardComponent implements OnInit {
             this.showButtons = false;
           }
         }
+        else if(snap.val().status === 'expired'){
+          if(this.timer !== undefined){
+            console.log('timer not undefined');
+            this.waitingMessage = "Trade expired";
+            this.showWaitingMessage = true;
+            this.showButtons = false;
+            this.timer.hasFinished = true;
+          }
+          else{
+            console.log('timer undefined!');
+            this.waitingMessage = "Trade expired";
+            this.showWaitingMessage = true;
+            this.showButtons = false;
+          }
+        }
       }
     });
 
@@ -79,8 +121,40 @@ export class TradeCardComponent implements OnInit {
     this.messageKey = this.message.messageKey;
     this.receiverUid = this.message.toUid;
     this.fromUid = this.message.fromUid;
+
+    this.dataService.fetchUserFromDatabase(this.fromUid).then((snap)=>{
+      this.proposerUsername = snap.val().username
+    });
+
+    
+
     this.dataService.fetchTrade(this.tradeKey).then((snap)=>{
       if(snap.val() !== null){
+
+        let games = snap.val().items;
+
+          if(this.receiverUid === this.dataService.uid){
+            this.showButtons = true;
+            for(let i = 0 ; i < games.length; i++){
+              if(games[i].type === 'offering'){
+                this.receivingGames.push(games[i])
+              }
+              else{
+                this.offeringGames.push(games[i]);
+              }
+            }
+          }
+          if(this.fromUid === this.dataService.uid){
+            this.showWaitingMessage = true;
+            for(let i = 0 ; i < games.length; i++){
+              if(games[i].type === 'offering'){
+                this.offeringGames.push(games[i])
+              }
+              else{
+                this.receivingGames.push(games[i]);
+              }
+            }
+        }
 
         if(snap.val().status === 'accepted'){
           let games = snap.val().items;
@@ -97,14 +171,45 @@ export class TradeCardComponent implements OnInit {
           this.showWaitingMessage = true;
           this.showButtons = false;
         }
+
+        else if(snap.val().status === 'expired'){
+          let games = snap.val().items;
+          for(let i = 0; i < games.length ; i++){
+            this.games.push(games[i].game);
+          }
+          this.waitingMessage = "Trade expired";
+          this.showWaitingMessage = true;
+          this.showButtons = false;
+        }
         else{
+
+          let games = snap.val().items;
+
           if(this.receiverUid === this.dataService.uid){
             this.showButtons = true;
+            for(let i = 0 ; i < games.length; i++){
+              if(games[i].type === 'offering'){
+                this.receivingGames.push(games[i])
+              }
+              else{
+                this.offeringGames.push(games[i]);
+              }
+            }
           }
           if(this.fromUid === this.dataService.uid){
             this.showWaitingMessage = true;
+            for(let i = 0 ; i < games.length; i++){
+              if(games[i].type === 'offering'){
+                this.offeringGames.push(games[i])
+              }
+              else{
+                this.receivingGames.push(games[i]);
+              }
+            }
           }
-          let games = snap.val().items;
+
+          
+          
           let now = moment().utc().valueOf();
           let test = moment().utc().valueOf();
   
@@ -119,7 +224,7 @@ export class TradeCardComponent implements OnInit {
           let remainingSeconds = 180 - secondsPassed;
   
           for(let i = 0; i < games.length ; i++){
-            this.games.push(games[i].game);
+            this.games.push(games[i]);
           }
   
           if(minutesPassed <= 3){
@@ -198,7 +303,7 @@ export class TradeCardComponent implements OnInit {
                   this.expired = true;
                   this.waitingMessage = "Trade expired";  
                   this.showButtons = false;
-                })     
+                });     
               }
             }
           })

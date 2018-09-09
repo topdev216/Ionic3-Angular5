@@ -7,6 +7,14 @@ page-messaging {
       border-bottom:1px solid rgba(27, 27, 27, 0.952);
     }
 
+    #swapIcon{
+      -moz-transform: rotate(90deg);
+      -webkit-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg) !important;
+    }
+
     ion-content {
         // background:linear-gradient(to right,#005C97 ,#363795);
         background-color:#002147 !important;
@@ -16,6 +24,8 @@ page-messaging {
         .item-md, .item-ios {
           background: transparent;
         }
+
+        
         
       }
       ion-footer {

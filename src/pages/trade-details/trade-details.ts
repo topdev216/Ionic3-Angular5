@@ -46,6 +46,9 @@ export class TradeDetailsPage {
         if(snap.val().status === 'accepted'){
           this.accepted = true;
         }
+        else if(snap.val().status === 'expired'){
+          this.accepted = true;
+        }
       }
 
       if(proposer === this.dataService.uid){
