@@ -47,6 +47,7 @@ export class TradeCardComponent implements OnInit {
   showWaitingMessage = false;
   waitingMessage:string = null;
   expired:boolean = false;
+  accepted:boolean = false;
   text: string;
   games:any [] = [];
   proposerUsername:string;
@@ -87,13 +88,16 @@ export class TradeCardComponent implements OnInit {
         if(snap.val().status === 'accepted'){
           if(this.timer !== undefined){
             console.log('timer not undefined');
+            this.accepted = true;
             this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
             this.showWaitingMessage = true;
             this.showButtons = false;
             this.timer.hasFinished = true;
+
           }
           else{
             console.log('timer undefined!');
+            this.accepted = true;
             this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
             this.showWaitingMessage = true;
             this.showButtons = false;
@@ -103,12 +107,14 @@ export class TradeCardComponent implements OnInit {
           if(this.timer !== undefined){
             console.log('timer not undefined');
             this.waitingMessage = "Trade expired";
+            this.expired = true;
             this.showWaitingMessage = true;
             this.showButtons = false;
             this.timer.hasFinished = true;
           }
           else{
             console.log('timer undefined!');
+            this.expired = true;
             this.waitingMessage = "Trade expired";
             this.showWaitingMessage = true;
             this.showButtons = false;
@@ -164,6 +170,7 @@ export class TradeCardComponent implements OnInit {
           this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
           this.showWaitingMessage = true;
           this.showButtons = false;
+          this.accepted = true;
           this.initTimer(0);
         }
         else if(snap.val().status === 'declined'){
@@ -180,6 +187,7 @@ export class TradeCardComponent implements OnInit {
           this.waitingMessage = "Trade expired";
           this.showWaitingMessage = true;
           this.showButtons = false;
+          this.expired = true;
         }
         else{
 
@@ -320,6 +328,7 @@ export class TradeCardComponent implements OnInit {
         console.log(data);
 
         this.ngZone.run(() =>{
+          this.accepted = true;
           this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
           this.showWaitingMessage = true;
           this.showButtons = false;

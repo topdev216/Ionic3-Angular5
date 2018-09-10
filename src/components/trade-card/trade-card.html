@@ -6,8 +6,10 @@
     
       <ion-card-header>
         <ion-row no-padding justify-content-center>
-            <span class="message" *ngIf="!expired" text-wrap>Offer by: {{proposerUsername}}</span>
+            <span class="message" *ngIf="!expired && !accepted" text-wrap>Offer by: {{proposerUsername}}</span>
             <span class="message" *ngIf="expired" text-wrap>Trade Expired</span>
+            <span class="message" *ngIf="accepted" text-wrap>Trade has been accepted!</span>
+
         </ion-row>
         <ion-row no-padding justify-content-end> 
             <h1 class="price" *ngIf="!timer?.hasFinished">{{timer?.displayTime}}</h1>
