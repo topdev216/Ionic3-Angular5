@@ -34,6 +34,28 @@ page-home {
       ion-title{
         cursor: pointer;
       }
+
+      .button{
+        color:color($colors,dark);
+        background:color($colors,primary);
+        box-shadow: none;
+        position: relative;
+        // top:1px;
+        // right: 1px;
+        padding:0px !important;
+        overflow: visible!important;
+        ion-badge {
+          background-color: red;
+          position: absolute;
+          top: 0px;
+          right: 0px;
+          border-radius: 100%;
+        }
+      }
+
+      .button:hover{
+        background:transparent;
+      }
     }
     .bar-button-default-ios{
       color:#002147;

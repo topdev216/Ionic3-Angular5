@@ -11,6 +11,8 @@ import * as moment from 'moment';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import { Reference } from '@firebase/database-types';
+import { GooglePlus } from '@ionic-native/google-plus';
+
 
 declare var Stripe:any;
 
@@ -49,7 +51,8 @@ export class DataService {
   , public afAuth: AngularFireAuth
   , public toastCtrl: ToastController
   , public zone: NgZone
-  , public urlEnvironment: UrlEnvironment) {
+  , public urlEnvironment: UrlEnvironment
+  , public gplus: GooglePlus) {
     console.log('Hello DataService Provider');
 
   }
@@ -86,6 +89,7 @@ export class DataService {
   //SOCIAL LOGINS
   private socialSignIn(provider): Promise<any> {
     if (this.platform.is('cordova')) {
+      
       return firebase.auth().signInWithRedirect(provider)
         .then((data: any) => {
           console.log("data: ", data);
@@ -838,6 +842,13 @@ export class DataService {
     return this.database.ref('/notifications/'+this.uid);
   }
 
+  public markReadNotifications():Promise<any>{
+    return this.database.ref('/notifications/'+this.uid).update({
+      read:true
+    });
+    
+  }
+
   public getLiveTradeStatus(tradeKey:string): Reference{
     return this.database.ref('/trades/'+tradeKey);
   }
@@ -846,6 +857,10 @@ export class DataService {
 
     return this.database.ref('/users/'+this.uid+'/friends').once('value')
 
+  }
+
+  public liveFriendsList(): Reference{
+    return this.database.ref('/users/'+this.uid+'/friends')
   }
 
   public saveNotificationToken(token:string,isBrowser:boolean):Promise<any>{

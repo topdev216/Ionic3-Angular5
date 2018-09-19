@@ -23,10 +23,10 @@
             <ion-col *ngFor="let game of games; let i=index; trackBy: trackById" >
 
               <ion-row justify-content-center>
-                    <img src="https://{{game.game.coverPhoto}}" alt="asd" class="game-photo">
+                    <img src="https://{{game.game?.coverPhoto}}" alt="asd" class="game-photo">
               </ion-row>
               <ion-row justify-content-center>
-                <span>{{game.game.platform}}</span>
+                <span>{{game.game?.platform}}</span>
               </ion-row>
 
             </ion-col>
@@ -52,20 +52,36 @@
                     
             
             </ion-row>
+
+            <ion-row no-padding justify-content-center *ngIf="isProposer
+             && !expired">
+                <button ion-button clear small icon-start (click)="declineTrade()">
+                    <ion-icon name='close'></ion-icon>
+                    Cancel Trade
+                  </button>
+            </ion-row>
         </div>
 
         <ng-template #elseBlock>
 
-                <ion-row justify-content-start>
-                    Offering
+                <ion-row *ngIf="isNotTradeInvolved;else offeringBlock" justify-content-start>
+                    {{proposerUsername}} is Offering
                 </ion-row>
+
+                <ng-template #offeringBlock>
+                    <ion-row justify-content-start>
+                        Offering
+                    </ion-row>
+                </ng-template>
+
+
                 <ion-row justify-content-center align-items-center>
 
                     <!-- <ion-col *ngFor="let game of offeringGames">
                         <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
                     </ion-col> -->
 
-                    <ion-col col-2>
+                    <ion-col col-2 *ngIf="offeringGames.length > 1">
                             <button type="submit" float-left ion-button clear icon-only color="primary" class="btnPrev" (click)="prevOffering()"><ion-icon name="arrow-back"></ion-icon></button>
                     </ion-col>
 
@@ -73,22 +89,28 @@
                             <ion-slides #offeringSlides>
                                     <ion-slide *ngFor="let game of offeringGames">
                                         <ion-row justify-content-center>
-                                                <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
+                                                    <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                         </ion-row>
                                     </ion-slide>
                                 </ion-slides>
                     </ion-col>
 
-                    <ion-col col-2> 
+                    <ion-col col-2 *ngIf="offeringGames.length > 1"> 
                             <button type="submit" float-right ion-button clear icon-only color="primary" class="btnNext" (click)="nextOffering()"><ion-icon name="arrow-forward"></ion-icon></button>
                     </ion-col>
                     
 
                 </ion-row>
 
-                <ion-row justify-content-start>
-                        Receiving
+                <ion-row *ngIf="isNotTradeInvolved;else receivingBlock" justify-content-start>
+                    {{receiverUsername}} is Offering
                 </ion-row>
+
+                <ng-template #receivingBlock>
+                    <ion-row justify-content-start>
+                        Receiving
+                    </ion-row>
+                </ng-template>
 
                 <ion-row justify-content-center align-items-center>
 
@@ -96,7 +118,7 @@
                             <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
                         </ion-col> -->
     
-                        <ion-col col-2>
+                        <ion-col col-2 *ngIf="receivingGames.length > 1">
                                 <button type="submit" float-left ion-button clear icon-only color="primary" class="btnPrev" (click)="prevReceiving()"><ion-icon name="arrow-back"></ion-icon></button>
                         </ion-col>
     
@@ -104,13 +126,13 @@
                                 <ion-slides #receivingSlides>
                                         <ion-slide *ngFor="let game of receivingGames">
                                             <ion-row justify-content-center>
-                                                    <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
+                                                    <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                             </ion-row>
                                         </ion-slide>
                                     </ion-slides>
                         </ion-col>
     
-                        <ion-col col-2> 
+                        <ion-col col-2 *ngIf="receivingGames.length > 1"> 
                                 <button type="submit" float-right ion-button clear icon-only color="primary" class="btnNext" (click)="nextReceiving()"><ion-icon name="arrow-forward"></ion-icon></button>
                         </ion-col>
                         

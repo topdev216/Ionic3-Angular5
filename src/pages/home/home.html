@@ -23,22 +23,46 @@
         </ion-buttons> -->
 
         <ion-toolbar>
-                <button *ngIf="authState" detail-none ion-button menuToggle left>
-                  <ion-icon name="menu"></ion-icon>
-                </button>
+
+                <ion-buttons left>
+                        
+                                <button *ngIf="authState" detail-none ion-button menuToggle left>
+                                        <ion-icon name="menu"></ion-icon>
+                                </button>
+                       
+                </ion-buttons>
+               
+
+                
+
+                
 
                 <ion-title text-center *ngIf="authState" (click)="goToProfile()">{{username}}</ion-title>
                 
-                <ion-buttons end>
-                    
-                  <button *ngIf="authState && !loading" detail-none icon-right ion-button (click)="showPopover($event)">
-                    <ion-icon name="more"></ion-icon>
-                  </button>
+                <ion-buttons right>
+
+                <ion-row align-items-center *ngIf="authState && !loading">
+
+                <ion-col no-padding>
+                        <button *ngIf="authState" color="dark" ion-button icon-only>
+                                <ion-icon name="notifications"></ion-icon>
+                                <ion-badge>{{unreadNotifications}}</ion-badge>
+                        </button>                    
+                </ion-col>
+                
+                <ion-col no-padding>
+                        <button *ngIf="authState && !loading" detail-none icon-right ion-button (click)="showPopover($event)">
+                                <ion-icon name="more"></ion-icon>
+                        </button>
+                </ion-col>
+
+                </ion-row>
+                  
 
                   <button *ngIf="!authState && !loading" ion-button icon-right outline (click)="goToLogin()">
                         Sign in 
                         <ion-icon name="log-in"></ion-icon>
-                </button>
+                        </button>
                  
 
                 </ion-buttons>
@@ -70,11 +94,12 @@
         <ion-grid fixed>
             <ion-row class="searchbar" justify-content-center align-items-center>
                 <ion-searchbar placeholder="Search Game"></ion-searchbar>
+                <ion-icon name="settings"></ion-icon>
             </ion-row>
 
-            <ion-row class="logo" justify-content-center>
+            <!-- <ion-row class="logo" justify-content-center>
                                 <img src="assets/imgs/logoTU.png" alt="logo" class="cover">
-            </ion-row>
+            </ion-row> -->
         </ion-grid>
   </div>
 

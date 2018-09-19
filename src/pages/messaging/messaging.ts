@@ -47,11 +47,18 @@ export class MessagingPage {
     this.zone=new NgZone({enableLongStackTrace: false});
 
 
-    firebase.database().ref('chatrooms/'+this.roomkey).once('value').then((snap) =>{
+    if(!this.isDirect){
+    firebase.database().ref('chatrooms/'+this.roomkey).on('value', (snap) =>{
       this.activeChatroom = snap.val();
-    })
+    });
+    }
+    else{
+      firebase.database().ref('directChats/'+this.roomkey).on('value', (snap) =>{
+        this.activeChatroom = snap.val();
+      });
+    }
 
-    this.dataService.getFriendsList().then((snap)=>{
+    this.dataService.liveFriendsList().on('value',(snap)=>{
       snap.forEach((friend) =>{
         this.friends.push(friend.val());
         console.log(friend.val());

@@ -73,9 +73,19 @@
             <ion-col>
                 <button ion-button block icon-start (click)="declineTrade()">
                     <ion-icon name='close'></ion-icon>
-                    Cancel Trade
+                    Decline Trade
                   </button>
             </ion-col>
+      </ion-row>
+
+
+      <ion-row *ngIf="isProposer && !accepted">
+          <ion-col>
+              <button ion-button block icon-start (click)="declineTrade()">
+                  <ion-icon name='close'></ion-icon>
+                  Cancel Trade
+                </button>
+          </ion-col>  
       </ion-row>
   
   

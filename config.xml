@@ -95,5 +95,9 @@
     <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <allow-navigation href="http://localhost:8100" />
     <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="^2.2.4" />
+    <plugin name="cordova-plugin-googleplus" spec="^5.3.1">
+        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.487644774277-moncksd69qao9vsh9vqimc8nrnrsuc2r" />
+        <variable name="WEB_APPLICATION_CLIENT_ID" value="487644774277-emh0r24s3u4hdfp0anb6ntdu1a8g29ll.apps.googleusercontent.com" />
+    </plugin>
     <engine name="android" spec="^7.1.1" />
 </widget>

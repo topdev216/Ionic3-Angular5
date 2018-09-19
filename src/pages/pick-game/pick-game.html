@@ -60,6 +60,10 @@
                   <!-- <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove"></ion-icon></button> -->
                   <!-- <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button> -->
               </ion-row>
+
+              <ion-row class="pickedQuery" justify-content-center>
+                  {{game.pickedGames}} picked
+              </ion-row>
               
             </ion-col>
         </ion-row> 

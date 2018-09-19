@@ -43,6 +43,7 @@ import {TimeAgoPipe} from 'time-ago-pipe';
 import { PlatformSelectionPage } from '../pages/platform-selection/platform-selection';
 import { NotificationPopoverComponent } from '../components/notification-popover/notification-popover';
 import { TradeDetailsPage } from '../pages/trade-details/trade-details';
+import { GooglePlus } from '@ionic-native/google-plus';
 
 
 
@@ -142,7 +143,8 @@ const firebaseConfig = {
     HttpClient,
     UrlEnvironment,
     UsernameValidator,
-    FCM
+    FCM,
+    GooglePlus
   ]
 })
 export class AppModule {}

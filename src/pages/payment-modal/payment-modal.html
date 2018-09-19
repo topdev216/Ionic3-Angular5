@@ -13,88 +13,12 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding-top>
 
-  <ion-grid fixed>
+      
+        <ion-slides (ionSlideDidChange)="zoomSlide()" #slides>
 
-      <!-- <ion-row>
-        <ion-item no-padding no-lines>
-          <ion-slides pager="true">
-            <ion-slide>
-                <ion-card>
-
-                    <img src="assets/imgs/logoTU.png" alt="logo">
-
-                      <ion-card-content>
-                          <ion-card-title>
-                            Membership A
-                            </ion-card-title>
-                          <ul>
-                            <li>Up to 5 trades per month of any type.</li>
-                            <li>Access to all features on the TUG site.</li>
-                          </ul>
-                          <ion-row justify-content-end>
-                            <h1>$9.99/month</h1>
-                          </ion-row>
-
-
-                        </ion-card-content>
-        
-        
-                  </ion-card>
-            </ion-slide>
-
-            <ion-slide>
-                <ion-card>
-
-                    <img src="assets/imgs/logoTU.png" alt="logo">
-        
-                      <ion-card-content>
-                          <ion-card-title>
-                            Membership B
-                            </ion-card-title>
-                          <ul>
-                            <li>Up to 10 trades per month of any type.</li>
-                            <li>Access to all features on the TUG site.</li>
-                          </ul>
-                          <ion-row justify-content-end>
-                              <h1>$12.99/month</h1>
-                            </ion-row>
-                        </ion-card-content>
-        
-        
-                  </ion-card>
-            </ion-slide>
-
-            <ion-slide>
-                <ion-card>
-
-                    <img src="assets/imgs/logoTU.png" alt="logo">
-        
-                      <ion-card-content>
-                          <ion-card-title>
-                            Membership C
-                            </ion-card-title>
-                          <ul>
-                            <li>Up to 15 trades per month of any type.</li>
-                            <li>Access to all features on the TUG site.</li>
-                          </ul>
-                          <ion-row justify-content-end>
-                              <h1>$15.99/month</h1>
-                            </ion-row>
-                        </ion-card-content>
-        
-        
-                  </ion-card>
-            </ion-slide>
-          </ion-slides>
-        </ion-item>
-      </ion-row> -->
-
-
-      <ion-row no-padding>
-
-        <ion-col>
+          <ion-slide #slideA>
           <ion-card>
             <ion-item class="card-header">
 
@@ -107,29 +31,41 @@
             <ion-card-content>
 
               <ion-item class="card-price">
-                  <img src="assets/imgs/logoTU.png" alt="logo">
 
                 <ion-row justify-content-center>
-                  <h1>$9.99/month</h1>
+                    <img src="assets/imgs/logoTU.png" alt="logo">
+                </ion-row>
+
+                <ion-row justify-content-center>
+                  <h1>$9.99</h1>
+                </ion-row>
+                <ion-row justify-content-center>
+                  <span>per month</span>
                 </ion-row>
               </ion-item>
 
               <ion-item class="card-content">
                 <ion-row justify-content-center>
-                  <p text-wrap>Up to 5 trades per month of any type</p>
-                  <p text-wrap>Access to all features on the TUG site</p>
+                  <ion-col col-2 >
+                    <ion-row justify-content-end>
+                        <ion-icon name="checkmark"></ion-icon>
+                    </ion-row>
+                  </ion-col>
+                  <ion-col col-10>
+                    <ion-row justify-content-center>
+                        <p text-wrap>Up to 5 trades per month of any type</p>
+                    </ion-row>
+                  </ion-col>
                 </ion-row>
               </ion-item>
 
-              <ion-item class="card-button">
                 <button ion-button round block (click)="showCredit('planA')">Choose</button>
-              </ion-item>
 
             </ion-card-content>
           </ion-card>
-        </ion-col>
+        </ion-slide>
 
-        <ion-col>
+        <ion-slide #slideB>
             <ion-card>
                 <ion-item class="card-header"> 
 
@@ -142,29 +78,42 @@
                 <ion-card-content>
     
                   <ion-item class="card-price">
-                      <img src="assets/imgs/logoTU.png" alt="logo">
 
-                    <ion-row justify-content-center>
-                      <h1>$12.99/month</h1>
+                <ion-row justify-content-center>
+                    <img src="assets/imgs/logoTU.png" alt="logo">
+                </ion-row>
+
+                <ion-row justify-content-center>
+                  <h1>$12.99</h1>
+                </ion-row>
+                <ion-row justify-content-center>
+                  <span>per month</span>
+                </ion-row>
+              </ion-item>
+
+              <ion-item class="card-content">
+                <ion-row justify-content-center>
+                  <ion-col col-2 >
+                    <ion-row justify-content-end>
+                        <ion-icon name="checkmark"></ion-icon>
                     </ion-row>
-                  </ion-item>
-    
-                  <ion-item class="card-content">
+                  </ion-col>
+                  <ion-col col-10>
                     <ion-row justify-content-center>
-                      <p text-wrap>Up to 10 trades per month of any type</p>
-                      <p text-wrap>Access to all features on the TUG site</p>
+                        <p text-wrap>Up to 10 trades per month of any type</p>
                     </ion-row>
-                  </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-item>
     
-                  <ion-item class="card-button">
                     <button ion-button round block (click)="showCredit('planB')">CHOOSE</button>
-                  </ion-item>
     
                 </ion-card-content>
               </ion-card>
-        </ion-col>
+            </ion-slide>
 
-        <ion-col>
+
+            <ion-slide #slideC>
             <ion-card>
                 <ion-item class="card-header">
                 <ion-row justify-content-center>
@@ -175,34 +124,46 @@
     
                 <ion-card-content>
     
-                  <ion-item class="card-price">
-                      <img src="assets/imgs/logoTU.png" alt="logo">
-                    <ion-row justify-content-center>
-                      <h1>$15.99/month</h1>
-                    </ion-row>
-                  </ion-item>
+                    <ion-item class="card-price">
+
+                        <ion-row justify-content-center>
+                            <img src="assets/imgs/logoTU.png" alt="logo">
+                        </ion-row>
+        
+                        <ion-row justify-content-center>
+                          <h1>$15.99</h1>
+                        </ion-row>
+                        <ion-row justify-content-center>
+                          <span>per month</span>
+                        </ion-row>
+                      </ion-item>
+        
+                      <ion-item class="card-content">
+                        <ion-row justify-content-center>
+                          <ion-col col-2>
+                            <ion-row justify-content-end>
+                                <ion-icon name="checkmark"></ion-icon>
+                            </ion-row>
+                          </ion-col>
+                          <ion-col col-10>
+                            <ion-row justify-content-center>
+                                <p text-wrap>Up to 15 trades per month of any type</p>
+                            </ion-row>
+                          </ion-col>
+                        </ion-row>
+                      </ion-item>
     
-                  <ion-item class="card-content">
-                    <ion-row justify-content-center>
-                      <p text-wrap>Up to 15 trades per month of any type</p>
-                      <p text-wrap>Access to all features on the TUG site</p>
-                    </ion-row>
-                  </ion-item>
-    
-                  <ion-item class="card-button">
                     <button ion-button round block (click)="showCredit('planC')">CHOOSE</button>
-                  </ion-item>
     
                 </ion-card-content>
               </ion-card>
-        </ion-col>
+            </ion-slide>
 
-      </ion-row>
+            </ion-slides>
+
     
-      <ion-row>
+      <!-- <ion-row justify-content-center>
           <button ion-button outline (click)="dismiss()" >Close</button>
-      </ion-row>
-  </ion-grid>
-
+      </ion-row> -->
   
 </ion-content>

@@ -5,6 +5,7 @@ import { TradeDetailsPage } from '../../pages/trade-details/trade-details';
 import { NavController } from 'ionic-angular';
 import * as firebase from 'firebase';
 import { Slides } from 'ionic-angular';
+import { THROW_IF_NOT_FOUND } from '@angular/core/src/di/injector';
 
 
 /**
@@ -51,6 +52,9 @@ export class TradeCardComponent implements OnInit {
   text: string;
   games:any [] = [];
   proposerUsername:string;
+  isProposer:boolean = false;
+  receiverUsername:string;
+  isNotTradeInvolved:boolean = false;
   offeringGames: any [] = [];
   receivingGames: any[] = [];
 
@@ -132,6 +136,12 @@ export class TradeCardComponent implements OnInit {
       this.proposerUsername = snap.val().username
     });
 
+    this.dataService.fetchUserFromDatabase(this.receiverUid).then((snap)=>{
+      this.receiverUsername = snap.val().username
+    });
+
+    
+
     
 
     this.dataService.fetchTrade(this.tradeKey).then((snap)=>{
@@ -150,7 +160,8 @@ export class TradeCardComponent implements OnInit {
               }
             }
           }
-          if(this.fromUid === this.dataService.uid){
+          else if(this.fromUid === this.dataService.uid){
+            this.isProposer = true;
             this.showWaitingMessage = true;
             for(let i = 0 ; i < games.length; i++){
               if(games[i].type === 'offering'){
@@ -160,6 +171,18 @@ export class TradeCardComponent implements OnInit {
                 this.receivingGames.push(games[i]);
               }
             }
+        }
+
+        else{
+          this.isNotTradeInvolved = true;
+          for(let i = 0 ; i < games.length; i++){
+            if(games[i].type === 'offering'){
+              this.offeringGames.push(games[i])
+            }
+            else{
+              this.receivingGames.push(games[i]);
+            }
+          }
         }
 
         if(snap.val().status === 'accepted'){
@@ -191,30 +214,30 @@ export class TradeCardComponent implements OnInit {
         }
         else{
 
-          let games = snap.val().items;
+          // let games = snap.val().items;
 
-          if(this.receiverUid === this.dataService.uid){
-            this.showButtons = true;
-            for(let i = 0 ; i < games.length; i++){
-              if(games[i].type === 'offering'){
-                this.receivingGames.push(games[i])
-              }
-              else{
-                this.offeringGames.push(games[i]);
-              }
-            }
-          }
-          if(this.fromUid === this.dataService.uid){
-            this.showWaitingMessage = true;
-            for(let i = 0 ; i < games.length; i++){
-              if(games[i].type === 'offering'){
-                this.offeringGames.push(games[i])
-              }
-              else{
-                this.receivingGames.push(games[i]);
-              }
-            }
-          }
+          // if(this.receiverUid === this.dataService.uid){
+          //   this.showButtons = true;
+          //   for(let i = 0 ; i < games.length; i++){
+          //     if(games[i].type === 'offering'){
+          //       this.receivingGames.push(games[i])
+          //     }
+          //     else{
+          //       this.offeringGames.push(games[i]);
+          //     }
+          //   }
+          // }
+          // if(this.fromUid === this.dataService.uid){
+          //   this.showWaitingMessage = true;
+          //   for(let i = 0 ; i < games.length; i++){
+          //     if(games[i].type === 'offering'){
+          //       this.offeringGames.push(games[i])
+          //     }
+          //     else{
+          //       this.receivingGames.push(games[i]);
+          //     }
+          //   }
+          // }
 
           
           
@@ -242,7 +265,13 @@ export class TradeCardComponent implements OnInit {
           else{
             this.timeInSeconds = 0;
             this.showButtons = false;
-            this.showWaitingMessage = true;        
+            this.showWaitingMessage = true;    
+            if(snap.val().status === 'pending'){
+              this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
+                console.log('trade expired!');
+              })
+            }
+
           }
         }
 

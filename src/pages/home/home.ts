@@ -15,6 +15,7 @@ export class HomePage {
   public authState:boolean = null;
   private username :string = "adasdasda";
   private loading:boolean;
+  private unreadNotifications:number;
   constructor(public navCtrl: NavController
   , public dataService: DataService
   , public events: Events
@@ -25,14 +26,38 @@ export class HomePage {
 
     this.loading = true;
 
+   
+
     this.events.subscribe('user logged2',(data) => {
       if(data.condition){
         this.username = data.username;
         console.log('returned user!',data.username);
-        this.zone.run( () => {
-          this.authState = true;
-          this.loading = false;
+
+
+        this.dataService.getNotifications().on('value',(snap)=>{
+
+      
+          console.log('new value!');
+    
+          let count = 0;
+    
+          snap.forEach((child) =>{      
+            console.log('each child',child.val());
+            if(!child.val().data.read){
+              count++;
+            }
+          })
+    
+          console.log('unread notifications:',this.unreadNotifications);
+
+          this.zone.run( () => {
+            this.authState = true;
+            this.loading = false;
+            this.unreadNotifications = count; 
+          })
+          
         })
+      
        
       }
       else{

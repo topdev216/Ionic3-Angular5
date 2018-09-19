@@ -22,6 +22,8 @@ export class TradeDetailsPage {
   chatKey:string;
   messageKey:string;
   isReceiver:boolean = false;
+  isProposer:boolean = false;
+  isNotInvolved:boolean = false;
   notificationKey:string;
   accepted: boolean = false;
 
@@ -51,7 +53,8 @@ export class TradeDetailsPage {
         }
       }
 
-      if(proposer === this.dataService.uid){
+      else if(proposer === this.dataService.uid){
+        this.isProposer = true;
         for(let i = 0 ; i < games.length ; i ++){
 
           if(games[i].type === 'offering'){
@@ -64,6 +67,7 @@ export class TradeDetailsPage {
         }
       }
       else{
+        this.isNotInvolved = true;
         for(let i = 0 ; i < games.length ; i ++){
 
           if(games[i].type === 'offering'){

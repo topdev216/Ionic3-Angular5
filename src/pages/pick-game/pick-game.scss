@@ -7,6 +7,15 @@ page-pick-game {
         .mediaQuery{
             display:none !important;
         }
+
+        .pickedQuery{
+            display:block !important;
+        }
+    }
+
+
+    .pickedQuery{
+        display:none;
     }
 
     .content{

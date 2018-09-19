@@ -95,7 +95,7 @@
           <p text-wrap>{{game.platform}}</p>
           <p text-wrap>{{game.genre}}</p>
           <p text-wrap>{{game.releaseDate}}</p>
-          <p style="font-weight:bold;">Amount receiving: <span>{{game.pickedGames}} units</span></p>
+          <p style="font-weight:bold;">Receiving: <span>{{game.pickedGames}} units</span></p>
       </ion-col>
 
     </ion-row>
@@ -116,18 +116,27 @@
             <p text-wrap>{{game.platform}}</p>
             <p text-wrap>{{game.genre}}</p>
             <p text-wrap>{{game.releaseDate}}</p>
-            <p style="font-weight:bold;">Amount giving: <span>{{game.pickedGames}} units</span></p>
+            <p style="font-weight:bold;">Giving: <span>{{game.pickedGames}} units</span></p>
         </ion-col>
       </ion-row>
       </ion-item>
   </ion-list>
 
   
-    <button ion-button block (click)="confirmTrade()">CONFIRM</button>
 
 
   </div>
 
 </ion-row>
 
+<ion-fab bottom right #fab>
+    <button ion-fab (click)="confirmTrade()"><ion-icon name="checkmark-circle-outline"></ion-icon></button>
+</ion-fab>
+
 </ion-content>
+
+<!-- <ion-footer>
+  <ion-row justify-content-center>
+      <button ion-button block (click)="confirmTrade()">CONFIRM</button>
+  </ion-row>
+</ion-footer> -->
