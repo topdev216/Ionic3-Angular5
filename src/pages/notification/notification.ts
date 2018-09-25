@@ -30,6 +30,10 @@ export class NotificationPage {
   socialNotifications: any [] = [];
   tradeNotifications: any [] = [];
   gameNotifications: any[] = [];
+  socialUnreadNotifications:number = 0;
+  tradeUnreadNotifications:number = 0;
+  gameUnreadNotifications:number = 0;
+
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService
     , private zone: NgZone
@@ -41,9 +45,15 @@ export class NotificationPage {
       this.socialNotifications = [];
       this.tradeNotifications = [];
       this.gameNotifications = [];
+      this.socialUnreadNotifications = 0;
+      this.tradeUnreadNotifications = 0;
+      this.gameUnreadNotifications = 0;
       data.forEach( (notification) =>{
-
+        
         if(notification.val().data.type == 'social'){
+          if(!notification.val().data.read || notification.val().data.read === 'false'){
+            this.socialUnreadNotifications++;
+          }
           let obj = {
             notification: notification.val(),
             expanded:false,
@@ -61,6 +71,9 @@ export class NotificationPage {
         }
         else if(notification.val().data.type == 'trade'){
 
+          if(!notification.val().data.read || notification.val().data.read === 'false'){
+            this.tradeUnreadNotifications++;
+          }
           
 
           this.dataService.checkTradeStatus(notification.val().data.key).then((snap) =>{
@@ -123,6 +136,11 @@ export class NotificationPage {
 
         }
         else if(notification.val().data.type == 'offering' || notification.val().data.type == 'interested'){
+
+          if(!notification.val().data.read || notification.val().data.read === 'false'){
+            this.gameUnreadNotifications++;
+          }
+
           let obj = {
             notification: notification.val(),
             expanded:false,
@@ -187,6 +205,24 @@ export class NotificationPage {
 
   ionViewWillLeave(){
     this.events.unsubscribe('open profile');
+  }
+
+  readNotifications(type:string){
+    if(type === 'social'){
+      for(let i = 0; i < this.socialNotifications.length; i++){
+        this.dataService.markReadNotifications(this.socialNotifications[i].notificationKey)
+      }
+    }
+    else if(type === 'trading'){
+      for(let i = 0; i < this.tradeNotifications.length; i++){
+        this.dataService.markReadNotifications(this.tradeNotifications[i].notificationKey)
+      }
+    }
+    else{
+      for(let i = 0; i < this.gameNotifications.length; i++){
+        this.dataService.markReadNotifications(this.gameNotifications[i].notificationKey)
+      }
+    }
   }
 
   showPopover(myEvent:any,notification:any){

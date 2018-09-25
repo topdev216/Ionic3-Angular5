@@ -21,18 +21,21 @@
         </div>
     </div>
 
-  <ion-segment [(ngModel)]="type">
+  <ion-segment [(ngModel)]="type" (ionChange)="readNotifications(type)">
 
        <ion-segment-button value="trading">
         Trading
+        <ion-badge *ngIf="tradeUnreadNotifications > 0" color="secondary" item-right>{{tradeUnreadNotifications}}</ion-badge>
        </ion-segment-button>
 
         <ion-segment-button value="games">
           Games
+          <ion-badge *ngIf="gameUnreadNotifications > 0" color="secondary" item-right>{{gameUnreadNotifications}}</ion-badge>
         </ion-segment-button>
 
         <ion-segment-button value="social">
           Social
+          <ion-badge *ngIf="socialUnreadNotifications > 0" color="secondary" item-right>{{socialUnreadNotifications}}</ion-badge>
         </ion-segment-button>
       
   </ion-segment>
@@ -99,7 +102,7 @@
 
         <ion-item (press)="showPopover($event,notification)" (tap)="expand(notification)">
           <ion-avatar item-start>
-            <img src="../../assets/imgs/logoTU.png">
+            <img src="assets/imgs/logoTU.png">
           </ion-avatar>
 
           
@@ -157,7 +160,7 @@
 
                 <ng-template #elseBlock>
                     <ion-row justify-content-center>
-                        <img src="../../assets/imgs/logoTU.png" alt="logo" class="game-photo">
+                        <img src="assets/imgs/logoTU.png" alt="logo" class="game-photo">
                     </ion-row>
                     <ion-row justify-content-center>
                         <button ion-button outline (click)="viewDetails(notification)">view details</button>

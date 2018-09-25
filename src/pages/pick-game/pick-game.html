@@ -70,7 +70,10 @@
     </ion-item>
   </ion-list>
 
-  <button *ngIf="!isUser" ion-button block [disabled]="count == 0" (click)="next()">NEXT</button>
-  <button *ngIf="isUser" ion-button block [disabled]="count == 0" (click)="createTrade()">NEXT</button>
+
+  <ion-fab bottom right #fab>
+      <button *ngIf="!isUser" ion-fab [disabled]="count == 0" (click)="next()"><ion-icon name="arrow-forward"></ion-icon></button>
+      <button *ngIf="isUser" ion-fab [disabled]="count == 0" (click)="createTrade()"><ion-icon name="arrow-forward"></ion-icon></button>
+  </ion-fab>
 
 </ion-content>

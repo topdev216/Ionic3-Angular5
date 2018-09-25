@@ -1,6 +1,6 @@
 page-add-username {
     .content{
-        background:linear-gradient(to right,#005C97 ,#363795);
+        background-color:#002147;
         h1{
             color:white;
         }
@@ -9,11 +9,21 @@ page-add-username {
         }
 
         ion-grid{
-            height:100%;
-
-            ion-row{
-                height:70%;
+            height:100% !important;
+            .first-row{
+                height:10% !important;
             }
+            .second-row{
+                height:90% !important;
+            }
+        }
+
+        .error-message{
+            color:red;
+        }
+
+        .valid-message{
+            color:green;
         }
     }
 

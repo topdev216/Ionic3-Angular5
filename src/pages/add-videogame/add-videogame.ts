@@ -145,7 +145,7 @@ export class AddVideogamePage {
         old:false
       },
       {
-        name:"New Nintendo 3DS",
+        name:"Nintendo 3DS",
         old:false
       },
       {

@@ -20,7 +20,7 @@ import { UrlEnvironment } from '../providers/services/urlEnvironment';
 import { SelectSearchableModule } from 'ionic-select-searchable';
 import { AddUsernamePage } from '../pages/add-username/add-username';
 import { LoadingPage } from '../pages/loading/loading';
-import { UsernameValidator } from '../providers/services/usernameValidator';
+import { UsernameValidator } from '../validators/username';
 import { ChatPage } from '../pages/chat/chat';
 import { ErrorCardComponent } from '../components/error-card/error-card';
 import { MenuComponent } from '../components/menu/menu';
@@ -44,6 +44,7 @@ import { PlatformSelectionPage } from '../pages/platform-selection/platform-sele
 import { NotificationPopoverComponent } from '../components/notification-popover/notification-popover';
 import { TradeDetailsPage } from '../pages/trade-details/trade-details';
 import { GooglePlus } from '@ionic-native/google-plus';
+import { TradeHistoryPage } from '../pages/trade-history/trade-history';
 
 
 
@@ -88,7 +89,8 @@ const firebaseConfig = {
     TimeAgoPipe,
     PlatformSelectionPage,
     NotificationPopoverComponent,
-    TradeDetailsPage
+    TradeDetailsPage,
+    TradeHistoryPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -132,7 +134,8 @@ const firebaseConfig = {
     AccordionComponent,
     PlatformSelectionPage,
     NotificationPopoverComponent,
-    TradeDetailsPage
+    TradeDetailsPage,
+    TradeHistoryPage
     
   ],
   providers: [

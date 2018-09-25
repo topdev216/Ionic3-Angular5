@@ -1,0 +1,27 @@
+page-trade-history {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
+      .content{
+          background-color:#002147;
+          #moreButton{
+            border:0;
+            }
+        }
+
+        .item {
+            align-items: baseline;
+            background-color:#002857;
+            border-bottom:0.1px solid #01326b !important;
+            color:rgb(201, 201, 201);
+        }
+
+        ion-avatar img {     
+            width:100% !important;  
+            height : 100% !important;  
+            max-width: 70px !important;  //any size
+            max-height: 70px !important; //any size 
+        }
+}
+

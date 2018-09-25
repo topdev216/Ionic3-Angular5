@@ -6,19 +6,30 @@
 -->
 <ion-content padding>
 
-    <h1>It looks like you don't have an username yet! :(</h1>
-
-  <ion-grid>
-    <ion-row justify-content-center align-items-center>
-
-            <form [formGroup]="postForm" (ngSubmit)="submitUsername(postForm.value)">
+    <ion-grid>
+    <ion-row class="first-row">
+      <h2>Please enter an username for your account</h2>
+    </ion-row>
+    <ion-row class="second-row" justify-content-center align-items-start>
+            <form [formGroup]="postForm">
               <ion-item>
-                <ion-label color="primary">Username</ion-label>
-                <ion-input placeholder="Username" spellcheck="false" type="text" [(ngModel)]="username" formControlName="username"></ion-input>
+                <ion-label color="primary" stacked>Username</ion-label>
+                <ion-input placeholder="Enter username" type="text" formControlName="username"></ion-input>
               </ion-item>
 
-              <button ion-button block color="primary">Submit</button>
+              <div class="validation-errors">
+                  <ng-container *ngFor="let validation of validation_messages.username" >
+                    <div class="error-message" *ngIf="postForm.get('username').hasError(validation.type) && submitAttempt">
+                  {{ validation.message }}
+                    </div>
+                  </ng-container>
+
+                 
+              </div>
             </form>
+
+            <button ion-button (click)="submitUsername(postForm)" block color="primary">Submit</button>
+
     </ion-row>
   </ion-grid>
     

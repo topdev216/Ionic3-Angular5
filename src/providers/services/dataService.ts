@@ -114,6 +114,8 @@ export class DataService {
     })
   }
 
+  
+
   public updateProfilePicture(url:string):Promise<any>{
     return this.database.ref('/users/'+this.uid).update({
       coverPhoto:url
@@ -131,18 +133,17 @@ export class DataService {
       .then((credential: any) => {
         let user = credential.user;
         
-        this.database.ref('/users/' + user.uid+'/name').once('value').then( (snapshot) => {
+        return this.database.ref('/users/' + user.uid).once('value').then( (snapshot) => {
           console.log(snapshot.val());
           //user is not registered on database...
           if(snapshot.val() == null){
             this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,'',user.photoURL)
+            return snapshot.val();
           }//user doesn't have an username yet...
-          else if(snapshot.val().username == null){
-            return null;
+          else{
+            return snapshot.val();
           }
         });
-        // return credential;
-        return user;
       });
   }
 
@@ -655,20 +656,39 @@ export class DataService {
     })
   }
 
+  public unsubscribeFromTopic(id:any): Observable<any>{
+    return this.http.post(this.urlEnvironment.getUnsubscribeTopic(),{uid:this.uid,gameId:id})
+  }
+
   public decreaseGameQuantity(id:any,type:string) :Promise<any>{
 
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
     
     return this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id+'/quantity').once('value').then((snap) =>{
 
       let quantity = snap.val();
 
-      if(quantity === 1){
-        return this.removeGameFromList(id,type,this.uid);
-      }
+      if(type === 'offer'){
 
+        if(quantity === 1){
+          return this.removeGameFromList(id,type,this.uid);
+        }
+
+        else{
+          return this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id).update({
+            quantity: quantity - 1
+          })
+        }
+      }
       else{
-        return this.database.ref('/users/'+this.uid+'/videogames/'+type+'/'+id).update({
-          quantity: quantity - 1
+        loader.present();
+        this.unsubscribeFromTopic(id).subscribe((data)=>{
+          console.log('Unsubscribed from game topic');
+          loader.dismiss();
+          return this.removeGameFromList(id,type,this.uid);
         })
       }
       
@@ -842,11 +862,15 @@ export class DataService {
     return this.database.ref('/notifications/'+this.uid);
   }
 
-  public markReadNotifications():Promise<any>{
-    return this.database.ref('/notifications/'+this.uid).update({
+  public markReadNotifications(notificationKey:string):Promise<any>{
+    return this.database.ref('/notifications/'+this.uid+'/'+notificationKey+'/data').update({
       read:true
     });
     
+  }
+
+  public getTrades() :Reference{
+    return this.database.ref('/trades/');
   }
 
   public getLiveTradeStatus(tradeKey:string): Reference{
@@ -866,12 +890,14 @@ export class DataService {
   public saveNotificationToken(token:string,isBrowser:boolean):Promise<any>{
     if(isBrowser){
       return this.database.ref('/users/'+this.uid).update({
-        browserToken: token
+        browserToken: token,
+        not_available_browser:false
       })
     }
     else{
       return this.database.ref('/users/'+this.uid).update({
-        phoneToken: token
+        phoneToken: token,
+        not_available_phone:false
       })
     }
     // return this.database.ref('/users/'+this.uid).update({

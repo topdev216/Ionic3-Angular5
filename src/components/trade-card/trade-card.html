@@ -54,7 +54,7 @@
             </ion-row>
 
             <ion-row no-padding justify-content-center *ngIf="isProposer
-             && !expired">
+             && (!expired && !accepted)">
                 <button ion-button clear small icon-start (click)="declineTrade()">
                     <ion-icon name='close'></ion-icon>
                     Cancel Trade

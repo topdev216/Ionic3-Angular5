@@ -5,6 +5,7 @@ import { LoginPage } from '../../pages/login/login';
 import { ProfilePage } from '../../pages/profile/profile';
 import { ChatPage } from '../../pages/chat/chat';
 import { DiscoverPage } from '../discover/discover';
+import { TradeHistoryPage } from '../trade-history/trade-history';
 
 /**
  * Generated class for the TabsPage page.
@@ -21,7 +22,7 @@ import { DiscoverPage } from '../discover/discover';
 export class TabsPage {
 
   tab1Root = HomePage;
-  tab2Root = '';
+  tab2Root = TradeHistoryPage;
   tab3Root = ChatPage;
   tab4Root = DiscoverPage;
   tab5Root = ProfilePage;

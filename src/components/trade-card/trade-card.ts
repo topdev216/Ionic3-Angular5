@@ -188,7 +188,7 @@ export class TradeCardComponent implements OnInit {
         if(snap.val().status === 'accepted'){
           let games = snap.val().items;
           for(let i = 0; i < games.length ; i++){
-            this.games.push(games[i].game);
+            this.games.push(games[i]);
           }
           this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
           this.showWaitingMessage = true;
@@ -205,7 +205,7 @@ export class TradeCardComponent implements OnInit {
         else if(snap.val().status === 'expired'){
           let games = snap.val().items;
           for(let i = 0; i < games.length ; i++){
-            this.games.push(games[i].game);
+            this.games.push(games[i]);
           }
           this.waitingMessage = "Trade expired";
           this.showWaitingMessage = true;

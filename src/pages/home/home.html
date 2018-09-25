@@ -44,9 +44,9 @@
                 <ion-row align-items-center *ngIf="authState && !loading">
 
                 <ion-col no-padding>
-                        <button *ngIf="authState" color="dark" ion-button icon-only>
+                        <button *ngIf="authState" color="dark" (click)="goToNotifications()" ion-button icon-only>
                                 <ion-icon name="notifications"></ion-icon>
-                                <ion-badge>{{unreadNotifications}}</ion-badge>
+                                <ion-badge *ngIf="unreadNotifications > 0" class="animated swing">{{unreadNotifications}}</ion-badge>
                         </button>                    
                 </ion-col>
                 

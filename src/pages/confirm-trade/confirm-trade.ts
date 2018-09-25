@@ -72,7 +72,7 @@ export class ConfirmTradePage {
                 if(element.name == 'MessagingPage'){
                      this.navCtrl.popTo(element)
                      .then(()=>{
-                        let loading = this.loadingCtrl.create({content:'Please wait...'});
+                        let loading = this.loadingCtrl.create({content:'Trade is being created...'});
                         loading.present();
                         this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.dataService.username,'create',this.dataService.tradeKey,chatKey)
                         .subscribe((res:any) =>{

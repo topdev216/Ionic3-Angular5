@@ -53,8 +53,10 @@ export class DiscoverPage {
       if(this.type == "username"){
         this.dataService.searchUsersByUsername(query.value).then((snap)=>{
           snap.forEach((childSnap)=>{
-            this.queryResults.push(childSnap);
-            console.log(childSnap.val());
+            if(childSnap.key !== this.dataService.uid){
+              this.queryResults.push(childSnap);
+              console.log(childSnap.val());
+              }
             })
             if(this.queryResults.length == 0){
               this.emptyResult = true;
@@ -68,8 +70,10 @@ export class DiscoverPage {
       else{
         this.dataService.searchUsersByName(this.query).then((snap)=>{
           snap.forEach((childSnap)=>{
-            this.queryResults.push(childSnap);
-            console.log(childSnap.val());
+            if(childSnap.key !== this.dataService.uid){
+              this.queryResults.push(childSnap);
+              console.log(childSnap.val());
+              }
             })
             if(this.queryResults.length == 0){
               this.emptyResult = true;

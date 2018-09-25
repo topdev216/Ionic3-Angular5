@@ -5,6 +5,7 @@ import { LoadingPage } from '../../pages/loading/loading';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import { NotificationPage } from '../notification/notification';
 
 @Component({
   selector: 'page-home',
@@ -43,7 +44,7 @@ export class HomePage {
     
           snap.forEach((child) =>{      
             console.log('each child',child.val());
-            if(!child.val().data.read){
+            if(!child.val().data.read || child.val().data.read === 'false'){
               count++;
             }
           })
@@ -110,5 +111,9 @@ export class HomePage {
     this.dataService.signOut().then(()=>{
       
     });
+  }
+
+  private goToNotifications() :void{
+    this.navCtrl.push(NotificationPage);
   }
 }

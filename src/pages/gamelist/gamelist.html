@@ -42,20 +42,28 @@
         <ion-item *ngFor="let game of interestedGames" no-lines>
             <ion-row no-padding align-items-center>
     
-                <ion-col col-2 no-padding>
+                <ion-col col-3 no-padding>
                   <img src="https://{{game.game.coverPhoto}}" alt="cover">
                   <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
                 </ion-col>
     
-                <ion-col col-4 padding-left>
-                  <div text-wrap> {{game.game.title}} </div>
-                  <p text-wrap>{{game.game.platform}}</p>
-                  <p text-wrap>{{game.game.genre}}</p>
-                  <p text-wrap>{{game.game.releaseDate}}</p>
+                <ion-col col-7 padding-left>
+                  <ion-row justify-content-start>
+                      <div text-wrap> {{game.game.title}} </div>
+                  </ion-row>
+                  <ion-row justify-content-start>
+                      <p text-wrap>{{game.game.platform}}</p>
+                  </ion-row>
+                  <ion-row justify-content-start>
+                      <p text-wrap>{{game.game.genre}}</p>
+                  </ion-row>
+                  <ion-row justify-content-start>
+                      <p text-wrap>{{game.game.releaseDate}}</p>
+                  </ion-row>
                   <!-- <p style="font-weight:bold;">Quantity: <span>{{game.game.quantity}}</span></p> -->
                 </ion-col>
                 
-                <ion-col col-6 no-padding>
+                <ion-col col-2 no-padding>
 
                   <ion-row *ngIf="isOwnUser" justify-content-end>
                     <!-- <ion-col col-3 no-padding>

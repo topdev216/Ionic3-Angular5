@@ -41,8 +41,15 @@ export class LoginPage {
     this.dataService.showLoading();
     this.dataService.googleLogin().then((data:any)=>{ 
       this.dataService.hideLoading();
-      console.log('logged data: ',data);
-      this.navCtrl.popToRoot();
+      console.log('logged data: ',data.username);
+      if(data.username === ""){
+        console.log('da pop up')
+        this.navCtrl.push(AddUsernamePage);
+      }
+      else{
+        console.log('no popup')
+        this.navCtrl.popToRoot();
+      }
     })
   }
 

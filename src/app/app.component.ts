@@ -1,3 +1,4 @@
+declare let cordova: any;
 import { Component,ViewChild } from '@angular/core';
 import { Platform, Nav , NavParams, Events, NavController,MenuController, ModalController, ToastController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -14,6 +15,7 @@ import { ProfilePage } from '../pages/profile/profile';
 import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
 import { GamelistPage } from '../pages/gamelist/gamelist';
 import { NotificationPage } from '../pages/notification/notification';
+import { AddUsernamePage } from '../pages/add-username/add-username';
 
 @Component({
   templateUrl: 'app.html'
@@ -28,6 +30,7 @@ export class MyApp {
   user: Observable<firebase.User>;
   username:string;
   messaging:any;
+  debug:boolean = false;
 
   @ViewChild('mycontent') navCtrl: NavController;
 
@@ -40,6 +43,13 @@ export class MyApp {
   , public toastCtrl: ToastController
   , public alertCtrl: AlertController
   , public fcm: FCM) {
+
+    if(this.debug){
+      this.rootPage = AddUsernamePage;
+    }
+    else{
+
+    
 
     if(platform.is('core')){
       this.messaging = dataService.initialiazeWebFCM();
@@ -277,56 +287,39 @@ export class MyApp {
           });
 
           let toast = toastCtrl.create({
-            message:data.body,
-            duration:3000,
-            position:'top',
+            message:"You've got a new notification! Check your notification tray",
+            duration:2200,
             showCloseButton: true,
-            closeButtonText: 'View'
           })
-  
-          toast.onDidDismiss(() => {
-            this.navCtrl.push(ProfilePage,{user:JSON.parse(data.user),search:true})
-          });
 
-
-          if(data.type == "offering"){
-            toast.present();
-          }
-          else if(data.type == "chatroom"){
+          
+          if(data.type == "chatroom"){
             alert.present();
+          }
+          else{
+            toast.present();
           }
 
         };
       });
 
-      this.fcm.onTokenRefresh().subscribe(token => {
-        dataService.saveNotificationToken(token,false).then(()=>{
-          dataService.phoneToken = token;
-          console.log('token refreshed');
+      this.fcm.onTokenRefresh().subscribe(() => {
+        this.fcm.getToken().then((token)=>{
+          dataService.saveNotificationToken(token,false).then(()=>{
+            dataService.phoneToken = token;
+            console.log('token refreshed');
+          })
         })
       });
     }
+
 
     else{
       //     Retrieve Firebase Messaging object.
       this.messaging.onMessage((payload) => {
         console.log('Message received. ', payload);
 
-        if(payload.data.type == "offering"){
-
-          let toast = toastCtrl.create({
-            message:payload.data.body,
-            duration:3000,
-            position:'top',
-            showCloseButton: true,
-            closeButtonText: 'View'
-          })
-  
-          toast.onDidDismiss(() => {
-            this.navCtrl.push(ProfilePage,{user:JSON.parse(payload.data.user),search:true})
-          });
-        }
-        else if(payload.data.type == "chatroom"){
+        if(payload.data.type == "chatroom"){
           let alert = alertCtrl.create({
             title: 'Chatroom Invitation',
             message: payload.notification.body,
@@ -350,6 +343,16 @@ export class MyApp {
             ]
           });
           alert.present();
+        }
+        else{
+
+          let toast = toastCtrl.create({
+            message:"You've got a new notification! Check your notification tray",
+            duration:2200,
+            showCloseButton: true,
+          });
+  
+          toast.present();
         }
 
         
@@ -376,7 +379,7 @@ export class MyApp {
         
       statusBar.styleDefault();
     });
-
+    }
   }
 }
 

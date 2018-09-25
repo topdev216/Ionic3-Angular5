@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Form } from 'ionic-angular';
+import { Component, Input } from '@angular/core';
+import { IonicPage, NavController, NavParams, Form, Checkbox } from 'ionic-angular';
 import { UrlEnvironment } from '../../providers/services/urlEnvironment';
 import { FormGroup,Validators,FormBuilder } from '@angular/forms';
 import { DataService } from '../../providers/services/dataService';
 import { ConfirmPaymentPage } from '../confirm-payment/confirm-payment';
+import { AddressInterface } from '../../providers/interfaces/addressInterface';
 declare var Stripe:any;
 /**
  * Generated class for the CreditFormPage page.
@@ -24,10 +25,13 @@ export class CreditFormPage {
   private cardHolderName:string;
   private addressOne:string;
   private addressTwo:string;
+  private zipcode:string;
   private city:string;
   private country:string;
   private state:string;
   private pickedPlan:any;
+  private useAsShipping:boolean = false;
+  @Input('checkbox') checkbox: Checkbox;
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams
@@ -70,7 +74,28 @@ export class CreditFormPage {
     this.state = event;
   }
 
+  toggleAddress(event:any){
+    console.log('toggle',event.checked);
+    if(event.checked){
+      this.useAsShipping = true;
+    }
+    else{
+      this.useAsShipping = false;
+    }
+  }
+
   submit(){
+
+    if(this.useAsShipping){
+      let address = {} as AddressInterface;
+      address.streetAddress = this.addressOne + ' ' + this.addressTwo;
+      address.city = this.city;
+      address.state = this.state;
+      address.zipCode = this.zipcode;
+      this.dataService.saveAddress(address);
+    }
+
+
     this.stripe.createToken(this.card,{
       name:this.cardHolderName,
       address_line1:this.addressOne,

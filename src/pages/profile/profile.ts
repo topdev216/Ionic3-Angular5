@@ -169,17 +169,27 @@ export class ProfilePage {
   addFriend(friend:any){
     console.log(friend);
     friend.userKey = this.paramKey;
-    this.dataService.addFriend(friend).then(()=>{
       this.dataService.sendFriendNotification(this.paramKey).subscribe((data) => {
-        this.isFriend = true;
-        console.log(data);
-        let toast = this.toastCtrl.create({
-          message: 'User was added successfully',
-          duration: 3000,
-          position: 'top'
+        if(data.error){
+          let toast = this.toastCtrl.create({
+            message: "User couldn't be reached! Please try again later",
+            duration: 3000,
+            position: 'top'
+          });
+          toast.present();
+        }
+        else{
+          this.dataService.addFriend(friend).then(()=>{
+          this.isFriend = true;
+          console.log(data);
+          let toast = this.toastCtrl.create({
+            message: 'User was added successfully',
+            duration: 3000,
+            position: 'top'
+          })
+          toast.present();
         })
-        toast.present();
-      })
+      }
     })
   }
 

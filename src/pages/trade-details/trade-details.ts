@@ -29,9 +29,13 @@ export class TradeDetailsPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService) {
     this.tradeKey = this.navParams.get('tradeKey');
+    console.log('trade key:',this.tradeKey);
     this.chatKey = this.navParams.get('chatKey');
+    console.log('chat key:',this.chatKey);
     this.messageKey = this.navParams.get('messageKey');
+    console.log('message key:',this.messageKey);
     this.notificationKey = this.navParams.get('notificationKey');
+    console.log('notification key:',this.notificationKey);
     this.dataService.fetchTrade(this.tradeKey).then((snap) =>{
 
 
@@ -45,11 +49,21 @@ export class TradeDetailsPage {
 
       if(receiver === this.dataService.uid){
         this.isReceiver = true;
+        for(let i = 0 ; i < games.length ; i ++){
+
+          if(games[i].type === 'offering'){
+            this.receivingGames.push(games[i].game)
+          }
+          else{
+            this.givingGames.push(games[i].game);
+          }
+
+        }
         if(snap.val().status === 'accepted'){
           this.accepted = true;
         }
         else if(snap.val().status === 'expired'){
-          this.accepted = true;
+          this.accepted = false;
         }
       }
 
