@@ -1,3 +1,61 @@
 page-friend-list {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
+      .content{
+        background:rgb(0, 29, 74);
+      }
+
+      ion-list{
+          width:450px;
+      }
+
+      ion-searchbar{
+          width:440px;
+      }
+
+      #moreButton{
+          border:0;
+        //   color:rgb(201, 201, 201);
+      }
+
+      .item {
+        
+        h3{
+            font-weight:bold;
+            letter-spacing: 0.05rem;
+        }
+        align-items: baseline;
+        background-color:#002857;
+        border-bottom:0.1px solid #01326b !important;
+        color:rgb(201, 201, 201);
+    }
+
+    .avatar-container{
+        height:100%;
+        width:70px;
+    }
+
+    ion-avatar img {     
+        width:100% !important;  
+        height : 100% !important;  
+        max-width: 70px !important;  //any size
+        max-height: 70px !important; //any size 
+    }
+
+    .dot {
+        position:absolute;
+        right:50%;
+        bottom:15%;
+        height: 12px;
+        width: 12px;
+        background-color: rgb(0, 204, 0);
+        border-radius: 50%;
+        border:1px solid white;
+        display: inline-block;
+      }
+
 
 }
+

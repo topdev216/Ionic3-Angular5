@@ -30,6 +30,7 @@ export class PickGamePage {
   private chatKey:string;
   private phoneToken:string;
   private browserToken:string;
+  private isDirect:boolean;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
     , public dataService: DataService
@@ -40,6 +41,7 @@ export class PickGamePage {
     this.username = this.navParams.get('username');
     this.chatKey = this.navParams.get('chatKey');
     this.isUser = this.navParams.get('isUser');
+    this.isDirect = this.navParams.get('isDirect');
     this.count = 0;
 
     for(let i = 0; i < this.games.length ; i++){
@@ -161,7 +163,7 @@ export class PickGamePage {
           }
         
       }
-      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username,chatKey:this.chatKey})
+      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username,chatKey:this.chatKey,isDirect:this.isDirect})
 
     })
   }
@@ -217,7 +219,7 @@ export class PickGamePage {
       this.phoneToken = snap.val()[key].phoneToken;
       console.log('phone:',this.phoneToken);
       this.browserToken = snap.val()[key].browserToken;
-      this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername'),chatKey:this.chatKey,phoneToken:this.phoneToken,browserToken:this.browserToken});
+      this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername'),chatKey:this.chatKey,phoneToken:this.phoneToken,browserToken:this.browserToken,isDirect:this.isDirect});
     })
 
 

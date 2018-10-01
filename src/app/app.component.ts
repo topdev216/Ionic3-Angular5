@@ -16,6 +16,7 @@ import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
 import { GamelistPage } from '../pages/gamelist/gamelist';
 import { NotificationPage } from '../pages/notification/notification';
 import { AddUsernamePage } from '../pages/add-username/add-username';
+import { FriendListPage } from '../pages/friend-list/friend-list';
 
 @Component({
   templateUrl: 'app.html'
@@ -68,6 +69,10 @@ export class MyApp {
 
     this.events.subscribe('payment',(data)=>{
       this.navCtrl.push(PaymentModalPage);
+    })
+
+    this.events.subscribe('friends list',(data) =>{
+      this.navCtrl.push(FriendListPage);
     })
 
     this.events.subscribe('myList',(data)=>{
@@ -155,6 +160,7 @@ export class MyApp {
           uid = user.uid;
           dataService.user = user;
           dataService.fetchUserFromDatabase(user.uid).then((userDB)=>{
+            dataService.user = userDB.val();
             dataService.username = userDB.val().username;
             this.events.publish('user logged2',{
               condition:true,
@@ -178,8 +184,9 @@ export class MyApp {
             })
             this.dataService.getConstants().then(()=>{
               this.dataService.checkPaidMembership().then((snap) =>{
+                console.log('paid membership:',snap.val());
                 if(snap.val()!== null){
-                  if(snap.val()){
+                  if(snap.val() == true){
                             console.log('user has paid!')
                           }
                   else{

@@ -45,6 +45,9 @@ import { NotificationPopoverComponent } from '../components/notification-popover
 import { TradeDetailsPage } from '../pages/trade-details/trade-details';
 import { GooglePlus } from '@ionic-native/google-plus';
 import { TradeHistoryPage } from '../pages/trade-history/trade-history';
+import { ShippingAddressFormPage } from '../pages/shipping-address-form/shipping-address-form';
+import { FriendListPage } from '../pages/friend-list/friend-list';
+import { FriendPopoverComponent } from '../components/friend-popover/friend-popover';
 
 
 
@@ -90,7 +93,10 @@ const firebaseConfig = {
     PlatformSelectionPage,
     NotificationPopoverComponent,
     TradeDetailsPage,
-    TradeHistoryPage
+    TradeHistoryPage,
+    ShippingAddressFormPage,
+    FriendListPage,
+    FriendPopoverComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -135,7 +141,10 @@ const firebaseConfig = {
     PlatformSelectionPage,
     NotificationPopoverComponent,
     TradeDetailsPage,
-    TradeHistoryPage
+    TradeHistoryPage,
+    ShippingAddressFormPage,
+    FriendListPage,
+    FriendPopoverComponent
     
   ],
   providers: [

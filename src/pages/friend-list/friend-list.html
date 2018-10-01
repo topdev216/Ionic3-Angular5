@@ -7,12 +7,110 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>friend-list</ion-title>
+    <ion-title>Friends</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content no-padding>
+
+    <ion-segment [(ngModel)]="type">
+        <ion-segment-button value="friends">
+          Friends
+        </ion-segment-button>
+        <ion-segment-button value="blocked">
+          Blocked
+        </ion-segment-button>
+        
+    </ion-segment>
+
+    <ion-row justify-content-center>
+        <ion-searchbar
+        [(ngModel)]="searchTerm"
+        [formControl]="searchControl"
+        showCancelButton
+        animated
+        placeholder="Search"
+        >
+        </ion-searchbar>
+    </ion-row>
+
+    <div [ngSwitch]="type">
+    
+  
+    <ion-row *ngSwitchCase="'friends'" justify-content-center>
+    <ion-list no-lines>
+      <ion-item *ngFor="let friend of friends">
+
+
+        <ion-row>
+          <ion-col col-3>
+          <div class="avatar-container">
+            <ion-avatar item-start>
+              <img src="{{friend.friend.coverPhoto}}" alt="photo">
+              <span *ngIf="friend.online" class="dot"></span>
+            </ion-avatar>
+          </div>
+        </ion-col>
+
+
+          <ion-col col-7>
+                  <h2>{{friend.friend.name}}</h2>
+                  <p>{{friend.friend.username}}</p>
+                  <h3>{{friend.friend.planName}}</h3>
+          </ion-col>
+
+          <ion-col col-2 align-self-center>
+            <ion-row justify-content-end>
+              <button ion-button (click)="showPopover($event,friend.key,friend.friend)" id="moreButton" icon-only outline>
+                <ion-icon name="more"></ion-icon>
+              </button>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+
+      </ion-item>
+    </ion-list>
+    </ion-row>
+
+    <ion-row *ngSwitchCase="'blocked'" justify-content-center>
+        <ion-list no-lines>
+          <ion-item *ngFor="let friend of blocked">
+    
+    
+            <ion-row>
+              <ion-col col-3>
+              <div class="avatar-container">
+                <ion-avatar item-start>
+                  <img src="{{friend.friend.coverPhoto}}" alt="photo">
+                  <span *ngIf="friend.online" class="dot"></span>
+                </ion-avatar>
+              </div>
+            </ion-col>
+    
+    
+              <ion-col col-7>
+                      <h2>{{friend.friend.name}}</h2>
+                      <p>{{friend.friend.username}}</p>
+                      <h3>{{friend.friend.planName}}</h3>
+              </ion-col>
+    
+              <ion-col col-2 align-self-center>
+                <ion-row justify-content-end>
+                  <button ion-button (click)="showPopover($event,friend.key,friend.friend)" id="moreButton" icon-only outline>
+                    <ion-icon name="more"></ion-icon>
+                  </button>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+    
+          </ion-item>
+        </ion-list>
+        </ion-row>
+
+
+
+  </div>
 
 </ion-content>

@@ -75,32 +75,32 @@
                 </ng-template>
 
 
-                <ion-row justify-content-center align-items-center>
+                <!-- <ion-row justify-content-center align-items-center> -->
 
                     <!-- <ion-col *ngFor="let game of offeringGames">
                         <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
                     </ion-col> -->
 
-                    <ion-col col-2 *ngIf="offeringGames.length > 1">
+                    <!-- <ion-col col-2 *ngIf="offeringGames.length > 1">
                             <button type="submit" float-left ion-button clear icon-only color="primary" class="btnPrev" (click)="prevOffering()"><ion-icon name="arrow-back"></ion-icon></button>
-                    </ion-col>
+                    </ion-col> -->
 
-                    <ion-col col-8>
-                            <ion-slides #offeringSlides>
+                    <!-- <ion-col col-8> -->
+                            <ion-slides pager slidesPerView="1.5" centeredSlides initialSlide="0" spaceBetween="3" #offeringSlides>
                                     <ion-slide *ngFor="let game of offeringGames">
                                         <ion-row justify-content-center>
                                                     <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                         </ion-row>
                                     </ion-slide>
                                 </ion-slides>
-                    </ion-col>
+                    <!-- </ion-col> -->
 
-                    <ion-col col-2 *ngIf="offeringGames.length > 1"> 
+                    <!-- <ion-col col-2 *ngIf="offeringGames.length > 1"> 
                             <button type="submit" float-right ion-button clear icon-only color="primary" class="btnNext" (click)="nextOffering()"><ion-icon name="arrow-forward"></ion-icon></button>
-                    </ion-col>
+                    </ion-col> -->
                     
 
-                </ion-row>
+                <!-- </ion-row> -->
 
                 <ion-row *ngIf="isNotTradeInvolved;else receivingBlock" justify-content-start>
                     {{receiverUsername}} is Offering
@@ -118,23 +118,23 @@
                             <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
                         </ion-col> -->
     
-                        <ion-col col-2 *ngIf="receivingGames.length > 1">
+                        <!-- <ion-col col-2 *ngIf="receivingGames.length > 1">
                                 <button type="submit" float-left ion-button clear icon-only color="primary" class="btnPrev" (click)="prevReceiving()"><ion-icon name="arrow-back"></ion-icon></button>
-                        </ion-col>
+                        </ion-col> -->
     
-                        <ion-col col-8>
-                                <ion-slides #receivingSlides>
+                        <!-- <ion-col col-8> -->
+                                <ion-slides pager slidesPerView="1.5" centeredSlides initialSlide="0" spaceBetween="0" #receivingSlides>
                                         <ion-slide *ngFor="let game of receivingGames">
                                             <ion-row justify-content-center>
                                                     <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                             </ion-row>
                                         </ion-slide>
                                     </ion-slides>
-                        </ion-col>
+                        <!-- </ion-col> -->
     
-                        <ion-col col-2 *ngIf="receivingGames.length > 1"> 
+                        <!-- <ion-col col-2 *ngIf="receivingGames.length > 1"> 
                                 <button type="submit" float-right ion-button clear icon-only color="primary" class="btnNext" (click)="nextReceiving()"><ion-icon name="arrow-forward"></ion-icon></button>
-                        </ion-col>
+                        </ion-col> -->
                         
     
                 </ion-row>

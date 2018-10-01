@@ -1,0 +1,48 @@
+page-shipping-address-form {
+    .toolbar-background {
+        background-color:color($colors,primary);
+    }
+    .content{
+        background: #000428;  /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #00396b, #000428);  /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #00396b, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */;
+    }
+
+    h3{
+        color:white;
+    }
+
+    #shippingText{
+        color:white;
+    }
+
+    form{
+        // margin-top:10px;
+
+        .item{
+            background:transparent;
+            color:white;
+            border-bottom:1px solid white !important;
+            ion-label{
+                color:white;
+            }
+            margin-bottom:8px;
+            // padding:10px;
+        }
+
+        .item#stripe{
+            background:transparent;
+            color:white;
+            border-bottom:1px solid transparent !important;
+            ion-label{
+                color:white;
+            }
+            margin-bottom:8px;
+            // padding:10px;
+        }
+    }
+
+    
+
+    
+}

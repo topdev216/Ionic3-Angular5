@@ -6,11 +6,15 @@ trade-card {
 
     .btnPrev{
         // margin-right:15vw;
-        padding:10px;
+        padding-right:25px !important;
+        padding-top:25px !important;
+        padding-bottom:25px !important;
      }
      
      .btnNext{
-         padding:10px;
+         padding-left:25px !important;
+         padding-top:25px !important;
+         padding-bottom:25px !important;
      }
 
     .price{
@@ -24,6 +28,23 @@ trade-card {
         font-weight:bold;
         margin-top:10px;
         padding-bottom:10px;
+    }
+
+    .swiper-pagination{
+        bottom:0px !important;
+    }
+
+    .swiper-slide{
+        height:190px;
+        transition: transform .6s ease-in-out;
+    }
+
+    .swiper-slide-active{
+        transform:scale(1.2);
+    }
+
+    .swiper-pagination-bullet{
+        background:color($colors,primary);
     }
 
     .card{

@@ -184,7 +184,6 @@ export class DataService {
     return this.database.ref('users/'+uid).once('value', (userSnapshot) => {
       let user = {};
       user = userSnapshot.val();
-      this.user = user;
       return user;
     })
   }
@@ -204,8 +203,6 @@ export class DataService {
   }
 
   public removeTradeMessage(tradeKey:string,isDirect:boolean,chatKey:string,messageKey:string):Promise<any>{
-
-    isDirect =  false;
 
     console.log('CHAT:',chatKey);
     console.log('MESSAGE:',messageKey);
@@ -548,27 +545,60 @@ export class DataService {
     });
   }
 
-  public showTradeCard(chatKey:string,username:string):Promise<any>{
+  public blockUser(uid:string,username:string) :Promise<any>{
+    return this.database.ref('/users/'+this.uid+'/blocked').update({
+      [uid]:{
+        username: username
+      }
+    });
+  }
+
+  public unblockUser(uid:string,username:string) :Promise<any>{
+    return this.database.ref('/users/'+this.uid+'/blocked/'+uid).remove();
+  }
+
+  public showTradeCard(chatKey:string,username:string,isDirect:boolean):Promise<any>{
 
     return this.fetchUserKey(username).then((snap)=>{
 
       var key = Object.keys(snap.val())[0];
 
-      let newMessage = firebase.database().ref('chatrooms/'+chatKey+'/chats').push();
+      if(!isDirect){
 
-      let messageKey = newMessage.key;
+        let newMessage = firebase.database().ref('chatrooms/'+chatKey+'/chats').push();
 
-      console.log('MESSAGE KEY:',messageKey);
+        let messageKey = newMessage.key;
 
-      return newMessage.set({
-        type:'trade',
-        user:this.username,
-        sendDate:Date(),
-        tradeKey:this.tradeKey,
-        toUid:key,
-        fromUid:this.uid,
-        messageKey:messageKey
-      })
+        console.log('MESSAGE KEY:',messageKey);
+
+        return newMessage.set({
+          type:'trade',
+          user:this.username,
+          sendDate:Date(),
+          tradeKey:this.tradeKey,
+          toUid:key,
+          fromUid:this.uid,
+          messageKey:messageKey
+        })
+      }
+      else{
+
+        let newMessage = firebase.database().ref('directChats/'+chatKey+'/chats').push();
+
+        let messageKey = newMessage.key;
+
+        console.log('MESSAGE KEY:',messageKey);
+
+        return newMessage.set({
+          type:'trade',
+          user:this.username,
+          sendDate:Date(),
+          tradeKey:this.tradeKey,
+          toUid:key,
+          fromUid:this.uid,
+          messageKey:messageKey
+        })
+      }
 
     })
 
@@ -769,6 +799,10 @@ export class DataService {
   
   }
 
+  public getOnlineStatus(uid:string):Reference{
+    return this.database.ref('/users/'+uid+'/online');
+  }
+
   public fetchUserKey(username:string):Promise<any>{
     
     return this.database.ref('/users').orderByChild('username').equalTo(username).once('value')
@@ -810,6 +844,50 @@ export class DataService {
       
     })
   }
+  
+  public checkIfBlocked(uid:string) :Promise<any>{
+
+    let data = {
+      exist : false
+    };
+
+
+    return this.database.ref('/users/'+uid+'/blocked/'+this.uid).once('value').then((snap)=>{
+      if(snap.val() !== null){
+        data.exist = true;
+        return data;
+      }
+      else{
+        return data;
+      }
+    })
+  }
+
+  public checkMyBlockedList(uid:string) :Promise<any>{
+    let data = {
+      exist : false
+    };
+
+
+    return this.database.ref('/users/'+this.uid+'/blocked/'+uid).once('value').then((snap)=>{
+      if(snap.val() !== null){
+        data.exist = true;
+        return data;
+      }
+      else{
+        return data;
+      }
+    })
+  }
+
+  public fetchChatroomParticipants(chatKey:string,isDirect:boolean) :Promise<any>{
+    if(!isDirect){
+      return this.database.ref('/chatrooms/'+chatKey+'/participants').once('value');
+    }
+    else{
+      return this.database.ref('/directChats/'+chatKey+'/participants').once('value');
+    }
+  }
 
 
   public createDirectChat(receiverUsername:string,receiverUid:string):Promise<any>{
@@ -817,26 +895,40 @@ export class DataService {
             console.log('receiver:',receiverUsername);
             console.log('receiverUID:',receiverUid);
 
+            let object = {
+              key:'',
+              error:false
+            };
+        
+
             return this.checkExistingDirect(this.username,receiverUsername,receiverUid).then((data)=>{
-              console.log('DATA EXIST:',data.exist);
-              if(!data.exist){
-                let directChat = this.database.ref('/directChats/').push();
-                directChat.set({
-                  participants:{
-                    [this.uid]:{
-                      username: this.username
-                    },
-                    [receiverUid]:{
-                      username: receiverUsername
+                  return this.checkIfBlocked(receiverUid).then((result)=>{
+                    console.log('DATA EXIST:',data.exist);
+                    console.log('RESULT EXIST:',result.exist);
+                    if(!data.exist && !result.exist){
+                      let directChat = this.database.ref('/directChats/').push();
+                      directChat.set({
+                        participants:{
+                          [this.uid]:{
+                            username: this.username
+                          },
+                          [receiverUid]:{
+                            username: receiverUsername
+                          }
+                        }
+                      })
+                      object.key = directChat.key;
+                      return object;
                     }
-                  }
-                })
-                return directChat.key;
-              }
-              else{
-                return data.key;
-              }
-              
+                    else if(data.exist && !result.exist){
+                      object.key = data.key;
+                      return object;
+                    }
+                    else{
+                      object.error = true;
+                      return object;
+                    }
+                });              
             })
             
             
@@ -862,9 +954,45 @@ export class DataService {
     return this.database.ref('/notifications/'+this.uid);
   }
 
-  public markReadNotifications(notificationKey:string):Promise<any>{
-    return this.database.ref('/notifications/'+this.uid+'/'+notificationKey+'/data').update({
-      read:true
+  public markReadNotifications(type:string):Promise<any>{
+    // return this.database.ref('/notifications/'+this.uid+'/'+notificationKey+'/data').update({
+    //   read:true
+    // });
+
+    
+
+    return this.database.ref('/notifications/'+this.uid).once('value').then((snap)=>{
+      snap.forEach((notification)=>{
+        if(type === 'trading'){
+          if(notification.val().data.type === 'trade' || notification.val().data.type === 'trade-accept' || notification.val().data.type === 'trade-declined'){
+            if(!notification.val().data.read || notification.val().data.read === 'false'){
+              notification.child('data').ref.update({
+                read:true
+              }).then(()=>console.log('trading notification updated!'));
+            }
+          }
+        } 
+        else if(type === 'social'){
+          if(notification.val().data.type === type && (!notification.val().data.read || notification.val().data.read === 'false')){
+            notification.child('data').ref.update({
+              read:true
+            }).then(()=>console.log('social notification updated!'));
+          }
+        }
+        else{
+          if(notification.val().data.type === 'interested' || notification.val().data.type === 'offering'){
+            if(!notification.val().data.read || notification.val().data.read === 'false'){
+              notification.child('data').ref.update({
+                read:true
+              }).then(()=>console.log('games notification updated!'));
+            }
+          }
+        }
+        
+        // notification.ref.update({
+        //   read:true
+        // }).then(()=>console.log('notification updated!'));
+      });
     });
     
   }
@@ -885,6 +1013,10 @@ export class DataService {
 
   public liveFriendsList(): Reference{
     return this.database.ref('/users/'+this.uid+'/friends')
+  }
+
+  public liveBlockedList(): Reference{
+    return this.database.ref('/users/'+this.uid+'/blocked');
   }
 
   public saveNotificationToken(token:string,isBrowser:boolean):Promise<any>{

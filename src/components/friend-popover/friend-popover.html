@@ -1,0 +1,40 @@
+<!-- Generated template for the FriendPopoverComponent component -->
+<div class="list container">
+    <ion-list>
+        <button *ngIf="type == 'friends'" ion-item (click)="startTrade()">
+            <ion-icon name="swap" item-end></ion-icon>
+            <div text-center>Start Trade</div>
+          </button>
+        
+          <button ion-item *ngIf="type == 'friends'" (click)="deleteFriend()">
+            <ion-icon name="trash" item-end></ion-icon>
+            <div text-center>Delete Friend</div>
+          </button>
+  
+          <button ion-item *ngIf="type == 'friends'" (click)="viewProfile()">
+              <ion-icon name="person" item-end></ion-icon>
+              <div text-center>View Profile</div>
+          </button>
+  
+          <button ion-item *ngIf="type == 'friends'" (click)="sendMessage()">
+            <ion-icon name="chatboxes" item-end></ion-icon>
+            <div text-center>Send Message</div>
+          </button>
+
+          <button ion-item *ngIf="type == 'friends'" (click)="blockUser()">
+              <ion-icon name="remove-circle" item-end></ion-icon>
+              <div text-center>Block User</div>
+          </button>
+
+          <button ion-item *ngIf="type == 'blocked'" (click)="unblockUser()">
+                <ion-icon name="add-circle" item-end></ion-icon>
+                <div text-center>Unblock User</div>
+            </button>
+          
+          <!-- <button ion-item>
+              <ion-icon name="logo-game-controller-b" item-end></ion-icon>
+              <div text-center>View Game</div>
+          </button> -->
+  
+      </ion-list>
+  </div>

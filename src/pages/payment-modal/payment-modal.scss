@@ -17,7 +17,6 @@ page-payment-modal {
 
         .swiper-slide-active{
             transform:scale(1.1);
-            filter:blur(0);
         }
 
         .swiper-slide{
@@ -25,15 +24,6 @@ page-payment-modal {
             transition: transform .6s ease-in-out;
         }
 
-        .swiper-slide-prev{
-            transition:filter 0.6s linear;
-            filter:blur(6px);
-        }
-
-        .swiper-slide-next{
-            transition:filter 0.6s linear;
-            filter:blur(6px);
-        }
 
         .card{
             background:rgb(66, 66, 66);

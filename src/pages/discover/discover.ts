@@ -53,12 +53,22 @@ export class DiscoverPage {
       if(this.type == "username"){
         this.dataService.searchUsersByUsername(query.value).then((snap)=>{
           snap.forEach((childSnap)=>{
+            console.log('search result:',childSnap.val());
             if(childSnap.key !== this.dataService.uid){
-              this.queryResults.push(childSnap);
-              console.log(childSnap.val());
+              if(this.dataService.user.blocked !== undefined){
+                
+                if(!(childSnap.key in this.dataService.user.blocked)){
+                  this.queryResults.push(childSnap);
+                  console.log(childSnap.val());
+                }
               }
+              else{
+                this.queryResults.push(childSnap);
+                console.log(childSnap.val());
+              }
+            }
             })
-            if(this.queryResults.length == 0){
+            if(this.queryResults.length == 0){ 
               this.emptyResult = true;
             }
             else{
@@ -71,9 +81,18 @@ export class DiscoverPage {
         this.dataService.searchUsersByName(this.query).then((snap)=>{
           snap.forEach((childSnap)=>{
             if(childSnap.key !== this.dataService.uid){
-              this.queryResults.push(childSnap);
-              console.log(childSnap.val());
+              if(this.dataService.user.blocked !== undefined){
+                
+                if(!(childSnap.key in this.dataService.user.blocked)){
+                  this.queryResults.push(childSnap);
+                  console.log(childSnap.val());
+                }
               }
+              else{
+                this.queryResults.push(childSnap);
+                console.log(childSnap.val());
+              }
+            }
             })
             if(this.queryResults.length == 0){
               this.emptyResult = true;

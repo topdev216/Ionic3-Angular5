@@ -116,6 +116,10 @@ export class MenuComponent {
     this.events.publish('notification page');
   }
 
+  private goToFriends():void{
+    this.events.publish('friends list');
+  }
+
   private createPrivate() :void{
     let alert = this.alertCtrl.create({
       title: 'Private Chatroom',

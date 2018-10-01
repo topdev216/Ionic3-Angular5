@@ -1,5 +1,5 @@
 import { Component,NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController,AlertController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController,AlertController, ToastController, LoadingController } from 'ionic-angular';
 import { DataService} from '../../providers/services/dataService'; 
 import { AddVideogamePage } from '../../pages/add-videogame/add-videogame'; 
 import { AddressModalPage } from '../../pages/address-modal/address-modal';
@@ -45,7 +45,8 @@ export class ProfilePage {
   , public modalCtrl : ModalController
   , public alertCtrl: AlertController
   , public toastCtrl: ToastController
-  , public zone: NgZone) {
+  , public zone: NgZone
+  , public loadingCtrl: LoadingController) {
 
     
     this.user = this.navParams.get('user');
@@ -169,6 +170,11 @@ export class ProfilePage {
   addFriend(friend:any){
     console.log(friend);
     friend.userKey = this.paramKey;
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
+    loader.present();
       this.dataService.sendFriendNotification(this.paramKey).subscribe((data) => {
         if(data.error){
           let toast = this.toastCtrl.create({
@@ -176,6 +182,7 @@ export class ProfilePage {
             duration: 3000,
             position: 'top'
           });
+          loader.dismiss();
           toast.present();
         }
         else{
@@ -187,6 +194,7 @@ export class ProfilePage {
             duration: 3000,
             position: 'top'
           })
+          loader.dismiss();
           toast.present();
         })
       }
@@ -194,6 +202,11 @@ export class ProfilePage {
   }
 
   removeFriend(friend:any){
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
+    loader.present();
     console.log(friend);
     friend.userKey = this.paramKey;
     this.dataService.removeFriend(friend).then(()=>{
@@ -203,6 +216,7 @@ export class ProfilePage {
           duration: 3000,
           position: 'top'
         })
+        loader.dismiss();
         toast.present();
       
     })

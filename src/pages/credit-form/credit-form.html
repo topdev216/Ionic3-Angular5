@@ -97,7 +97,7 @@
           </ion-item>
 
 
-          <ion-row justify-content-center align-items-center>
+          <!-- <ion-row justify-content-center align-items-center>
             <ion-col col-6>
               <ion-row justify-content-center align-items-end>
                 <ion-col col-2>
@@ -115,7 +115,7 @@
                 <ion-input type="number" name="zipcode" [(ngModel)]="zipcode"></ion-input>
               </ion-item>
             </ion-col>
-          </ion-row>
+          </ion-row> -->
           
           
           <ion-item no-padding no-lines id="cardHolderName">
@@ -129,18 +129,27 @@
               <div id="card-element">
                 </div>
           </ion-item>
+
+
       
 
       <!-- <ion-item>
           <ion-label floating>Card</ion-label>
           <ion-input id="card-element"></ion-input>
       </ion-item> -->
+
+      <ion-item no-padding no-lines>
+          <ion-label>Use as Shipping Address</ion-label>
+          <ion-checkbox #checkbox (ionChange)="toggleAddress($event)"></ion-checkbox>
+      </ion-item>
       
 
       <!-- Used to display Element errors. -->
       <div id="card-errors" role="alert"></div>
 
-    <button ion-button full type="submit" (click)="submit()">NEXT</button>
+    <ion-fab bottom right #fab>
+        <button ion-fab type="submit" (click)="submit()"><ion-icon name="arrow-forward"></ion-icon></button>
+    </ion-fab>
   </form>
   </ion-grid>
 

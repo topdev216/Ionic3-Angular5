@@ -26,6 +26,7 @@ export class TradeDetailsPage {
   isNotInvolved:boolean = false;
   notificationKey:string;
   accepted: boolean = false;
+  expired:boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService) {
     this.tradeKey = this.navParams.get('tradeKey');
@@ -44,6 +45,15 @@ export class TradeDetailsPage {
       let proposer = snap.val().proposer;
       let receiver = snap.val().receiver;
 
+      if(snap.val().status === 'accepted'){
+        this.accepted = true;
+        this.expired = false;
+      }
+      else if(snap.val().status === 'expired'){
+        this.accepted = false;
+        this.expired = true;
+      }
+
       console.log('RECEIVER:',receiver);
       console.log('THIS UID:',this.dataService.uid);
 
@@ -58,12 +68,6 @@ export class TradeDetailsPage {
             this.givingGames.push(games[i].game);
           }
 
-        }
-        if(snap.val().status === 'accepted'){
-          this.accepted = true;
-        }
-        else if(snap.val().status === 'expired'){
-          this.accepted = false;
         }
       }
 

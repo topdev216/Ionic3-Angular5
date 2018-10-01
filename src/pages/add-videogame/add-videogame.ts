@@ -489,6 +489,9 @@ private doSearch(){
         console.log(this.genres[i]);
       }
       console.log(data);
+    },(err) =>{
+      this.searching = false;
+      console.log('An error has ocurred.');
     })
   }
 }

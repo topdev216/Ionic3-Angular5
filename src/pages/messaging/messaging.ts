@@ -1,5 +1,5 @@
 import { Component,ViewChild, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Content, PopoverController, AlertController, ViewController, App, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Content, PopoverController, AlertController, ViewController, App, ToastController, LoadingController } from 'ionic-angular';
 import * as firebase from 'firebase/app';
 import { PopoverComponent } from '../../components/popover/popover';
 import { DataService } from '../../providers/services/dataService';
@@ -36,7 +36,8 @@ export class MessagingPage {
       , public dataService: DataService
       , public viewCtrl: ViewController
       , public appCtrl: App
-      , public toastCtrl: ToastController) {
+      , public toastCtrl: ToastController
+      , public loadingCtrl: LoadingController) {
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.chatTitle = this.navParams.get('title');
     this.roomkey = this.navParams.get("key") as string;
@@ -80,10 +81,12 @@ export class MessagingPage {
         setTimeout(() => {
             if(this.offStatus === false){
               if(this.content._scroll){
-              this.content.scrollToBottom(300); 
+              this.zone.run(()=>{
+                this.content.scrollToBottom(300); 
+              })
               }       
             }
-        }, 100);
+        }, 1000);
 
       });
     }
@@ -102,10 +105,12 @@ export class MessagingPage {
         setTimeout(() => {
             if(this.offStatus === false){
               if(this.content._scroll){
-              this.content.scrollToBottom(300); 
+                this.zone.run(()=>{
+                  this.content.scrollToBottom(300); 
+                })
               }       
             }
-        }, 100);
+        }, 1000);
 
       });
     }
@@ -116,6 +121,8 @@ export class MessagingPage {
 
   }
 
+ 
+
   private sendMessage() :void {
 
     if(!this.isDirect){
@@ -123,6 +130,7 @@ export class MessagingPage {
         return 
       }
       else{
+        
         let newData = firebase.database().ref('chatrooms/'+this.roomkey+'/chats').push();
         newData.set({
           type:this.data.type,
@@ -134,7 +142,7 @@ export class MessagingPage {
       }
     }
     else{
-      if(this.data.message == ''){
+      if(this.data.message.trim() == ''){
         return
       }
       else{
@@ -179,6 +187,11 @@ export class MessagingPage {
   }
 
   private createTrade(){
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
+    loader.present();
     let options = {
       title:'Members',
       buttons:[
@@ -200,7 +213,7 @@ export class MessagingPage {
               })
 
               
-                this.navCtrl.push(PickGamePage,{games:gameArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.roomkey});
+                this.navCtrl.push(PickGamePage,{games:gameArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect});
               
             })
           }
@@ -209,16 +222,42 @@ export class MessagingPage {
       inputs:[]
     }
 
-    for(let key in this.activeChatroom.participants){
-      console.log(this.activeChatroom.participants[key]);
-      console.log(this.dataService.username);
-      if(this.activeChatroom.participants[key].username !== this.dataService.username){
-        options.inputs.push({name:'options',value:{key:key,name:this.activeChatroom.participants[key].username},label:this.activeChatroom.participants[key].username,type:'radio'})
-      }
-    }
+    this.fillRadioInputs(options,loader);
+  }
 
-    let alert = this.alertCtrl.create(options);
-    alert.present();
+  fillRadioInputs(options:any,loader:any){
+    
+    return this.dataService.fetchChatroomParticipants(this.roomkey,this.isDirect).then((snap)=>{
+      let reads = [];
+      snap.forEach((participant)=>{
+        let promise = this.dataService.checkIfBlocked(participant.key).then((res)=>{
+          if(participant.val().username !== this.dataService.username && !(res.exist)){
+            console.log('participant key:',participant.key);
+            console.log('participant username:',participant.val().username);
+            return participant;
+          }
+          else{
+            return null;
+          }
+        },err =>{
+          console.log('promise rejected');
+          return err;
+        });
+        reads.push(promise);
+      });
+      return Promise.all(reads).then((values)=>{
+        values.map((participant)=>{
+          if(participant !== null){
+            console.log('returned values:',participant.val());
+            options.inputs.push({name:'options',value:{key:participant.key,name:participant.val().username},label:participant.val().username,type:'radio'})
+          } 
+        })
+        let alert = this.alertCtrl.create(options);
+        loader.dismiss();
+        alert.present();
+      });
+    
+    });
   }
 
   inviteChatroom(){
@@ -274,10 +313,12 @@ export class MessagingPage {
 
   ionViewWillEnter(){
     this.tabBar.style.display = 'none';
+    // this.offStatus = false;
   }
 
   ionViewWillLeave(){
     this.tabBar.style.display = 'flex';
+    // this.offStatus = true;
 
   }
 

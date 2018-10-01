@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, NgZone, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, NgZone, ViewChild, HostListener } from '@angular/core';
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
 import { TradeDetailsPage } from '../../pages/trade-details/trade-details';
@@ -34,6 +34,7 @@ export class TradeCardComponent implements OnInit {
 
   @Input() public message: any;
   @Input() public chatKey: string;
+  @Input() public isDirect:boolean;
   @ViewChild('offeringSlides') offeringSlides: Slides;
   @ViewChild('receivingSlides') receivingSlides: Slides;
 
@@ -57,6 +58,8 @@ export class TradeCardComponent implements OnInit {
   isNotTradeInvolved:boolean = false;
   offeringGames: any [] = [];
   receivingGames: any[] = [];
+  innerWidth:number;
+
 
   constructor(public dataService: DataService,public ngZone: NgZone, public navCtrl: NavController) {
     console.log('Hello TradeCardComponent Component asdasdas');
@@ -83,11 +86,16 @@ export class TradeCardComponent implements OnInit {
     this.receivingSlides.slidePrev();
   }
 
+
   ngOnInit() {
 
-    
+    this.tradeKey = this.message.tradeKey;
+    this.messageKey = this.message.messageKey;
+    this.receiverUid = this.message.toUid;
+    this.fromUid = this.message.fromUid;
 
     this.dataService.getLiveTradeStatus(this.message.tradeKey).on('value',(snap) =>{
+      console.log('live trade:',snap.val());
       if(snap.val() !== null){
         if(snap.val().status === 'accepted'){
           if(this.timer !== undefined){
@@ -113,24 +121,63 @@ export class TradeCardComponent implements OnInit {
             this.waitingMessage = "Trade expired";
             this.expired = true;
             this.showWaitingMessage = true;
-            this.showButtons = false;
-            this.timer.hasFinished = true;
+
+            let now = moment().utc().valueOf();
+    
+            let timePassed = now - snap.val().creationTime;
+            
+            let minutesPassed = timePassed / 60000;
+
+
+            console.log('expired minutes passed:',minutesPassed);
+            
+           
+            if(minutesPassed <= 4 && minutesPassed >=3){
+              this.showWaitingMessage = true;
+              this.showButtons = false;
+              this.showButtons = false;
+              this.timer.hasFinished = true;
+            }
+            else{
+              this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
+                this.dataService.removeTradeMessage(this.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
+                });
+              });
+            }
+
+
+            
           }
           else{
             console.log('timer undefined!');
             this.expired = true;
             this.waitingMessage = "Trade expired";
-            this.showWaitingMessage = true;
-            this.showButtons = false;
+            let now = moment().utc().valueOf();
+    
+            let timePassed = now - snap.val().creationTime;
+            
+            let minutesPassed = timePassed / 60000;
+
+
+            console.log('expired minutes passed:',minutesPassed);
+            
+           
+            if(minutesPassed <= 4 && minutesPassed >=3){
+              this.showWaitingMessage = true;
+              this.showButtons = false;
+            }
+            else{
+              if(this.message.tradeKey !== null || this.message.tradeKey !== undefined){
+                this.dataService.declineTradeOffer(this.message.tradeKey).then(()=>{
+                  this.dataService.removeTradeMessage(this.message.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
+                  });
+                });
+              }
+            }
           }
         }
       }
     });
-
-    this.tradeKey = this.message.tradeKey;
-    this.messageKey = this.message.messageKey;
-    this.receiverUid = this.message.toUid;
-    this.fromUid = this.message.fromUid;
 
     this.dataService.fetchUserFromDatabase(this.fromUid).then((snap)=>{
       this.proposerUsername = snap.val().username
@@ -262,6 +309,10 @@ export class TradeCardComponent implements OnInit {
             // this.timeInSeconds = 180 - secondsPassed;
             this.initTimer(remainingSeconds);
           }
+          else if(minutesPassed <= 4 && minutesPassed >=3){
+            this.showWaitingMessage = true;
+            this.showButtons = false;
+          }
           else{
             this.timeInSeconds = 0;
             this.showButtons = false;
@@ -376,7 +427,7 @@ export class TradeCardComponent implements OnInit {
           console.log(data);
           this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
             console.log('trade declined and removed');
-            this.dataService.removeTradeMessage(this.tradeKey,false,this.chatKey,this.messageKey).then(()=>{
+            this.dataService.removeTradeMessage(this.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
               console.log('trade card message removed');
           })
       })

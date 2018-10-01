@@ -61,7 +61,7 @@
     </ion-list>
   
     
-      <ion-row *ngIf="isReceiver && !accepted">
+      <ion-row *ngIf="isReceiver && (!accepted && !expired)">
           <ion-col>
               <button ion-button block icon-start (click)="acceptTrade()">
                   <ion-icon name='checkmark'></ion-icon>
@@ -79,7 +79,7 @@
       </ion-row>
 
 
-      <ion-row *ngIf="isProposer && !accepted">
+      <ion-row *ngIf="isProposer && (!accepted && !expired) ">
           <ion-col>
               <button ion-button block icon-start (click)="declineTrade()">
                   <ion-icon name='close'></ion-icon>

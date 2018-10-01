@@ -1,5 +1,5 @@
-import { Component, ElementRef, ViewChild, NgZone, Output, EventEmitter, AnimationKeyframe } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, Gesture, PopoverController } from 'ionic-angular';
+import { Component, ElementRef, ViewChild, NgZone, Output, EventEmitter, AnimationKeyframe, Input } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, Gesture, PopoverController, Segment } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { ProfilePage } from '../profile/profile';
 import { NotificationPopoverComponent } from '../../components/notification-popover/notification-popover';
@@ -25,7 +25,6 @@ export class NotificationPage {
   type:string = "trading";
   notificationData: any;
   buttonCondition:boolean = false;
-
 
   socialNotifications: any [] = [];
   tradeNotifications: any [] = [];
@@ -178,6 +177,10 @@ export class NotificationPage {
     
   }
 
+  ngOnInit(){
+    this.readNotifications(this.type);
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad NotificationPage');
   }
@@ -208,21 +211,32 @@ export class NotificationPage {
   }
 
   readNotifications(type:string){
-    if(type === 'social'){
-      for(let i = 0; i < this.socialNotifications.length; i++){
-        this.dataService.markReadNotifications(this.socialNotifications[i].notificationKey)
-      }
-    }
-    else if(type === 'trading'){
-      for(let i = 0; i < this.tradeNotifications.length; i++){
-        this.dataService.markReadNotifications(this.tradeNotifications[i].notificationKey)
-      }
-    }
-    else{
-      for(let i = 0; i < this.gameNotifications.length; i++){
-        this.dataService.markReadNotifications(this.gameNotifications[i].notificationKey)
-      }
-    }
+    console.log('type is:',type);
+    // if(type === 'social'){
+    //   for(let i = 0; i < this.socialNotifications.length; i++){
+    //     this.dataService.markReadNotifications(this.socialNotifications[i].notificationKey).then(()=>{
+    //       console.log('notification marked');
+    //     })
+    //   }
+    // }
+    // else if(type === 'trading'){
+    //   for(let i = 0; i < this.tradeNotifications.length; i++){
+    //     this.dataService.markReadNotifications(this.tradeNotifications[i].notificationKey).then(()=>{
+    //       console.log('notification marked');
+    //     })
+    //   }
+    // }
+    // else{
+    //   for(let i = 0; i < this.gameNotifications.length; i++){
+    //     this.dataService.markReadNotifications(this.gameNotifications[i].notificationKey).then(()=>{
+    //       console.log('notification marked');
+    //     })
+    //   }
+    // }
+
+    this.dataService.markReadNotifications(type);
+    
+    
   }
 
   showPopover(myEvent:any,notification:any){

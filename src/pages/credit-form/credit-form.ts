@@ -5,6 +5,7 @@ import { FormGroup,Validators,FormBuilder } from '@angular/forms';
 import { DataService } from '../../providers/services/dataService';
 import { ConfirmPaymentPage } from '../confirm-payment/confirm-payment';
 import { AddressInterface } from '../../providers/interfaces/addressInterface';
+import { ShippingAddressFormPage } from '../shipping-address-form/shipping-address-form';
 declare var Stripe:any;
 /**
  * Generated class for the CreditFormPage page.
@@ -85,15 +86,7 @@ export class CreditFormPage {
   }
 
   submit(){
-
-    if(this.useAsShipping){
-      let address = {} as AddressInterface;
-      address.streetAddress = this.addressOne + ' ' + this.addressTwo;
-      address.city = this.city;
-      address.state = this.state;
-      address.zipCode = this.zipcode;
-      this.dataService.saveAddress(address);
-    }
+    console.log('SHIPPING ADDRESS doesnt shows:',this.useAsShipping);
 
 
     this.stripe.createToken(this.card,{
@@ -110,7 +103,19 @@ export class CreditFormPage {
         console.log("result.token.id: ", result.token.id);
         this.dataService.saveStripeToken(result.token.id).then(()=>{
           console.log('token saved');
-          this.navCtrl.push(ConfirmPaymentPage,{token:result.token.id,plan:this.pickedPlan});
+          if(this.useAsShipping){
+            let address = {} as AddressInterface;
+            address.streetAddress = this.addressOne + ' ' + this.addressTwo;
+            address.city = this.city;
+            address.state = this.state;
+            address.zipCode = result.token.card.address_zip;
+            this.dataService.saveAddress(address).then(()=>{
+              this.navCtrl.push(ConfirmPaymentPage,{token:result.token.id,plan:this.pickedPlan});
+            })
+          }
+          else{
+            this.navCtrl.push(ShippingAddressFormPage,{token:result.token.id,plan:this.pickedPlan})
+          }
         })
         // if (result && result.token) {
         //   return this.contractorService.saveCreditCard(result.token.id)

@@ -202,7 +202,7 @@ export class ChatPage {
       this.dataService.fetchUserKey(chat.username).then((snapshot)=>{
         var key = Object.keys(snapshot.val())[0];
       this.dataService.createDirectChat(chat.username,key).then((chatKey)=>{
-        this.navCtrl.push(MessagingPage,{title:chat.username,key:chatKey,username:this.dataService.username,condition:true});
+        this.navCtrl.push(MessagingPage,{title:chat.username,key:chatKey.key,username:this.dataService.username,condition:true});
       })
     })
     }
