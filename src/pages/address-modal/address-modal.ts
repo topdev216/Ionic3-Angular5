@@ -26,11 +26,13 @@ export class AddressModalPage {
   private state: string = null;
   private geoX:any;
   private geoY:any;
-  private apiKey:string = 'AIzaSyD7gB6aOgaSWuccp-nkamk_OlDvXRYMR4Y'
+  private apiKey:string = 'AIzaSyA9RMaRNiybHZvMLsQcGB0aFR8bE7TYdcI'
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public formBuilder: FormBuilder
   , public dataService: DataService) {
+
+    let address = this.dataService.user.address;
 
     this.postForm = formBuilder.group({
       streetAddress: ['', Validators.compose([Validators.required, Validators.minLength(10)])],
@@ -38,6 +40,11 @@ export class AddressModalPage {
       city: ['', Validators.compose([Validators.required])],
       state: ['', Validators.compose([Validators.required])],
     });
+
+    this.streetAddress = address.street;
+    this.state = address.state;
+    this.city = address.city;
+    this.zipcode = address.zipCode;
     
   }
 
@@ -57,63 +64,34 @@ export class AddressModalPage {
 
   ionViewDidLoad() {
     //Use Device GPS if available
-    if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition((position:any)=>{
-        console.log("position: ", position);
-        this.geoX = position.coords.longitude;
-        this.geoY = position.coords.latitude;
-        this.dataService.getUserAddress(position.coords.latitude,position.coords.longitude,this.apiKey).
-      subscribe((res:any)=>{
-        let addressArray = res.results;
-        console.log(addressArray);
-        for (let i = 0; i < addressArray[0].address_components.length; i++) {
-          for (let j = 0; j < addressArray[0].address_components[i].types.length; j++) {
-            if (addressArray[0].address_components[i].types[j] == 'route') {
-              this.streetAddress = res.results[0].address_components[i].short_name;
-            }
-            if (addressArray[0].address_components[i].types[j] == 'postal_code') {
-              this.zipcode = addressArray[0].address_components[i].short_name;
-            }
-            if (addressArray[0].address_components[i].types[j] == 'administrative_area_level_1') {
-              this.state = addressArray[0].address_components[i].long_name;
-            }
-            if (addressArray[0].address_components[i].types[j] == 'locality') {
-              this.city = addressArray[0].address_components[i].long_name;
-            }
-          }
-        }
-      })
-      });
-  }//Use Google Maps API to get location
-    // else{
-    //   this.dataService.getUserLocation('AIzaSyCM_MMJAqeY-sL0umxqIn9cR-s4-vycnmw')
-    //   .subscribe((data:any)=>{
-    //     console.log("data.location.lat: ", data.location.lat);
-    //     console.log("data.location.lng: ", data.location.lng);
-    //     this.geoX = data.location.lng;
-    //     this.geoY = data.location.lat;
-    //     this.dataService.getUserAddress(data.location.lat, data.location.lng,'AIzaSyCM_MMJAqeY-sL0umxqIn9cR-s4-vycnmw')
-    //     .subscribe((res:any)=>{
-    //       let addressArray = res.results;
-    //       console.log(addressArray);
-    //       for (let i = 0; i < addressArray[0].address_components.length; i++) {
-    //         for (let j = 0; j < addressArray[0].address_components[i].types.length; j++) {
-    //           if (addressArray[0].address_components[i].types[j] == 'route') {
-    //             this.streetAddress = res.results[0].address_components[i].short_name;
-    //           }
-    //           if (addressArray[0].address_components[i].types[j] == 'postal_code') {
-    //             this.zipcode = addressArray[0].address_components[i].short_name;
-    //           }
-    //           if (addressArray[0].address_components[i].types[j] == 'administrative_area_level_1') {
-    //             this.state = addressArray[0].address_components[i].long_name;
-    //           }
-    //           if (addressArray[0].address_components[i].types[j] == 'locality') {
-    //             this.city = addressArray[0].address_components[i].long_name;
-    //           }
+    // if(navigator.geolocation){
+    //   navigator.geolocation.getCurrentPosition((position:any)=>{
+    //     console.log("position: ", position);
+    //     this.geoX = position.coords.longitude;
+    //     this.geoY = position.coords.latitude;
+    //     this.dataService.getUserAddress(position.coords.latitude,position.coords.longitude,this.apiKey).
+    //   subscribe((res:any)=>{
+    //     let addressArray = res.results;
+    //     console.log(res);
+    //     console.log(addressArray);
+    //     for (let i = 0; i < addressArray[0].address_components.length; i++) {
+    //       for (let j = 0; j < addressArray[0].address_components[i].types.length; j++) {
+    //         if (addressArray[0].address_components[i].types[j] == 'route') {
+    //           this.streetAddress = res.results[0].address_components[i].short_name;
+    //         }
+    //         if (addressArray[0].address_components[i].types[j] == 'postal_code') {
+    //           this.zipcode = addressArray[0].address_components[i].short_name;
+    //         }
+    //         if (addressArray[0].address_components[i].types[j] == 'administrative_area_level_1') {
+    //           this.state = addressArray[0].address_components[i].long_name;
+    //         }
+    //         if (addressArray[0].address_components[i].types[j] == 'locality') {
+    //           this.city = addressArray[0].address_components[i].long_name;
     //         }
     //       }
-    //     })
+    //     }
     //   })
+    //   });
     // }
   }
 

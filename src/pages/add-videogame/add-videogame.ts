@@ -402,6 +402,13 @@ export class AddVideogamePage {
       this.searchPlaceholder = "Search Games";
       this.submitPlaceholder = "Add";
       this.platformPlaceholder = "Change Platform";
+    }, (err) =>{
+      this.searching = false;
+      let toast = this.toastCtrl.create({
+        message:'An error has occurred, please try again',
+        duration:2000
+      });
+      toast.present();
     })
     
 
@@ -455,6 +462,14 @@ export class AddVideogamePage {
         console.log(this.genres[i]);
       }
       console.log(data);
+    },(err)=>{
+      this.searching = false;
+      let toast = this.toastCtrl.create({
+        message:'An error has occurred, please try again',
+        duration:2000
+      });
+
+      toast.present();
     })
   }
 }
@@ -491,6 +506,12 @@ private doSearch(){
       console.log(data);
     },(err) =>{
       this.searching = false;
+      let toast = this.toastCtrl.create({
+        message:'An error has occurred, please try again',
+        duration:2000
+      });
+
+      toast.present();
       console.log('An error has ocurred.');
     })
   }

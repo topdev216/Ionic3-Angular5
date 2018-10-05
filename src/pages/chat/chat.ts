@@ -5,7 +5,6 @@ import { LoadingPage } from '../../pages/loading/loading';
 import { MessagingPage } from '../../pages/messaging/messaging';
 import { PopoverComponent } from '../../components/popover/popover';
 import * as firebase from 'firebase/app';
-import { INTERNAL_BROWSER_PLATFORM_PROVIDERS } from '@angular/platform-browser/src/browser';
 
 
 /**
@@ -56,15 +55,29 @@ export class ChatPage {
 
       });
 
-      firebase.database().ref('/directChats/').orderByChild('participants/'+this.dataService.uid+'/username').equalTo(this.username).on('value', snapshot =>{
-        this.directChats = [];
-        snapshot.forEach((childSnap)=>{
-          console.log('direct',childSnap.val());
-          let direct = childSnap.val();
-          direct.key = childSnap.key;
-          this.directChats.push(direct);
-        })
-      })
+      // firebase.database().ref('/directChats/').orderByChild('participants/'+this.dataService.uid+'/username').equalTo(this.username).on('value', snapshot =>{
+      //   this.directChats = [];
+      //   snapshot.forEach((childSnap)=>{
+      //     console.log('direct',childSnap.val());
+      //     let direct = childSnap.val();
+      //     direct.key = childSnap.key;
+      //     let count = this.dataService.NewDirectMessagesCount(direct.key);
+          
+      //     let obj = {
+      //       unread:count,
+      //       key:direct.key,
+      //       username:direct.participants[this].username
+      //     }
+      //     this.directChats.push(direct);
+      //   })
+      // })
+
+      this.directChats = this.dataService.directChats;
+      
+
+      this.dataService.directChatChanges.subscribe((values)=>{
+        this.directChats = values;
+      });
 
 
 
@@ -202,7 +215,7 @@ export class ChatPage {
       this.dataService.fetchUserKey(chat.username).then((snapshot)=>{
         var key = Object.keys(snapshot.val())[0];
       this.dataService.createDirectChat(chat.username,key).then((chatKey)=>{
-        this.navCtrl.push(MessagingPage,{title:chat.username,key:chatKey.key,username:this.dataService.username,condition:true});
+        this.navCtrl.push(MessagingPage,{title:chat.username,key:chatKey.key,username:this.dataService.username,condition:true,receiverKey:key});
       })
     })
     }

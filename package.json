@@ -36,7 +36,6 @@
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-fcm-with-dependecy-updated": "^2.2.4",
     "cordova-plugin-firebase": "^2.0.2",
-    "cordova-plugin-googleplus": "^5.3.1",
     "cordova-plugin-inappbrowser": "^3.0.0",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^1.1.19",
@@ -71,10 +70,6 @@
       "cordova-plugin-browsertab": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-fcm-with-dependecy-updated": {},
-      "cordova-plugin-googleplus": {
-        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.487644774277-moncksd69qao9vsh9vqimc8nrnrsuc2r",
-        "WEB_APPLICATION_CLIENT_ID": "487644774277-emh0r24s3u4hdfp0anb6ntdu1a8g29ll.apps.googleusercontent.com"
-      },
       "cordova-plugin-firebase": {}
     },
     "platforms": [

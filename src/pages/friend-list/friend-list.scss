@@ -56,6 +56,18 @@ page-friend-list {
         display: inline-block;
       }
 
+      .offDot {
+        position:absolute;
+        right:50%;
+        bottom:15%;
+        height: 12px;
+        width: 12px;
+        background-color: rgb(221, 7, 0);
+        border-radius: 50%;
+        border:1px solid white;
+        display: inline-block;
+      }
+
 
 }
 

@@ -21,12 +21,16 @@ export class UrlEnvironment {
     private _sendTradeNotification = this.baseUrl+'/tradeNotification';
     private _sendFriendNotification = this.baseUrl+'/friendNotification';
     private _unsubscribeTopic = this.baseUrl+'/unsubscribeTopic';
-
+    private _newDirectMessage = this.baseUrl+'/newDirectMessage';
 
     
 
     constructor(public platformLocation: PlatformLocation) {        
         
+    }
+
+    public getNewDirectMessageNotification():string{
+        return this._newDirectMessage;
     }
 
     public getUnsubscribeTopic():string{

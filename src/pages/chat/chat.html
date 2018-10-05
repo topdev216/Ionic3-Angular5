@@ -45,7 +45,7 @@
                             
                             <ion-row no-padding>
                                     <ion-col col-8 no-padding>
-                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(room,false)">{{room.name}}<ion-icon *ngIf="room.type == 'private' " name="key" item-end></ion-icon></button>
+                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(room,false)">{{room.name}}</button>
                                     </ion-col>
 
                                     <ion-col col-2 no-padding>
@@ -82,13 +82,24 @@
                         Chats
                         </ion-list-header>
 
-                        <ion-item no-padding *ngFor="let user of toUsername">
+                        <ion-item no-padding *ngFor="let chat of directChats">
 
-                            <button detail-none menuClose ion-item outline text-wrap (click)="enterChat(user,true)"><ion-icon name="chatboxes" item-end></ion-icon>
-                                {{user.username}}</button>
+
+                            <ion-row align-items-center>
+                                <ion-col col-9>
+                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(chat,true)">{{chat.username}}</button>
+                                </ion-col>
+                                <ion-col col-3>
+                                        <button color="primary" (click)="enterChat(chat,true)" ion-button clear icon-only>
+                                                <ion-icon name="chatboxes"></ion-icon>
+                                                <ion-badge *ngIf="chat.unread > 0">{{chat.unread}}</ion-badge>
+                                        </button>  
+                                </ion-col>
+                            </ion-row>
+                
                         </ion-item>
 
-                        <ion-item *ngIf="toUsername?.length === 0">
+                        <ion-item *ngIf="directChats.length === 0">
                             <ion-row no padding justify-content-center>
                                     You don't have any active chats.
                             </ion-row>

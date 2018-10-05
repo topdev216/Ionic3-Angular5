@@ -2,7 +2,7 @@ import { Component, Input, OnInit, NgZone, ViewChild, HostListener } from '@angu
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
 import { TradeDetailsPage } from '../../pages/trade-details/trade-details';
-import { NavController } from 'ionic-angular';
+import { NavController, LoadingController, ToastController } from 'ionic-angular';
 import * as firebase from 'firebase';
 import { Slides } from 'ionic-angular';
 import { THROW_IF_NOT_FOUND } from '@angular/core/src/di/injector';
@@ -54,6 +54,7 @@ export class TradeCardComponent implements OnInit {
   games:any [] = [];
   proposerUsername:string;
   isProposer:boolean = false;
+  isReceiver:boolean = false;
   receiverUsername:string;
   isNotTradeInvolved:boolean = false;
   offeringGames: any [] = [];
@@ -61,7 +62,8 @@ export class TradeCardComponent implements OnInit {
   innerWidth:number;
 
 
-  constructor(public dataService: DataService,public ngZone: NgZone, public navCtrl: NavController) {
+  constructor(public dataService: DataService,public ngZone: NgZone, public navCtrl: NavController,public loadingCtrl: LoadingController
+    , public toastCtrl: ToastController) {
     console.log('Hello TradeCardComponent Component asdasdas');
     this.text = 'Hello World';
   }
@@ -97,6 +99,15 @@ export class TradeCardComponent implements OnInit {
     this.dataService.getLiveTradeStatus(this.message.tradeKey).on('value',(snap) =>{
       console.log('live trade:',snap.val());
       if(snap.val() !== null){
+        if(snap.val().proposer === this.dataService.uid){
+          this.isProposer = true;
+        }
+        else if(snap.val().receiver === this.dataService.uid){
+          this.isReceiver = true;
+        }
+        else{
+          this.isNotTradeInvolved = true;
+        }
         if(snap.val().status === 'accepted'){
           if(this.timer !== undefined){
             console.log('timer not undefined');
@@ -403,10 +414,23 @@ export class TradeCardComponent implements OnInit {
 
   acceptTrade(){
     
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
+
+    loader.present();
+    
     this.dataService.acceptTradeOffer(this.tradeKey).then(()=>{
       this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',this.tradeKey,this.chatKey).subscribe((data:any)=>{
         console.log(data);
 
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message:'The trade proposer has been notified!',
+          duration:2000
+        });
+        toast.present();
         this.ngZone.run(() =>{
           this.accepted = true;
           this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
@@ -415,6 +439,13 @@ export class TradeCardComponent implements OnInit {
           this.timer.secondsRemaining = 0;
         })
 
+      },(err)=>{
+        let toast = this.toastCtrl.create({
+          message:'An error has occurred while notifying the user',
+          duration:2000
+        });
+        loader.dismiss();
+        toast.present();
       })
       
     })
@@ -422,16 +453,35 @@ export class TradeCardComponent implements OnInit {
   }
 
   declineTrade(){
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
+
+    loader.present();
     
         this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',this.tradeKey,this.chatKey).subscribe((data:any)=>{
           console.log(data);
           this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
             console.log('trade declined and removed');
             this.dataService.removeTradeMessage(this.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
+              let toast = this.toastCtrl.create({
+                message:'Trade has been declined, the proposer has been notified!',
+                duration:2000
+              });
+              loader.dismiss();
+              toast.present();
               console.log('trade card message removed');
           })
       })
      
+    },(err) =>{
+      let toast = this.toastCtrl.create({
+        message:'An error has occurred, while notifying the user.',
+        duration:2000
+      });
+      loader.dismiss();
+      toast.present();
     })
   }
 

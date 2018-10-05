@@ -29,6 +29,7 @@
         <ion-searchbar
         [(ngModel)]="searchTerm"
         [formControl]="searchControl"
+        (ionInput)="onSearchInput()"
         showCancelButton
         animated
         placeholder="Search"
@@ -50,6 +51,7 @@
             <ion-avatar item-start>
               <img src="{{friend.friend.coverPhoto}}" alt="photo">
               <span *ngIf="friend.online" class="dot"></span>
+              <span *ngIf="!friend.online" class="offDot"></span>
             </ion-avatar>
           </div>
         </ion-col>
@@ -85,6 +87,7 @@
                 <ion-avatar item-start>
                   <img src="{{friend.friend.coverPhoto}}" alt="photo">
                   <span *ngIf="friend.online" class="dot"></span>
+                  <span *ngIf="!friend.online" class="offDot"></span>
                 </ion-avatar>
               </div>
             </ion-col>

@@ -6,6 +6,16 @@ page-chat {
   .bar-button-default-ios{
     color:#002147;
   }
+
+  .button{
+    ion-badge {
+      background-color: red;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      border-radius: 100%;
+    }
+  }
   
     .content{
       // background-color:rgba(27, 27, 27, 0.952);

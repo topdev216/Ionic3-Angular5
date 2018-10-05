@@ -99,6 +99,7 @@ export class ConfirmTradePage {
                   let loading = this.loadingCtrl.create({content:'Trade is being created...'});
                   loading.present();
                   this.dataService.sendTradeNotification(this.navParams.get('browserToken'),this.navParams.get('phoneToken'),this.dataService.username,'create',this.dataService.tradeKey,chatKey)
+                        .timeout(8000)
                         .subscribe((res:any) =>{
 
                           console.log(res);

@@ -113,6 +113,8 @@ export class MyApp {
           dataService.updateOnDisconnect(user.uid);
           this.menuCtrl.enable(true,'myMenu');
           console.log(platform);
+          dataService.friendListService();
+          dataService.blockedListService();
           if(!platform.is('cordova')){
             
               this.messaging.requestPermission().then(() => {
@@ -162,17 +164,12 @@ export class MyApp {
           dataService.fetchUserFromDatabase(user.uid).then((userDB)=>{
             dataService.user = userDB.val();
             dataService.username = userDB.val().username;
+            dataService.directChatService();
             this.events.publish('user logged2',{
               condition:true,
               username:userDB.val().username
             });
-            dataService.getFriendsList().then((data)=>{
-              data.forEach((childSnap)=>{
-                let friend = childSnap.val();
-                friend.key = childSnap.key;
-                dataService.friends.push(friend);
-              })
-            })
+                        
             this.username = userDB.val().username;
   
           })
@@ -190,13 +187,13 @@ export class MyApp {
                             console.log('user has paid!')
                           }
                   else{
-                            this.navCtrl.push(PaymentModalPage);
+                            this.navCtrl.setRoot(PaymentModalPage);
                           }
                 }
                 else{
                   this.remainingDays = this.dataService.getRemainingDays(user);
                   if(this.remainingDays <= (this.dataService.trialEnd) ){
-                    this.navCtrl.push(PaymentModalPage);
+                    this.navCtrl.setRoot(PaymentModalPage);
                   }
                   else{
                     console.log('user on trial')
@@ -267,7 +264,12 @@ export class MyApp {
         if(data.wasTapped){
           console.log("Received in background");
           console.log('THE DATA',data);
-          this.navCtrl.push(NotificationPage);
+          if(data.chatFlag === "true"){
+            this.navCtrl.push(MessagingPage,{title:data.username,key:data.chatKey.key,username:data.receiverUsername,condition:true,receiverKey:data.receiverUid});
+          }
+          else{
+            this.navCtrl.push(NotificationPage);
+          }
         } else {
           console.log('Message received. ', JSON.stringify(data));
           let alert = alertCtrl.create({

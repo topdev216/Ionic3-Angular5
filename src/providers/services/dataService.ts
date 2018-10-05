@@ -12,6 +12,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import { Reference } from '@firebase/database-types';
 import { GooglePlus } from '@ionic-native/google-plus';
+import { Subject, ReplaySubject } from 'rxjs';
 
 
 declare var Stripe:any;
@@ -34,7 +35,12 @@ export class DataService {
   public authState: boolean;
   public user: any;
   public fireUser: firebase.User;
-  public friends: any [] = [];
+  public friends:any[] = [];
+  public friendsChange: ReplaySubject<any[]> =  new ReplaySubject<any[]> ();
+  public blockedChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
+  public directChatChanges: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
+  public directChats:any[] = [];
+  public blocked: any [] = [];
   public username:string;
   public activeChatroomID:string;
   public trialAmount: number;
@@ -55,12 +61,149 @@ export class DataService {
   , public gplus: GooglePlus) {
     console.log('Hello DataService Provider');
 
+    this.friendsChange.subscribe((value)=>{
+      console.log('friend list service:',value);
+      this.friends = value;
+    })
+    this.blockedChange.subscribe((value)=>{
+      this.blocked = value;
+    })
+
+    this.directChatChanges.subscribe((value)=>{
+      this.directChats = value;
+    })
+
   }
 
   public initialiazeWebFCM():firebase.messaging.Messaging{
     const messaging = firebase.messaging();
     messaging.usePublicVapidKey("BNJKkIXoLQCgzWDYJeI41p89a7zcml_rsc6bbE5TVXvMHdsNxSCebW4iu8kv1GOcfnpKCKh5AwsfpnsgExuYiu8");
     return messaging;
+  }
+
+  public directChatService(){
+    this.database.ref('/directChats/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).on('value', snapshot =>{
+      this.directChatChanges.next([]);
+      let reads = [];
+      snapshot.forEach((chat)=>{
+        let promise = this.NewDirectMessagesCount(chat.key).then((result)=>{
+
+          let obj = {};
+          if(chat.val().senderA === this.username){
+            obj = {
+              unread:result,
+              key:chat.key,
+              chat:chat.val(),
+              type:'direct',
+              username:chat.val().senderB
+            }
+          }
+          else{
+            obj = {
+              unread:result,
+              key:chat.key,
+              chat:chat.val(),
+              type:'direct',
+              username:chat.val().senderA
+            }
+          }
+          
+          return obj;
+        });
+        reads.push(promise);
+      })
+
+      Promise.all(reads).then((values)=>{
+        this.directChatChanges.next(values);
+        console.log('direct chat service:',values);
+      })
+    });
+  }
+
+  public friendListService(){
+    this.liveFriendsList().on('value',(data)=>{
+      let reads = [];
+      this.friendsChange.next(this.friends = []);
+      
+      data.forEach((childSnap)=>{
+        let promise = this.fetchUserKey(childSnap.val().username).then((user)=>{
+          
+        var key = Object.keys(user.val())[0];
+        let obj = {
+          friend:user.val()[key],
+          key:key,
+          online:user.val()[key].online
+        };
+        return obj
+      },err =>{
+        return err;
+      });
+        reads.push(promise);
+      });
+      Promise.all(reads).then((values)=>{
+            let array = [];
+            this.friendsChange.next(this.friends = []);
+            values.map((friend,index) =>{
+              console.log('friend list service index:',index);
+              array.push(friend);
+              this.onlineFriendListener(friend.key,index,true);
+            })
+            this.friendsChange.next(array);
+      });
+    })
+  }
+
+  public blockedListService(){
+    this.liveBlockedList().on('value',(data)=>{
+      let reads = [];
+      this.blockedChange.next(this.blocked = []);
+      
+      data.forEach((childSnap)=>{
+        let promise = this.fetchUserKey(childSnap.val().username).then((user)=>{
+          
+        var key = Object.keys(user.val())[0];
+        let obj = {
+          friend:user.val()[key],
+          key:key,
+          online:user.val()[key].online
+        };
+        return obj
+      },err =>{
+        return err;
+      });
+        reads.push(promise);
+      });
+      Promise.all(reads).then((values)=>{
+            let array = [];
+            values.map((friend,index) =>{
+              console.log('friend list service index:',index);
+              array.push(friend);
+              this.onlineFriendListener(friend.key,index,false);
+            })
+            this.blockedChange.next(array);
+      });
+    })
+  }
+
+
+
+  public onlineFriendListener(uid:string,position:number,isFriend:boolean){
+    this.getOnlineStatus(uid).on('value',(data) =>{
+      this.zone.run(()=>{
+        console.log('online status uid:',uid);
+        console.log('online:',data.val())
+        if(isFriend){
+          if(this.friends[position] !== undefined){
+            this.friends[position].online = data.val();
+          }
+        }
+        else{
+          if(this.blocked[position] !== undefined){
+            this.blocked[position].online = data.val();
+          }
+        }
+      });
+    });
   }
 
   public showLoading(): void {
@@ -110,7 +253,8 @@ export class DataService {
       email: email,
       creationTime: date,
       coverPhoto:url,
-      online:true
+      online:true,
+      chat_notification_disable:false
     })
   }
 
@@ -178,6 +322,26 @@ export class DataService {
     return this.database.ref('users/'+uid)
             .onDisconnect()
             .update({online: false})
+  }
+
+  public updateChatOnDisconnect(chatKey:string):Promise<any>{
+    return this.database.ref('/directChats/'+chatKey+'/participants/'+this.uid).onDisconnect().update({
+      isInside:false
+    });
+  }
+
+  public NewDirectMessagesCount(chatKey:string):Promise<any>{
+
+    return this.database.ref('/directChats/'+chatKey+'/chats').once('value').then((snap)=>{
+      let count = 0 as number;
+      snap.forEach((message)=>{
+        if(!message.val().read && message.val().user !== this.username){
+          count++;
+        }
+      })
+      return count;
+    })
+
   }
 
   public fetchUserFromDatabase(uid:string): Promise<any>{
@@ -578,7 +742,7 @@ export class DataService {
           tradeKey:this.tradeKey,
           toUid:key,
           fromUid:this.uid,
-          messageKey:messageKey
+          messageKey:messageKey,
         })
       }
       else{
@@ -596,7 +760,8 @@ export class DataService {
           tradeKey:this.tradeKey,
           toUid:key,
           fromUid:this.uid,
-          messageKey:messageKey
+          messageKey:messageKey,
+          read:false
         })
       }
 
@@ -844,6 +1009,18 @@ export class DataService {
       
     })
   }
+
+  public disableChatNotifications(): Promise<any>{
+    return this.database.ref('/users/'+this.uid).update({
+      chat_notification_disable:true
+    });
+  }
+
+  public enableChatNotifications(): Promise<any>{
+    return this.database.ref('/users/'+this.uid).update({
+      chat_notification_disable:false
+    });
+  }
   
   public checkIfBlocked(uid:string) :Promise<any>{
 
@@ -906,16 +1083,21 @@ export class DataService {
                     console.log('DATA EXIST:',data.exist);
                     console.log('RESULT EXIST:',result.exist);
                     if(!data.exist && !result.exist){
+                      
                       let directChat = this.database.ref('/directChats/').push();
                       directChat.set({
                         participants:{
                           [this.uid]:{
-                            username: this.username
+                            username: this.username,
+                            isInside:true
                           },
                           [receiverUid]:{
-                            username: receiverUsername
+                            username: receiverUsername,
+                            isInside:false
                           }
-                        }
+                        },
+                        senderA:this.username,
+                        senderB:receiverUsername
                       })
                       object.key = directChat.key;
                       return object;
@@ -952,6 +1134,68 @@ export class DataService {
 
   public getNotifications() :Reference{
     return this.database.ref('/notifications/'+this.uid);
+  }
+
+  public markReadDirectMessages(chatKey:string):Promise<any>{
+    return this.database.ref('/directChats/'+chatKey+'/chats').once('value').then((snap)=>{
+      snap.forEach((message)=>{
+        if(message.val().user !== this.username){
+          message.ref.update({
+            read:true
+          });
+        }
+      });
+    });
+  }
+
+  public markUserInsideChat(chatKey:string):Promise<any>{
+    return this.database.ref('/directChats/'+chatKey+'/participants').once('value').then((snap)=>{
+      snap.forEach((user) =>{
+        if(user.key === this.uid){
+          user.ref.update({
+            isInside:true
+          })
+        }
+      })
+    })
+  }
+
+  public checkIfUserInsideChat(chatKey:string,receiverKey:string) :Promise<any>{
+    
+    return this.database.ref('/directChats/'+chatKey+'/participants/'+receiverKey).once('value').then((snap)=>{
+      if(snap.val()!== null){
+        if(snap.val().isInside !== undefined && snap.val().isInside ){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    })
+    
+  }
+
+  public notifyNewDirectMessage(chatKey:string,message:string):Observable<any>{
+    let obj = {
+      chatKey:chatKey,
+      uid:this.uid,
+      username:this.username,
+      message:message,
+      photo:this.user.coverPhoto
+    };
+    return this.http.post(this.urlEnvironment.getNewDirectMessageNotification(),obj);
+  }
+
+  public markUserOutsideChat(chatKey:string):Promise<any>{
+    return this.database.ref('/directChats/'+chatKey+'/participants').once('value').then((snap)=>{
+      snap.forEach((user) =>{
+        if(user.key === this.uid){
+          user.ref.update({
+            isInside:false
+          })
+        }
+      })
+    })
   }
 
   public markReadNotifications(type:string):Promise<any>{

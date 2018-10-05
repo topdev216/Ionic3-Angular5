@@ -23,6 +23,11 @@ trade-card {
         color:white;
     }
 
+    // ion-badge {
+    //     background:transparent !important;
+    //     color:color($colors,primary)!important;
+    // }
+
     .message{
         font-size:2.7vh;
         font-weight:bold;
@@ -89,10 +94,122 @@ trade-card {
             max-width: 100%;
         }
 
-        .game-photo{
-            width:auto !important;
-            height:100px !important;
+        // .game-photo{
+        //     width:auto !important;
+        //     height:100px !important;
+        // }
+
+        // ion-badge {
+        //     position: absolute;
+        //     top: calc(10vh - 10px);
+        //     right: calc(19.5vw - 5px);
+        //     border-radius: 50%;
+        // }
+    }
+
+    @media (max-width: 320px) {
+        ion-badge {
+            position: absolute;
+            // top: calc(10vh - 10px);
+            // right: calc(19.5vw - 5px);
+            border-radius: 50%;
         }
+    } 
+
+    @media (min-width: 320px) and (max-width:374px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(15% - 5px); 
+            right: calc(8% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
+        background:red;
+    }
+
+    @media (min-width: 375px) and (max-width:424px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(15% - 5px); 
+            right: calc(15% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
+        background:red;
+    }
+
+    @media (min-width: 425px) and (max-width:440px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(15% - 5px); 
+            right: calc(15% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
+        background:red;
+    }
+
+    @media (min-width: 441px) and (max-width:524px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(15% - 5px); 
+            right: calc(22% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
+        background:red;
+    }
+
+    @media (min-width: 525px) and (max-width:650px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(17% - 5px); 
+            right: calc(28% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
+        background:red;
+    }
+
+    @media (min-width: 651px) and (max-width:800px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(16% - 5px); 
+            right: calc(33% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
+    }
+
+    @media (min-width: 801px) {
+
+        ion-badge{
+            position: absolute;
+            top: calc(17% - 5px); 
+            right: calc(42% - 5px);
+            border-radius: 50%;
+        }
+
+       
+
     }
 
   

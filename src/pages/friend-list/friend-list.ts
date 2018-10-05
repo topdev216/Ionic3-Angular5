@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, PopoverController, Events, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, PopoverController, Events, ToastController, Loading } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { FriendPopoverComponent } from '../../components/friend-popover/friend-popover';
 import { PickGamePage } from '../pick-game/pick-game';
@@ -27,6 +27,7 @@ export class FriendListPage {
   searchTerm:string="";
   searchControl: FormControl;
   searching:boolean = false;
+  loading: Loading;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService, public loadingCtrl: LoadingController
     , public zone: NgZone
@@ -34,41 +35,35 @@ export class FriendListPage {
     , public events: Events
     , public toastCtrl: ToastController) {
 
-      this.searchControl = new FormControl();
+    this.searchControl = new FormControl();
+    this.friends = this.dataService.friends;
+    this.blocked = this.dataService.blocked;
+    this.dataService.friendsChange.subscribe((value)=>{
+      this.friends = value;
+      console.log('friend list service:',this.friends);
+
+    });
+    this.dataService.blockedChange.subscribe((value)=>{
+      this.blocked = value;
+    })
 
 
-    // this.dataService.getFriendsList().then((snap) =>{
-    //   this.friends = [];
-    //   let count = 0;
-    //   snap.forEach((friend)=>{
-    //     this.dataService.fetchUserKey(friend.val().username).then((user) =>{
-    //       var key = Object.keys(user.val())[0];
-    //       console.log('saved key:',key);
-    //       let obj = {
-    //         friend:user.val()[key],
-    //         key:key,
-    //         online:user.val()[key].online
-    //       };
-    //       this.friends.push(obj);
-    //       this.onlineFriendListener(key,count);
-    //       count++;
-    //     })
-    //   });
 
-    //   loader.dismiss();
-    // });
-
-    this.friendListener();
-    this.blockedListener();
 
   }
   
   ngOnInit(){
     this.searchControl = new FormControl();
+    this.dataService.friendsChange.subscribe((value)=>{
+      this.friends = value;
+    });
+    // this.friends = this.dataService.friends;
+    // this.blocked = this.dataService.blocked;
   }
   
 
   ionViewWillEnter(){
+
     this.events.subscribe('create trade', (data) =>{
       let loader = this.loadingCtrl.create({
         content:'Please wait...',
@@ -103,6 +98,18 @@ export class FriendListPage {
       });
     });
 
+    this.events.subscribe('search input', (data)=>{
+      this.loading = this.loadingCtrl.create({
+        content:'Please wait...',
+        spinner:'crescent'
+      });
+      this.loading.present();
+    });
+
+    this.events.subscribe('search finish',(data)=>{
+      this.loading.dismiss();
+    });
+
     this.events.subscribe('view profile',(data)=>{
       this.navCtrl.push(ProfilePage,{
         search:true,
@@ -123,7 +130,7 @@ export class FriendListPage {
           toast.present();
         }
         else{
-        this.navCtrl.push(MessagingPage,{title:data.user.username,key:chatKey.key,username:this.dataService.username,condition:true});
+        this.navCtrl.push(MessagingPage,{title:data.user.username,key:chatKey.key,username:this.dataService.username,condition:true,receiverKey:data.friendUid});
         }
       })
     });
@@ -133,26 +140,8 @@ export class FriendListPage {
     this.events.unsubscribe('create trade');
     this.events.unsubscribe('view profile');
     this.events.unsubscribe('send message');
-  }
-
-  blockedListener(){
-    this.dataService.liveBlockedList().on('value',(snap)=>{
-      this.blocked = [];
-      let count = 0;
-      snap.forEach((friend) => {
-        this.dataService.fetchUserKey(friend.val().username).then((user) =>{
-          var key = Object.keys(user.val())[0];
-          let obj = {
-            friend:user.val()[key],
-            key:key,
-            online:user.val()[key].online
-          };
-          this.blocked.push(obj);
-          this.onlineFriendListener(key,count);
-          count++;
-        });
-      })
-    })
+    this.events.unsubscribe('search input');
+    this.events.unsubscribe('search finish');
   }
 
   setFilteredItems() {
@@ -196,47 +185,9 @@ export class FriendListPage {
   } 
 
 
-  friendListener(){
-
-    let loader = this.loadingCtrl.create({
-      content:'Please wait...',
-      spinner:'crescent'
-    });
-    loader.present();
-
-    this.dataService.liveFriendsList().on('value',(snap)=>{
-      this.friends = [];
-      let count = 0;
-      snap.forEach((friend)=>{
-        this.dataService.fetchUserKey(friend.val().username).then((user) =>{
-          var key = Object.keys(user.val())[0];
-          let obj = {
-            friend:user.val()[key],
-            key:key,
-            online:user.val()[key].online
-          };
-          this.friends.push(obj);
-          this.onlineFriendListener(key,count);
-          count++;
-        });
-      })
-      loader.dismiss();
-    })
+  onSearchInput(){
+    this.events.publish('search input');
   }
-
-  onlineFriendListener(uid:string,position:number){
-      this.dataService.getOnlineStatus(uid).on('value',(data) =>{
-        this.zone.run(()=>{
-          console.log('online status uid:',uid);
-          console.log('online:',data.val())
-          if(this.friends[position] !== undefined){
-            this.friends[position].online = data.val();
-          }
-        })
-      });
-
-  }
-
 
 
   showPopover(myEvent:any,friendUid:string,friend:any){
@@ -251,11 +202,12 @@ export class FriendListPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad FriendListPage');
- 
     this.searchControl.valueChanges.debounceTime(700).subscribe(search => {
+        this.events.publish('search finish');
         this.setFilteredItems();
-
     });
+
+
   }
 
 }

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
+import { TabsPage } from '../tabs/tabs';
 
 /**
  * Generated class for the ConfirmPaymentPage page.
@@ -25,7 +26,9 @@ export class ConfirmPaymentPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams
     ,public dataService: DataService
-    ,public toastCtrl: ToastController) {
+    ,public toastCtrl: ToastController
+    ,public zone: NgZone
+    ) {
 
       this.pickedPlan = this.navParams.get('plan');
       this.stripeToken = this.navParams.get('token');
@@ -49,12 +52,18 @@ export class ConfirmPaymentPage {
   }
 
   pay(){
-    this.loading = true;
+    
+    this.zone.run(()=>{
+      this.loading = true;
+    })
     this.dataService.createStripeCustomer(this.stripeToken,this.pickedPlan).subscribe( (data) =>{
       console.log(data);
       if(data.status == "active"){
-        this.loading = false;
-        this.navCtrl.popToRoot().then(()=>{
+        this.zone.run(()=>{
+          this.loading = false;
+        })
+        this.navCtrl.setRoot(TabsPage).then(()=>{
+          window.location.reload();
           let toast = this.toastCtrl.create({
             message:'Your payment has been approved! Welcome to TUG',
             duration:3000,
@@ -65,8 +74,25 @@ export class ConfirmPaymentPage {
       }
       else{
         console.log(data.status);
-        this.loading = false;
+        let toast = this.toastCtrl.create({
+          message:data.message,
+          duration:3000,
+          position:'top'
+        });
+        toast.present();
+        this.zone.run(()=>{
+          this.loading = false;
+        })
       }
+    },(err) =>{
+      this.zone.run(()=>{
+        this.loading = false;
+      })
+      let toast = this.toastCtrl.create({
+        message:'An error has occurred, please try again',
+        duration:2000
+      });
+      toast.present();
     })
   }
 

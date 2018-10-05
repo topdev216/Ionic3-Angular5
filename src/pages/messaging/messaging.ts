@@ -28,6 +28,7 @@ export class MessagingPage {
   offStatus:boolean = false;
   isDirect:boolean;
   chatTitle : string;
+  receiverKey:string;
   tabBar : any;
   activeChatroom:any;
   friends:any [] = [];
@@ -43,10 +44,12 @@ export class MessagingPage {
     this.roomkey = this.navParams.get("key") as string;
     this.username = this.navParams.get("username") as string;
     this.isDirect = this.navParams.get("condition") as boolean;
+    this.receiverKey = this.navParams.get("receiverKey") as string;
     this.data.type = 'message';
     this.data.username = this.username;
     this.zone=new NgZone({enableLongStackTrace: false});
-
+      
+    
 
     if(!this.isDirect){
     firebase.database().ref('chatrooms/'+this.roomkey).on('value', (snap) =>{
@@ -54,6 +57,7 @@ export class MessagingPage {
     });
     }
     else{
+      this.dataService.updateChatOnDisconnect(this.roomkey);
       firebase.database().ref('directChats/'+this.roomkey).on('value', (snap) =>{
         this.activeChatroom = snap.val();
       });
@@ -147,14 +151,41 @@ export class MessagingPage {
       }
       else{
 
-        let newData = firebase.database().ref('directChats/'+this.roomkey+'/chats').push();
-        newData.set({
-          type:this.data.type,
-          user:this.data.username,
-          message:this.data.message,
-          sendDate:Date()
-        });
-        this.data.message = '';
+        this.dataService.checkIfUserInsideChat(this.roomkey,this.receiverKey).then((condition)=>{
+          if(condition){
+            let newData = firebase.database().ref('directChats/'+this.roomkey+'/chats').push();
+            newData.set({
+              type:this.data.type,
+              user:this.data.username,
+              message:this.data.message,
+              sendDate:Date(),
+              read:true
+            });
+            this.data.message = '';
+          }
+          else{
+            let newData = firebase.database().ref('directChats/'+this.roomkey+'/chats').push();
+            
+            let message = this.data.message;
+            newData.set({
+              type:this.data.type,
+              user:this.data.username,
+              message:this.data.message,
+              sendDate:Date(),
+              read:false
+            });
+
+            this.data.message = '';
+            
+            this.dataService.notifyNewDirectMessage(this.roomkey,message).subscribe((data)=>{
+              console.log(data);
+            },(err) =>{
+              console.log(err);
+            })
+          }
+        })
+
+       
       }
     }
   }
@@ -313,13 +344,19 @@ export class MessagingPage {
 
   ionViewWillEnter(){
     this.tabBar.style.display = 'none';
+    if(this.isDirect){
+      this.dataService.markUserInsideChat(this.roomkey);
+      this.dataService.markReadDirectMessages(this.roomkey);
+    }
     // this.offStatus = false;
   }
 
   ionViewWillLeave(){
     this.tabBar.style.display = 'flex';
+    if(this.isDirect){
+      this.dataService.markUserOutsideChat(this.roomkey);
+    }
     // this.offStatus = true;
-
   }
 
 

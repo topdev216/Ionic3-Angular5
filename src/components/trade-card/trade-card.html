@@ -90,6 +90,7 @@
                                     <ion-slide *ngFor="let game of offeringGames">
                                         <ion-row justify-content-center>
                                                     <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                    <ion-badge>{{game.game?.pickedGames}} units</ion-badge>
                                         </ion-row>
                                     </ion-slide>
                                 </ion-slides>
@@ -127,6 +128,7 @@
                                         <ion-slide *ngFor="let game of receivingGames">
                                             <ion-row justify-content-center>
                                                     <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                    <ion-badge>{{game.game?.pickedGames}}</ion-badge>
                                             </ion-row>
                                         </ion-slide>
                                     </ion-slides>
@@ -140,10 +142,24 @@
                 </ion-row>
                     
                 
-                <ion-row justify-content-center>
-                    <button ion-button clear small (click)="viewDetails()">view details</button>
+                <ion-row *ngIf="!expired && !accepted && isReceiver" justify-content-center>
+                    <ion-col>
+                            <button ion-button block icon-end color="secondary" (click)="acceptTrade()">Accept<ion-icon name="checkmark"></ion-icon></button>
+                    </ion-col>
+                    <ion-col>
+                            <button ion-button block icon-end color="danger" (click)="declineTrade()">Decline<ion-icon name="close"></ion-icon></button>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row *ngIf="!expired && !accepted && isProposer">
+                        <button ion-button block icon-end color="danger" (click)="declineTrade()">Cancel<ion-icon name="close"></ion-icon></button>
+                </ion-row>
+
+                <ion-row *ngIf="!expired && !accepted && (isReceiver || isProposer)" justify-content-center>
                     <button ion-button clear small>revise trade</button>
                 </ion-row>
+
+               
         </ng-template>
 
       </ion-card-content>

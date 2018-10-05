@@ -6,6 +6,7 @@ import { AddressModalPage } from '../../pages/address-modal/address-modal';
 import { AddUsernamePage } from '../../pages/add-username/add-username';
 import * as firebase from 'firebase/app';
 import { GamelistPage } from '../gamelist/gamelist';
+import { MessagingPage } from '../messaging/messaging';
 
 /**
  * Generated class for the ProfilePage page.
@@ -37,6 +38,7 @@ export class ProfilePage {
   loading: boolean;
   isFriend:boolean = false;
   comingFromSearch:boolean = false;
+  isChecked:boolean = false;
   paramKey:string;
 
 
@@ -50,6 +52,7 @@ export class ProfilePage {
 
     
     this.user = this.navParams.get('user');
+    this.isChecked = this.dataService.user.chat_notification_disable || false;
     this.comingFromSearch = this.navParams.get('search');
 
     if(!this.comingFromSearch){
@@ -167,6 +170,22 @@ export class ProfilePage {
     this.navCtrl.push(AddVideogamePage);
   }
 
+  sendMessage(){
+    this.dataService.createDirectChat(this.user.username,this.paramKey).then((chatKey)=>{
+      console.log('returned chatkey:',chatKey);
+      if(chatKey.error){
+        let toast = this.toastCtrl.create({
+          message:"It's not possible to message this user right now, please try again later",
+          duration:3000
+        });
+        toast.present();
+      }
+      else{
+      this.navCtrl.push(MessagingPage,{title:this.user.username,key:chatKey.key,username:this.dataService.username,condition:true});
+      }
+    })
+  }
+
   addFriend(friend:any){
     console.log(friend);
     friend.userKey = this.paramKey;
@@ -198,7 +217,46 @@ export class ProfilePage {
           toast.present();
         })
       }
+    },(err)=>{
+      let toast = this.toastCtrl.create({
+        message: "User couldn't be reached! Please try again later",
+        duration: 3000,
+        position: 'top'
+      });
+      loader.dismiss(); 
+      toast.present();
     })
+  }
+
+  disableChat(event:any){
+    if(event.checked){
+      let alert = this.alertCtrl.create({
+       title:'Confirm action',
+       message:"Are you sure you want to disable chat notification? You won't be able to know when someone is trying to contact you",
+       buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+            this.isChecked = false;
+          }
+        },
+        {
+          text: 'Accept',
+          handler: () => {
+            this.dataService.disableChatNotifications();
+            this.isChecked = true;
+          }
+        }
+      ]
+    
+      });
+      alert.present();
+    }
+    else{
+      this.dataService.enableChatNotifications();
+    }
   }
 
   removeFriend(friend:any){
