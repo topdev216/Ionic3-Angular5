@@ -23,7 +23,6 @@
         <ion-col></ion-col>
       </ion-row>
   
-      <form (ngSubmit)="login()" #registerForm="ngForm">
         <ion-row>
             <ion-item>
                 <ion-icon name="ios-mail-outline" item-start></ion-icon>
@@ -41,13 +40,12 @@
   
         <ion-row>
           <ion-col>
-            <button ion-button block icon-end color="signin" type="submit" [disabled]="!registerForm.form.valid">
+            <button ion-button block icon-end color="signin" type="submit" (click)="login()">
               Sign in
               <ion-icon name="log-in"></ion-icon>
             </button>
           </ion-col>
         </ion-row>
-      </form>
   
       <ion-row>
         <ion-col>

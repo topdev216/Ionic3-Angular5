@@ -14,11 +14,11 @@
 
 
 <ion-content padding>
-  <ion-row *ngIf="!isUser" justify-content-center>
+  <ion-row class="title" *ngIf="!isUser" justify-content-center>
     <h1>{{username}}'s offering games </h1>
   </ion-row>
 
-  <ion-row *ngIf="isUser" justify-content-center>
+  <ion-row class="title" *ngIf="isUser" justify-content-center>
       <h1>Your available games to trade </h1>
   </ion-row>
   <ion-list>

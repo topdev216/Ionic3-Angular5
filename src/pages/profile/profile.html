@@ -81,7 +81,7 @@
             </ion-row>
       </ion-item>
 
-      <ion-item>
+      <ion-item *ngIf="!comingFromSearch">
         <ion-label><p>Disable chat notifications</p></ion-label>
         <ion-checkbox (ionChange)="disableChat($event)" [(ngModel)]="isChecked"></ion-checkbox>
       </ion-item>

@@ -477,7 +477,12 @@ export class DataService {
   }
   
   public signIn(email: string, password: string): Promise<any> {
-    return firebase.auth().signInWithEmailAndPassword(email, password);
+    return firebase.auth().signInWithEmailAndPassword(email, password).then((data)=>{
+      return this.database.ref('/users/'+data.user.uid).once('value').then((snap)=>{
+        let user = snap.val();
+        return user;
+      });
+    });
   }
 
 

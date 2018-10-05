@@ -3,6 +3,12 @@ page-confirm-trade {
         background-color:color($colors,primary);
       } 
 
+      .title{
+          h2{
+            border-bottom:3px solid black;
+          }
+      }
+
     .content{
         background: #006bcf;  /* fallback for old browsers */
         p{

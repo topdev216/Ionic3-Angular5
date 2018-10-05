@@ -68,12 +68,14 @@ export class LoginPage {
     this.dataService.showLoading();
     this.dataService
       .signIn(this.email, this.password)
-      .catch((error) => {
-        return new ErrorObservable('Something bad happened; please try again later.');
-      })
       .then((user) => {
+        console.log('login user:',user);
         this.dataService.hideLoading();
-        this.navCtrl.setRoot(TabsPage);
+        if(user.username === ""){
+          this.navCtrl.push(AddUsernamePage);
+        }
+        else{
+        this.navCtrl.popToRoot();
         console.log("user: ", user);
         console.log("email verfied: ", user.emailVerified);
         // if(!user.emailVerified) {
@@ -82,6 +84,10 @@ export class LoginPage {
         //     this.contractorService.showToast("Please verify your email address");
         //   });
         // }
+        }
+      })
+      .catch((error) => {
+        return new ErrorObservable('Something bad happened; please try again later.');
       })
     console.log("submit");
   }
