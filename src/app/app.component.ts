@@ -200,28 +200,7 @@ export class MyApp {
                   }
                 }
               })
-            // this.remainingDays = this.dataService.getRemainingDays(user);
-            // if(this.remainingDays <= (this.dataService.trialEnd) ){
-            //   this.trialCondition = false;
-            //   console.log('Trial expired');
-            //   this.dataService.checkPaidMembership().then((snap) =>{
-            //     if(snap.val()!== null){
-            //       if(snap.val()){
-            //         console.log('user has paid!')
-            //       }
-            //       else{
-            //         this.navCtrl.push(PaymentModalPage);
-            //       }
-            //     }
-            //   })
-            //   this.navCtrl.push(PaymentModalPage);
-            //   }
-            // else{
-            //   this.trialCondition = true;
-            //   console.log(this.remainingDays);
-            //   console.log('User on trial..');
-            //   }
-            })
+            });
             
           }
         }
@@ -265,7 +244,7 @@ export class MyApp {
           console.log("Received in background");
           console.log('THE DATA',data);
           if(data.chatFlag === "true"){
-            this.navCtrl.push(MessagingPage,{title:data.username,key:data.chatKey.key,username:data.receiverUsername,condition:true,receiverKey:data.receiverUid});
+              this.navCtrl.push(MessagingPage,{title:data.username,key:data.chatKey,username:data.receiverUsername,condition:true,receiverKey:data.receiverUid});
           }
           else{
             this.navCtrl.push(NotificationPage);

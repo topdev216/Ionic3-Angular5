@@ -276,18 +276,19 @@ export class DataService {
     return this.socialSignIn(new firebase.auth.GoogleAuthProvider)
       .then((credential: any) => {
         let user = credential.user;
-        
-        return this.database.ref('/users/' + user.uid).once('value').then( (snapshot) => {
-          console.log(snapshot.val());
-          //user is not registered on database...
-          if(snapshot.val() == null){
-            this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,'',user.photoURL)
-            return snapshot.val();
-          }//user doesn't have an username yet...
-          else{
-            return snapshot.val();
-          }
-        });
+        return this.flagLogin(user.uid).then(()=>{
+          return this.database.ref('/users/' + user.uid).once('value').then( (snapshot) => {
+            console.log(snapshot.val());
+            //user is not registered on database...
+            if(snapshot.val() == null){
+              this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,'',user.photoURL)
+              return snapshot.val();
+            }//user doesn't have an username yet...
+            else{
+              return snapshot.val();
+            }
+          });
+        }); 
       });
   }
 
@@ -310,14 +311,28 @@ export class DataService {
     let uid = user.uid;
     
     return this.updateOnlineStatus(false,this.uid).then(()=>{
-      this.user = null;
-      this.email = null;
-      this.uid = null;
-      return this.afAuth.auth.signOut();
+      return this.flagLogin(this.uid).then(()=>{
+        this.user = null;
+        this.email = null;
+        this.uid = null;
+        return this.afAuth.auth.signOut();
+      });
     });
     // return this.afAuth.auth.signOut() 
   }
 
+  public flagLogin(uid:string): Promise<any> {
+    if(this.platform.is('cordova')){
+      return this.database.ref('users/'+uid).update({
+        not_available_phone:true
+      });
+    }
+    else{
+      return this.database.ref('users/'+uid).update({
+        not_available_browser:true
+      });
+    }
+  }
   public updateOnDisconnect(uid:string):Promise<any> {
     return this.database.ref('users/'+uid)
             .onDisconnect()
@@ -480,7 +495,9 @@ export class DataService {
     return firebase.auth().signInWithEmailAndPassword(email, password).then((data)=>{
       return this.database.ref('/users/'+data.user.uid).once('value').then((snap)=>{
         let user = snap.val();
-        return user;
+        return this.flagLogin(data.user.uid).then(()=>{
+          return user;
+        })
       });
     });
   }
