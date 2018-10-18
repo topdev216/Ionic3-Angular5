@@ -7,21 +7,12 @@ page-home {
 
         .main-content{
           height:100%;
-        }
-
-        ion-grid{
-          height:100%;
-        }
-
-        .searchbar{
-          height:30%;
-        }
-
-        .logo{
-          // height:40%;
-          .cover{
-            height:300px;
-            width:auto;
+          #liveTrades{
+            font-size: 34px;
+            font-weight:bold;
+            letter-spacing:0.06rem;
+            background:color($colors,primary);
+            opacity:0.6;
           }
         }
 
@@ -71,6 +62,108 @@ page-home {
       max-width:520px;
     }
 
+    .card{
+
+      padding:0px;
+      margin-bottom:5px;
+      margin-top:0px;
+      margin-left:0px;
+      margin-right:0px;
+      .game-title{
+        font-weight:bold;
+        text-align:center;
+      }
+
+      // background:color($colors,primary);
+      background-color:rgba(255, 164, 0, 0.8);
+      // opacity:0.7 !important;
+      img{
+        height:120px;
+        width:auto;
+      }
+
+      #swapIcon{
+        font-size:50px;
+        animation: pulsar 1.6s infinite;
+        -moz-animation: pulsar 1.6s infinite;
+        -o-animation: pulsar 1.6s infinite;
+        -webkit-animation: pulsar 1.6s infinite;
+      }
+
+        .swiper-pagination{
+          bottom:0px !important;
+          }
+
+        .swiper-slide{
+          
+            height:195px;
+            img{
+              height:100px !important;
+            }
+            transition: transform .6s ease-in-out;
+        }
+
+        // .swiper-slide-active{
+        //     transform:scale(1.2);
+        // }
+
+      @keyframes pulsar {
+        0% {
+          @include transform(scale(.9));
+        }
+        70% {
+          @include transform(scale(1));
+          box-shadow: 0 0 0 150px rgba(#0c1824, 0);
+        }
+          100% {
+          @include transform(scale(.9));
+          box-shadow: 0 0 0 0 rgba(#0e1d2c, 0);
+        }
+      }
+      
+
+      ion-badge{
+        background:red !important;
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-radius: 50%;
+      }
+    }
+
+    .fab{
+      animation: pulse 1.5s infinite;
+      -moz-animation: pulse 1.5s infinite;
+      -o-animation: pulse 1.5s infinite;
+      -webkit-animation: pulse 1.5s infinite;
+      bottom:60px;
+      color:rgba(27, 27, 27, 0.952);
+      width:80px !important;
+      height:80px !important;
+      ion-icon{
+        font-size:35px;
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        @include transform(scale(.9));
+      }
+      70% {
+        @include transform(scale(1));
+        box-shadow: 0 0 0 50px rgba(#5a99d4, 0);
+      }
+        100% {
+        @include transform(scale(.9));
+        box-shadow: 0 0 0 0 rgba(#5a99d4, 0);
+      }
+    }
+    
+
+    #settingsBtn{
+      border:0;
+    }
+
     div.horizontal {
       display: flex;
       justify-content: center;
@@ -105,6 +198,237 @@ page-home {
         color:#FFA400;
       }
 
+      @media (max-width: 320px) {
+
+        .card{
+          img{
+            height:100px;
+            width:auto;
+          }
+          ion-badge {
+            position: absolute;
+            top: calc(15% - 10px);
+            right: calc(15% - 5px);
+            border-radius: 50%;
+          }
+          .game-title{
+            font-size:11px;
+            text-align:center
+          }
+  
+          .game-platform{
+            font-size:11px;
+            text-align:center;
+          }
+        }
+       
+      }
+      
+      @media (min-width: 321px) and (max-width:374px) {
+
+        .card{
+          img{
+            height:100px !important;
+            width:auto;
+          }
+          ion-badge{
+            position: absolute;
+            top: calc(11% - 5px); 
+            right: calc(12% - 15px);
+            border-radius: 50%;
+        }
+
+        .game-title{
+          font-size:13px;
+          text-align:center;
+        }
+
+        .game-platform{
+          font-size:13px;
+          text-align:center;
+        }
+
+
+        }
+
+      
+    }
+
+    @media (min-width: 375px) and (max-width:424px) {
+
+      .card{
+        img{
+          height:100px !important;
+          width:auto;
+        }
+        ion-badge{
+          position: absolute;
+          top: calc(11% - 5px); 
+          right: calc(14% - 15px);
+          border-radius: 50%;
+      }
+
+      .game-title{
+        font-size:14px;
+        text-align:center;
+      }
+
+      .game-platform{
+        text-align:center;
+        font-size:14px;
+      }
+
+
+      }
+
+    
+  }
+
+  @media (min-width: 425px) and (max-width:440px) {
+
+    .card{
+      img{
+        height:100px !important;
+        width:auto;
+      }
+      ion-badge{
+        position: absolute;
+        top: calc(5% - 5px); 
+        right: calc(25% - 15px);
+        border-radius: 50%;
+    }
+
+    .game-title{
+      font-size:14px;
+      text-align:center;
+    }
+
+    .game-platform{
+      font-size:14px;
+      text-align:center;
+    }
+
+
+    }
+
+    
+
+  
+  }
+
+  @media (min-width: 441px) and (max-width:524px) {
+
+    .card{
+      img{
+        height:100px !important;
+        width:auto;
+      }
+      ion-badge{
+        position: absolute;
+        top: calc(8% - 5px); 
+        right: calc(28% - 15px);
+        border-radius: 50%;
+    }
+
+    .game-title{
+      font-size:14px;
+      text-align:center;
+    }
+
+    .game-platform{
+      font-size:14px;
+      text-align:center;
+    }
+
+
+    }
+  }
+
+  @media (min-width: 525px) and (max-width:650px) {
+
+    .card{
+      img{
+        height:100px !important;
+        width:auto;
+      }
+      ion-badge{
+        position: absolute;
+        top: calc(8% - 5px); 
+        right: calc(28% - 15px);
+        border-radius: 50%;
+    }
+
+    .game-title{
+      font-size:15px;
+      text-align:center
+    }
+
+    .game-platform{
+      font-size:15px;
+      text-align:center;
+    }
+
+
+    }
+  }
+
+  @media (min-width: 651px) and (max-width:800px) {
+
+    .card{
+      img{
+        height:100px !important;
+        width:auto;
+      }
+      ion-badge{
+        position: absolute;
+        top: calc(8% - 5px); 
+        right: calc(35% - 15px);
+        border-radius: 50%;
+    }
+
+    .game-title{
+      font-size:14px;
+      text-align: center;
+    }
+
+    .game-platform{
+      font-size:14px;
+      text-align: center;
+    }
+
+
+    }
+  }
+
+  @media (min-width: 801px) {
+
+    .card{
+      img{
+        height:100px !important;
+        width:auto;
+      }
+      ion-badge{
+        position: absolute;
+        top: calc(8% - 5px); 
+        right: calc(38% - 15px);
+        border-radius: 50%;
+    }
+
+    .game-title{
+      font-size:15px;
+      text-align:center;
+    }
+
+    .game-platform{
+      font-size:15px;
+      text-align:center;
+    }
+
+
+    }
+  }
+
+    
       
 
      

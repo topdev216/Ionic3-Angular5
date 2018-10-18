@@ -44,8 +44,7 @@ export class NotificationPopoverComponent {
   }
 
   sendMessage(){
-    let userObj = JSON.parse(this.data.user);
-    this.events.publish('user text',userObj.username);
+    this.events.publish('user text',this.data.username);
     this.viewCtrl.dismiss();
   }
 

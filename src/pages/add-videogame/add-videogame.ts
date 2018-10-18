@@ -262,7 +262,7 @@ export class AddVideogamePage {
 
     this.dataService.checkExistingVideogame(this.gameId,game.type).then((snap) =>{
       if(snap.val() == null){
-        this.dataService.addVideogame(game,this.gameId).then(()=>{
+        this.dataService.addVideogame(game,this.gameId,this.platformID).then(()=>{
 
           if(game.type == "offer"){
             this.dataService.notifyUsers(this.gameId,game.title).subscribe(((data) =>{

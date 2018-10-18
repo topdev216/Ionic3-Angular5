@@ -22,11 +22,21 @@ export class UrlEnvironment {
     private _sendFriendNotification = this.baseUrl+'/friendNotification';
     private _unsubscribeTopic = this.baseUrl+'/unsubscribeTopic';
     private _newDirectMessage = this.baseUrl+'/newDirectMessage';
+    private _getTrades = this.baseUrl+'/getTrades';
+    private _getPartners = this.baseUrl+'/getPartners';
 
     
 
     constructor(public platformLocation: PlatformLocation) {        
         
+    }
+
+    public getPartners() :string{
+        return this._getPartners;
+    }
+
+    public getTrades() :string {
+        return this._getTrades;
     }
 
     public getNewDirectMessageNotification():string{

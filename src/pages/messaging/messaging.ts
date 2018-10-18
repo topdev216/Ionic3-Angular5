@@ -277,8 +277,9 @@ export class MessagingPage {
         reads.push(promise);
       });
       return Promise.all(reads).then((values)=>{
+        console.log(values);
         values.map((participant)=>{
-          if(participant !== null){
+          if(participant !== null && participant.key !== undefined){
             console.log('returned values:',participant.val());
             options.inputs.push({name:'options',value:{key:participant.key,name:participant.val().username},label:participant.val().username,type:'radio'})
           } 

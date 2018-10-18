@@ -48,6 +48,8 @@ import { TradeHistoryPage } from '../pages/trade-history/trade-history';
 import { ShippingAddressFormPage } from '../pages/shipping-address-form/shipping-address-form';
 import { FriendListPage } from '../pages/friend-list/friend-list';
 import { FriendPopoverComponent } from '../components/friend-popover/friend-popover';
+import { GameTypePipe } from '../pipes/game-type/game-type';
+import { HomeFiltersPage } from '../pages/home-filters/home-filters';
 
 
 
@@ -96,7 +98,9 @@ const firebaseConfig = {
     TradeHistoryPage,
     ShippingAddressFormPage,
     FriendListPage,
-    FriendPopoverComponent
+    FriendPopoverComponent,
+    GameTypePipe,
+    HomeFiltersPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -144,7 +148,8 @@ const firebaseConfig = {
     TradeHistoryPage,
     ShippingAddressFormPage,
     FriendListPage,
-    FriendPopoverComponent
+    FriendPopoverComponent,
+    HomeFiltersPage
     
   ],
   providers: [

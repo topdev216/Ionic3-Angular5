@@ -67,17 +67,27 @@
                       Game Title
                   </ng-template>
               </select-searchable> -->
-            <ion-searchbar
-              #mySearch
-              id="input"
-              [showCancelButton]="true"
-              (keyup.enter)="doSearch()"
-              [placeholder]="searchPlaceholder"
-              [debounce]="100"
-              (ionInput)="onSearchInput($event)"
-              (ionClear)="onClear($event)"
-              (ionCancel)="onCancel($event)">
-            </ion-searchbar>
+
+            <ion-row justify-content-start align-items-center>
+              <ion-col col-10> 
+                  <ion-searchbar
+                  #mySearch
+                  id="input"
+                  [showCancelButton]="true"
+                  (keyup.enter)="doSearch()"
+                  [placeholder]="searchPlaceholder"
+                  [debounce]="100"
+                  (ionInput)="onSearchInput($event)"
+                  (ionClear)="onClear($event)"
+                  (ionCancel)="onCancel($event)">
+                </ion-searchbar>
+              </ion-col>
+              
+              <ion-col col-2>
+                <button ion-button clear id="searchButton" *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" (click)="doSearch()" icon-only><ion-icon name="search"></ion-icon></button>
+              </ion-col>
+            </ion-row>
+           
 
             <div *ngIf="searching" class="spinner-container">
               <ion-spinner></ion-spinner>
@@ -89,7 +99,6 @@
 
                     <ion-col col-3 no-padding>
                       <img src="https://{{game?.cover?.url}}" alt="">
-                      <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
                     </ion-col>
 
                     <ion-col col-9 padding-left>
@@ -99,9 +108,6 @@
                           <p *ngIf="i == 0" text-wrap>{{genre.name}}</p>
                       </div>
                       <p text-wrap>{{game.first_release_date}}</p>
-                      <!-- <div *ngFor="let platform of game.platforms">
-                          <p text-wrap> {{platform.name}}</p>
-                      </div> -->
                     </ion-col>
                     
                 </ion-row>
@@ -174,7 +180,7 @@
        
       
             
-        <button ion-button full *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" type="button" id="bottomBtn" (click)="doSearch()">search</button>
+        <!-- <button ion-button full *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" type="button" id="bottomBtn" (click)="doSearch()">search</button> -->
         <!-- <button ion-button full id="bottomBtn" [disabled]="!gamePicked" type="submit">add</button>       -->
         </form>
         <button ion-button full *ngIf="!gamePicked" id="bottomBtn" (click)="goToList()" color="secondary">Go to My List</button>

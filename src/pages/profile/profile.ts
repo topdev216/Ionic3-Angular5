@@ -7,6 +7,7 @@ import { AddUsernamePage } from '../../pages/add-username/add-username';
 import * as firebase from 'firebase/app';
 import { GamelistPage } from '../gamelist/gamelist';
 import { MessagingPage } from '../messaging/messaging';
+import { PaymentModalPage } from '../payment-modal/payment-modal';
 
 /**
  * Generated class for the ProfilePage page.
@@ -143,7 +144,8 @@ export class ProfilePage {
       inputs: [
         {
           name: 'phoneNumber',
-          placeholder: 'Phone Number'
+          placeholder: 'Phone Number',
+          type:'tel'
         }
       ],
       buttons: [
@@ -157,6 +159,7 @@ export class ProfilePage {
         {
           text: 'Submit',
           handler: data => {
+            if(data.phoneNumber)
             this.phoneNumber = data.phoneNumber;
             this.dataService.savePhoneNumber(this.phoneNumber);
           }
@@ -184,6 +187,10 @@ export class ProfilePage {
       this.navCtrl.push(MessagingPage,{title:this.user.username,key:chatKey.key,username:this.dataService.username,condition:true});
       }
     })
+  }
+
+  goToPlans(){
+    this.navCtrl.push(PaymentModalPage);
   }
 
   addFriend(friend:any){

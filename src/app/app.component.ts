@@ -61,7 +61,7 @@ export class MyApp {
       dataService.fetchUserKey(data).then((snapshot)=>{
         var key = Object.keys(snapshot.val())[0];
         dataService.createDirectChat(data,key).then((chatKey)=>{
-          this.navCtrl.push(MessagingPage,{title:data,key:chatKey,username:dataService.username,condition:true});
+          this.navCtrl.push(MessagingPage,{title:data,key:chatKey.key,username:dataService.username,condition:true});
           })
       })
       
@@ -187,17 +187,17 @@ export class MyApp {
                             console.log('user has paid!')
                           }
                   else{
-                            this.navCtrl.setRoot(PaymentModalPage);
+                    this.remainingDays = this.dataService.getRemainingDays(user);
+                    if(this.remainingDays <= (this.dataService.trialEnd) ){
+                      this.navCtrl.setRoot(PaymentModalPage);
+                    }
+                    else{
+                      console.log('user on trial')
+                    }
                           }
                 }
                 else{
-                  this.remainingDays = this.dataService.getRemainingDays(user);
-                  if(this.remainingDays <= (this.dataService.trialEnd) ){
-                    this.navCtrl.setRoot(PaymentModalPage);
-                  }
-                  else{
-                    console.log('user on trial')
-                  }
+                 
                 }
               })
             });

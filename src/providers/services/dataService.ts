@@ -36,6 +36,9 @@ export class DataService {
   public user: any;
   public fireUser: firebase.User;
   public friends:any[] = [];
+  public trades:any [] = [];
+  public tradesChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
+  public tradeCountChange: ReplaySubject<number> = new ReplaySubject<number> ();
   public friendsChange: ReplaySubject<any[]> =  new ReplaySubject<any[]> ();
   public blockedChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
   public directChatChanges: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
@@ -73,12 +76,53 @@ export class DataService {
       this.directChats = value;
     })
 
+    this.tradesChange.subscribe((value)=>{
+      this.trades = value;
+    })
+
   }
 
   public initialiazeWebFCM():firebase.messaging.Messaging{
     const messaging = firebase.messaging();
     messaging.usePublicVapidKey("BNJKkIXoLQCgzWDYJeI41p89a7zcml_rsc6bbE5TVXvMHdsNxSCebW4iu8kv1GOcfnpKCKh5AwsfpnsgExuYiu8");
     return messaging;
+  }
+
+  public liveTradesCount(){
+    this.database.ref('/constants/trades_count').on('value',(snap)=>{
+      let count = snap.val();
+      this.tradeCountChange.next(count);
+    })
+  }
+
+  public liveTradesService(){
+    this.database.ref('/trades/').on('value', (snap) =>{
+      let array = [];
+      snap.forEach((trade)=>{
+        let obj = {
+          trade:trade.val(),
+          key:trade.key
+        };
+        array.push(obj);
+      })
+
+      for(let i = 0 ; i < array.length ; i ++){
+        for(let j = 0 ; j < array[i].trade.items.length ; j++){
+            array[i].trade.items[j].game.platform = array[i].trade.items[j].game.platform.toLowerCase();
+            array[i].trade.items[j].game.title = array[i].trade.items[j].game.title.toLowerCase();
+        }
+    }
+      this.tradesChange.next(array);
+    })
+  }
+
+  public liveTrades(lastKey?): Observable<any>{
+
+    let obj = {
+      lastKey: lastKey
+    };
+
+    return this.http.post(this.urlEnvironment.getTrades(),obj)
   }
 
   public directChatService(){
@@ -254,7 +298,8 @@ export class DataService {
       creationTime: date,
       coverPhoto:url,
       online:true,
-      chat_notification_disable:false
+      chat_notification_disable:false,
+      paidMember:false
     })
   }
 
@@ -276,7 +321,6 @@ export class DataService {
     return this.socialSignIn(new firebase.auth.GoogleAuthProvider)
       .then((credential: any) => {
         let user = credential.user;
-        return this.flagLogin(user.uid).then(()=>{
           return this.database.ref('/users/' + user.uid).once('value').then( (snapshot) => {
             console.log(snapshot.val());
             //user is not registered on database...
@@ -288,7 +332,6 @@ export class DataService {
               return snapshot.val();
             }
           });
-        }); 
       });
   }
 
@@ -339,10 +382,18 @@ export class DataService {
             .update({online: false})
   }
 
-  public updateChatOnDisconnect(chatKey:string):Promise<any>{
-    return this.database.ref('/directChats/'+chatKey+'/participants/'+this.uid).onDisconnect().update({
-      isInside:false
-    });
+  public updateChatOnDisconnect(chatKey:any):Promise<any>{
+    console.log('chatKey:',chatKey);
+    if(chatKey.hasOwnProperty('key')){
+      return this.database.ref('/directChats/'+chatKey.key+'/participants/'+this.uid).onDisconnect().update({
+        isInside:false
+      });
+    }
+    else{
+      return this.database.ref('/directChats/'+chatKey+'/participants/'+this.uid).onDisconnect().update({
+        isInside:false
+      });
+    }
   }
 
   public NewDirectMessagesCount(chatKey:string):Promise<any>{
@@ -702,6 +753,27 @@ export class DataService {
     
   }
 
+  // public incrementTradeCounter() :Promise<any>{
+  //   return this.database.ref('/constants/trades_count').once('value').then((snap)=>{
+  //     let count = snap.val();
+  //     console.log('current trade count:',snap.val());
+      
+  //     return snap.ref.set(count+1);
+  //   })
+  // }
+
+  // public decreaseTradeCounter() :Promise<any>{
+  //   return this.database.ref('/constants/trades_count').once('value').then((snap)=>{
+  //     let count = snap.val();
+
+  //     console.log('current trade count:',snap.val());
+  //     return snap.ref.set(count-1);
+
+  //   })
+
+  // }
+  
+
   public cancelTradeMessage(chatKey:string,tradeKey:string): Promise<any>{
     return this.database.ref('chatrooms/'+chatKey+'/chats').orderByChild('tradeKey').equalTo(tradeKey).once('value').then((snap) =>{
       if(snap.val() !== null){
@@ -815,7 +887,7 @@ export class DataService {
     return this.database.ref('users/'+this.uid+'/videogames/'+checkType+'/'+id).once('value')
   }
 
-  public addVideogame(game:any,id:any):Promise<any>{
+  public addVideogame(game:any,id:any,platformId:any):Promise<any>{
 
     return this.database.ref('/users/'+this.uid+'/videogames/'+game.type+'/'+id).once('value').then((snap)=>{
       if(snap.val() !== null){
@@ -840,6 +912,7 @@ export class DataService {
             coverPhoto:game.coverPhoto,
             esrbRating:game.esrbRating,
             platform:game.platform,
+            platformId:platformId,
             quantity: 1
           });
         }
@@ -850,7 +923,8 @@ export class DataService {
             releaseDate:game.releaseDate,
             coverPhoto:game.coverPhoto,
             esrbRating:game.esrbRating,
-            platform:game.platform
+            platform:game.platform,
+            platformId:platformId
           });
         }
       }
@@ -996,11 +1070,15 @@ export class DataService {
   }
 
   public searchUsersByUsername(query:string):Promise<any>{
-    return this.database.ref('/users').orderByChild('username').startAt(query).endAt(query+'\uf8ff').once('value')
+    return this.database.ref('/users').orderByChild('usernameLower').startAt(query).endAt(query+'\uf8ff').once('value')
   }
 
   public searchUsersByName(query:string):Promise<any>{
-    return this.database.ref('/users').orderByChild('name').startAt(query).endAt(query+'\uf8ff').once('value')
+    return this.database.ref('/users').orderByChild('nameLower').startAt(query).endAt(query+'\uf8ff').once('value')
+  }
+
+  public searchTradePartners(query:string):Observable<any>{
+    return this.http.post(this.urlEnvironment.getPartners(),{query:query})
   }
 
   

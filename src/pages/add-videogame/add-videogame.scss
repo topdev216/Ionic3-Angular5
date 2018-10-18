@@ -21,6 +21,16 @@ page-add-videogame {
         background: transparent;
     }
 
+    
+    .button#searchButton{
+        color:color($colors,primary);
+        font-size:17px;
+    }
+
+    .button#searchButton:hover{
+        background:transparent;
+    }
+
     .item#searchItem{
         background:color($colors,primary);
         border-bottom:1px solid gray;

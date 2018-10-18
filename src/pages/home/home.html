@@ -1,27 +1,6 @@
 <ion-header>
   <ion-navbar>
 
-        <!-- <button ion-button icon-only menuToggle left>
-                <ion-icon name="menu"></ion-icon>
-        </button> -->
-
-        <!-- <ion-row justify-content-center>
-                <h4>{{username}}</h4>
-        </ion-row> -->
-
-        <!-- <ion-buttons end>
-                <button *ngIf="authState == false && authState !== undefined" ion-button outline right (click)="goToLogin()">
-                        Sign In
-                    </button>
-
-                    <div *ngIf="authState && authState !== undefined">
-                        <button ion-button icon-only (click)="logout()" right>
-                            <ion-icon name="exit"></ion-icon>
-                        </button>
-                    </div>
-                   
-        </ion-buttons> -->
-
         <ion-toolbar>
 
                 <ion-buttons left>
@@ -89,20 +68,124 @@
     </div>
 
   <div *ngIf="!loading" class="main-content">
-     
-        
-        <ion-grid fixed>
-            <ion-row class="searchbar" justify-content-center align-items-center>
-                <ion-searchbar placeholder="Search Game"></ion-searchbar>
-                <ion-icon name="settings"></ion-icon>
-            </ion-row>
+          <ion-row no-padding justify-content-center>
+                  <h1 id="liveTrades">{{trades_count}} live trades</h1>
+          </ion-row>
+          <ion-row no-padding justify-content-start align-items-center>
+                  <ion-col col-8 no-padding> 
+                                <ion-searchbar
+                                [(ngModel)]="query"
+                                [placeholder]="searchPlaceholder"
+                                (ionInput)="doSearch($event)"
+                                showCancelButton
+                                >
+                              </ion-searchbar>
+                  </ion-col>
 
-            <!-- <ion-row class="logo" justify-content-center>
-                                <img src="assets/imgs/logoTU.png" alt="logo" class="cover">
-            </ion-row> -->
-        </ion-grid>
+                  <ion-col col-2 no-padding>
+                          <button ion-button outline id="settingsBtn" (click)="doSearch($event)" icon-only><ion-icon name="search"></ion-icon></button>
+                  </ion-col>
+                  <ion-col col-2 no-padding>
+                          <button ion-button outline id="settingsBtn" (click)="goToFilters()" icon-only><ion-icon name="settings"></ion-icon></button>
+                  </ion-col>
+          </ion-row>
+
+
+          
+                  <ion-card class="animated fadeInLeft" *ngFor="let trade of trades; let i = index">
+                         
+                        <!-- <div *ngIf="trade?.trade?.items?.length === 0">
+                                <ion-row justify-content-center>
+                                        <h3>No results have been found.</h3>
+                                </ion-row>
+                        </div> -->
+                        <div *ngIf="trade?.trade?.items?.length === 2; else elseBlock">
+                                <ion-row justify-content-center align-items-center>
+                                        <ion-col col-5 *ngFor="let game of trade.trade.items | slice:0:1">
+                                                <ion-row justify-content-center>
+                                                        <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
+                                                        <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                </ion-row>
+                                                <ion-row justify-content-center>
+                                                        <p text-wrap class="game-title">{{game.game?.title | titlecase}}</p>
+                                                </ion-row>
+                                                <ion-row justify-content-center>
+                                                        <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                </ion-row>
+                                        </ion-col>
+
+                                        <ion-col col-2>
+                                                <ion-row justify-content-center>
+                                                        <ion-icon name="swap" id="swapIcon"></ion-icon>
+                                                </ion-row>
+                                        </ion-col>
+
+                                        <ion-col col-5 *ngFor="let game of trade.trade.items | slice:1">
+                                                <ion-row justify-content-center>
+                                                        <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
+                                                        <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                </ion-row>
+                                                <ion-row justify-content-center>
+                                                        <p text-wrap class="game-title">{{game.game?.title | titlecase}}</p>
+                                                </ion-row>
+                                                <ion-row justify-content-center>
+                                                        <p class="game-platform" text-wrap>{{game.game?.platform | titlecase}}</p>
+                                                </ion-row>
+                                        </ion-col>
+                                </ion-row>
+                        </div>
+
+                        <ng-template #elseBlock>
+                                <ion-row justify-content-center>
+                                        <ion-col col-6>
+                                        <ion-slides pager>
+                                                <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'interested'}">
+                                                <ion-row justify-content-center>
+                                                                <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                </ion-row>
+                                                <ion-row justify-content-center>
+                                                        <p class="game-title" text-wrap>{{game.game?.title | titlecase}}</p>
+                                                </ion-row>
+                                                <ion-row justify-content-center>
+                                                        <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                </ion-row>
+                                                </ion-slide>
+                                        </ion-slides>
+                                        </ion-col>
+                                        <ion-col col-6>
+                                        <ion-slides pager>
+                                                        <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'offering'}">
+                                                        <ion-row justify-content-center>
+                                                                        <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                        <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                        </ion-row>
+                                                        <ion-row justify-content-center>
+                                                                <p class="game-title" text-wrap>{{game.game?.title | titlecase}}</p>
+                                                        </ion-row>
+                                                        <ion-row justify-content-center>
+                                                                <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                        </ion-row>
+                                                        </ion-slide>
+                                        </ion-slides>
+                                        </ion-col>
+                                </ion-row>
+                        </ng-template>
+
+
+                </ion-card>
+                  
+
+          <ion-infinite-scroll #infiniteScroll (ionInfinite)="loadTrades($event)">
+                        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+           </ion-infinite-scroll>       
   </div>
 
 
 
 </ion-content>
+
+
+<!-- <ion-fab *ngIf="!loading" bottom right #fab>
+                <button ion-fab (click)="searchPartners()"><ion-icon name="search"></ion-icon></button>
+</ion-fab> -->

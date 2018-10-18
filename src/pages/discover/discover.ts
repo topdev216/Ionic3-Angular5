@@ -40,18 +40,18 @@ export class DiscoverPage {
 
     
     
-    this.query = query.value;
-    this.query = this.query.replace(/[^-\s]+/g, function(word) {
-      return word.replace(/^./, function(first) {
-        return first.toUpperCase();
-      });
-    });
+    this.query = query.value.toLowerCase();
+    // this.query = this.query.replace(/[^-\s]+/g, function(word) {
+    //   return word.replace(/^./, function(first) {
+    //     return first.toUpperCase();
+    //   });
+    // });
     console.log(this.query);
     
     this.queryResults = [];
     if(query.value !== ""){
       if(this.type == "username"){
-        this.dataService.searchUsersByUsername(query.value).then((snap)=>{
+        this.dataService.searchUsersByUsername(query.value.toLowerCase()).then((snap)=>{
           snap.forEach((childSnap)=>{
             console.log('search result:',childSnap.val());
             if(childSnap.key !== this.dataService.uid){
