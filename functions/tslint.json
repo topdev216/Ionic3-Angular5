@@ -43,10 +43,10 @@
 
     // Disallows a variable definition in an inner scope from shadowing a variable in an outer scope. Developers should
     // instead use a separate variable name.
-    "no-shadowed-variable": true,
+    // "no-shadowed-variable": true,
 
     // Empty blocks are almost never needed. Allow the one general exception: empty catch blocks.
-    "no-empty": [true, "allow-empty-catch"],
+    // "no-empty": [true, "allow-empty-catch"],
 
     // Functions must either be handled directly (e.g. with a catch() handler) or returned to another function.
     // This is a major source of errors in Cloud Functions and the team strongly recommends leaving this rule on.
@@ -81,7 +81,7 @@
     // understand the warning and wants to deploy anyway.
 
     // Warn when an empty interface is defined. These are generally not useful.
-    "no-empty-interface": {"severity": "warning"},
+    // "no-empty-interface": {"severity": "warning"},
 
     // Warn when an import will have side effects.
     "no-import-side-effect": {"severity": "warning"},
