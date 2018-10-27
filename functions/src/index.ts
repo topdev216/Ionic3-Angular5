@@ -3,7 +3,8 @@ import * as admin from 'firebase-admin';
 const igdb = require('igdb-api-node').default;
 const client = igdb('56b69359df896ff0135fe5d08e1ceaa8');
 const axios = require('axios');
-const api_key = "56b69359df896ff0135fe5d08e1ceaa8";
+const body = require('body-parser');
+const api_key = "f6852c0a510d23e7fb6af9575f0224bb";
 import * as cors from 'cors';
 import { DataSnapshot } from 'firebase-functions/lib/providers/database';
 const corsHandler = cors({origin: true});
@@ -986,10 +987,12 @@ export const unsubscribeTopic = functions.https.onRequest((req,res) =>{
 })
 
 export const friendNotification = functions.https.onRequest((req,res) => {
+    corsHandler(req,res,()=>{
     const username = req.body.username;
     const uid = req.body.userKey;
     const photoUID = req.body.uid;
 
+    console.log('body:',req.body);
     console.log('PHOTO UID:',photoUID);
 
     db.ref('/users/'+photoUID).once('value').then((user) => {
@@ -1204,10 +1207,14 @@ export const friendNotification = functions.https.onRequest((req,res) => {
     .catch((err)=>{
       console.log('Error getting value:',err)
     })
-
+    })
 })
 
 export const newDirectMessage = functions.https.onRequest((req,res) =>{
+
+    corsHandler(req,res,() =>{
+
+    
   console.log('new Direct');
 
     const uid = req.body.uid;
@@ -1306,21 +1313,29 @@ export const newDirectMessage = functions.https.onRequest((req,res) =>{
                     } as any;
                    
 
-                    defaultMessaging.send(message).then((data)=>{
-                        res.json(data);
+                    const notificationRef = db.ref('/notifications/'+receiverUid).push();
+                    notificationRef.set(message).then(()=>{
+                        defaultMessaging.send(message).then((data)=>{
+                            res.json(data);
+                        })
+                        .catch((err)=>{
+                            if(err.code === "messaging/registration-token-not-registered"){
+                                db.ref('/users/'+receiverUid).update({
+                                    not_available_phone:true
+                                })
+                                .catch((err)=>{
+                                  console.log('Error updating value:',err);
+                                })
+                            }
+                            console.log('Error sending phone notification:',err);
+                            res.json(err);
+                        })
                     })
                     .catch((err)=>{
-                        if(err.code === "messaging/registration-token-not-registered"){
-                            db.ref('/users/'+receiverUid).update({
-                                not_available_phone:true
-                            })
-                            .catch((err)=>{
-                              console.log('Error updating value:',err);
-                            })
-                        }
-                        console.log('Error sending phone notification:',err);
+                        console.log('Error saving value:',err);
                         res.json(err);
                     })
+                   
                 }
                 else{
                     res.json({message:'no device to send'});
@@ -1347,19 +1362,27 @@ export const newDirectMessage = functions.https.onRequest((req,res) =>{
                             receiverUid:receiverUid
                         }
                     } as any;
-                    defaultMessaging.send(message).then((data)=>{
-                        res.json(data);
+
+                    const notificationRef = db.ref('/notifications/'+receiverUid).push();
+                    notificationRef.set(message).then(()=>{
+                        defaultMessaging.send(message).then((data)=>{
+                            res.json(data);
+                        })
+                        .catch((err)=>{
+                            if(err.code === "messaging/registration-token-not-registered"){
+                                db.ref('/users/'+receiverUid).update({
+                                    not_available_browser:true
+                                })
+                                .catch((err)=>{
+                                  console.log('Error updating value:',err);
+                                })
+                            }
+                            console.log('Error sending browser notification:',err);
+                            res.json(err);
+                        })
                     })
                     .catch((err)=>{
-                        if(err.code === "messaging/registration-token-not-registered"){
-                            db.ref('/users/'+receiverUid).update({
-                                not_available_browser:true
-                            })
-                            .catch((err)=>{
-                              console.log('Error updating value:',err);
-                            })
-                        }
-                        console.log('Error sending browser notification:',err);
+                        console.log('Error saving value:',err);
                         res.json(err);
                     })
                 }
@@ -1440,35 +1463,44 @@ export const newDirectMessage = functions.https.onRequest((req,res) =>{
                     }
                 } as any;
 
-                defaultMessaging.send(messagePhone).then(()=>{
-                    defaultMessaging.send(messageBrowser).then((data)=>{
-                        res.json(data);
+                
+                const notificationRef = db.ref('/notifications/'+receiverUid).push();
+                notificationRef.set(messageBrowser).then(()=>{
+                    defaultMessaging.send(messagePhone).then(()=>{
+                        defaultMessaging.send(messageBrowser).then((data)=>{
+                            res.json(data);
+                        })
+                        .catch((err)=>{
+                            if(err.code === "messaging/registration-token-not-registered"){
+                                db.ref('/users/'+receiverUid).update({
+                                    not_available_browser:true
+                                })
+                                .catch((err)=>{
+                                  console.log('Error updating value:',err);
+                                })
+                            }
+                            console.log('Error sending browser notification:',err);
+                            res.json(err);
+                        })
                     })
                     .catch((err)=>{
                         if(err.code === "messaging/registration-token-not-registered"){
                             db.ref('/users/'+receiverUid).update({
-                                not_available_browser:true
+                                not_available_phone:true
                             })
                             .catch((err)=>{
-                              console.log('Error updating value:',err);
+                              console.log('error updating value:',err);
                             })
                         }
-                        console.log('Error sending browser notification:',err);
+                        console.log('Error sending phone notification:',err);
                         res.json(err);
                     })
                 })
                 .catch((err)=>{
-                    if(err.code === "messaging/registration-token-not-registered"){
-                        db.ref('/users/'+receiverUid).update({
-                            not_available_phone:true
-                        })
-                        .catch((err)=>{
-                          console.log('error updating value:',err);
-                        })
-                    }
-                    console.log('Error sending phone notification:',err);
+                    console.log('Error saving value:',err)
                     res.json(err);
                 })
+               
             }
             else{
                 res.json({message:'no devices found'});
@@ -1489,18 +1521,33 @@ export const newDirectMessage = functions.https.onRequest((req,res) =>{
       console.log('Error getting value:',err);
     })
 })
+})
 
 export const getGames = functions.https.onRequest((req,res) => {
   corsHandler(req,res,() =>{
-    console.log(req.body);
+
+    const platforms = [];
+    db.ref('/platformTable').once('value').then((snap)=>{
+        snap.forEach((platform)=>{
+            platforms.push(platform.val());
+            return false;
+        })
+
+        const idArray = platforms.map( e => e.id).join(',');
+
+        console.log('platform ids:',idArray)
+        console.log(req.body);
+
+
 
         if(req.body.query !== ''){
 
+            if(req.body.platformID !== undefined && req.body.platformID !== null){
             console.log(req.body.platformID);
             const queryLowerCase = req.body.query.toLowerCase();
-            db.ref('/videogames/'+req.body.platformID).orderByChild('titleLower').startAt(queryLowerCase).endAt(queryLowerCase+'\uf8ff').limitToFirst(10).once('value')
+            db.ref('/videogames/'+req.body.platformID).orderByChild('titleLower').startAt(queryLowerCase).endAt(queryLowerCase+'\uf8ff').limitToFirst(15).once('value')
             .then( (snap) =>{
-                if(snap.val() !== null){
+                if(snap.val() !== null && snap.numChildren() > 10 ){
                         const array = [];
                         snap.forEach((child)=>{
                             console.log(child.val());
@@ -1546,8 +1593,8 @@ export const getGames = functions.https.onRequest((req,res) => {
                                                 url:coverImage
                                                 }
                                         })
-                                        .catch((err)=>{
-                                          console.log('Error setting value',err);
+                                        .catch((error)=>{
+                                            console.log('Error setting value:',error);
                                         })
                                     }
                                     else{
@@ -1569,8 +1616,8 @@ export const getGames = functions.https.onRequest((req,res) => {
                                                 url:coverImage
                                                 }
                                         })
-                                        .catch((err)=>{
-                                          console.log('Error setting value',err);
+                                        .catch((error)=>{
+                                            console.log('Error setting value:',error);
                                         })
                                     }
                                       
@@ -1587,15 +1634,84 @@ export const getGames = functions.https.onRequest((req,res) => {
                         })
                     }
                 })
-                .catch((err)=>{
-                  console.log('Error getting value:',err)
+                .catch((error)=>{
+                    console.log('Error getting value:',error);
                 })
+            }
+            else{
+            const queryLowerCase = req.body.query.toLowerCase();
 
-                
+            axios.get('https://api-endpoint.igdb.com/games/?search='+queryLowerCase+'&fields=name,cover,first_release_date,esrb,genres,platforms,popularity&order=popularity:desc&filter[version_parent][not_exists]=1&limit=15',{headers:{ 'user-key':api_key,'Accept':'application/json'}})
+
+                    .then( response => {
+                            response.data.forEach((game,index)=>{
+                                if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
+                                    response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
+                                    game.platforms.forEach((gamePlatform,index2)=>{
+                                        platforms.forEach((platform)=>{
+                                            if(gamePlatform === platform.id){
+                                                response.data[index].platforms[index2] = platform;
+                                            }
+                                        })
+                                    })
+                                }
+                                else{
+                                    response.data.splice(index,1);
+                                }
+                            })
+
+                            response.data.forEach((game,index)=>{
+                                if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
+                                    game.platforms.forEach((platform,index2)=>{
+                                        if(typeof platform === 'number'){
+                                            response.data[index].platforms.splice(index2,1);
+                                        }
+                                    })
+                                }
+                            })
+
+                            const reads = [];
+                            response.data.forEach((game,index)=>{
+                                if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
+                                    game.genres.forEach((genre,index2)=>{
+                                        const promise = axios.get('https://api-endpoint.igdb.com/genres/'+genre+'?fields=*',{headers:{ 'user-key':api_key,'Accept':'application/json'}}).then((res)=>{
+                                            console.log('genre data:',res.data[0]);
+                                            response.data[index].genres[index2] = res.data[0];
+                                            return 'promise finished';
+                                        },err =>{
+                                            return 'promise rejected';
+                                        })
+                                        reads.push(promise);
+                                    })
+                                }
+                                else{
+                                    response.data.splice(index,1);
+                                }
+                            })
+
+                            Promise.all(reads).then((values)=>{
+                                return res.status(200).json(response.data);
+                            })
+                            .catch((err)=>{
+                                return res.send(err);
+                            })
+                            
+                    })
+                        .catch(error=>{
+                            console.log(error);
+                            return res.status(400).send(error);
+                        })
+            }
         }
         else{
             res.json({value:"Empty request"});
         }
+
+    })
+    .catch((error)=>{
+        console.log('Error getting value');
+    })
+    
 
   })
 })

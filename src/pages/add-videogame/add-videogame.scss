@@ -16,9 +16,23 @@ page-add-videogame {
     .item {
         // padding-left: 16px;
         // padding-left: 16px;
-        padding-left:10px !important;
-        padding-bottom:10px;
-        background: transparent;
+        padding:5px;
+        color:color($colors,dark);
+        ion-icon{
+            font-size:25px;
+            color:color($colors,dark);
+        }
+        background: color($colors,primary);
+    }
+
+    .game-card{
+        padding:0;
+        margin-left:0px;
+    }
+
+    .game-offer{
+        // color:black;
+        // font-size:16px;
     }
 
     

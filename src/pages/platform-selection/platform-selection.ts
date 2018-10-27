@@ -37,8 +37,15 @@ export class PlatformSelectionPage {
   }
 
   select(name:string){
-    this.navCtrl.getPrevious().data.platform = name;
-    this.navCtrl.pop()
+    if(name === 'all'){
+      this.navCtrl.getPrevious().data.platform = null;
+      this.navCtrl.pop()
+    }
+    else{
+      this.navCtrl.getPrevious().data.platform = name;
+      this.navCtrl.pop()
+    }
+    
   }
 
 }

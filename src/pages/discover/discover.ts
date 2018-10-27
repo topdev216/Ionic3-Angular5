@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { ProfilePage } from '../profile/profile';
+import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
+import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 
 /**
  * Generated class for the DiscoverPage page.
@@ -23,13 +25,22 @@ export class DiscoverPage {
   private emptyResult:boolean = false;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService
+    , public backbuttonService: BackButtonProvider) {
 
     this.type = "username";
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DiscoverPage');
+  }
+
+  ionViewWillLeave(){
+    this.dataService.previousTab = 'DiscoverPage';
+  }
+  ionViewWillEnter(){
+    this.dataService.activeTab = 'DiscoverPage';
+    console.log(this.dataService.activeTab);
   }
 
   segmentChange(){

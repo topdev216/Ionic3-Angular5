@@ -1,0 +1,25 @@
+page-bug-report {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
+      .content{
+        background-color:#002147;
+
+        .item{
+          background:transparent;
+          padding:30px;
+        }
+        ion-select{
+          color:white;
+        }
+        ion-textarea{
+          color:white;
+          textarea{
+            height:100px;
+          }
+        }
+
+      }
+
+}

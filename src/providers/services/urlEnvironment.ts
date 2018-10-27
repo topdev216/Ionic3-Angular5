@@ -5,16 +5,16 @@ import { Injectable } from '@angular/core';
 export class UrlEnvironment {
 
     
-    private baseUrl = "https://tradeupgames.ngrok.io";
+    private baseUrl = "https://us-central1-tug-project-39442.cloudfunctions.net";
     private _getUserLocation = "https://www.googleapis.com/geolocation/v1/geolocate?key="
     private _getUserAddress = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
     private _getGamesAPI = this.baseUrl+"/getGames";
-    private _getPlatformsAPI = this.baseUrl+"/getPlatforms";
+    private _getPlatformsAPI = this.baseUrl+"/getPlatforms"
     private _igdbAPI = "https://api-endpoint.igdb.com/games/?search="
     private _stripeKey = "pk_test_itNpGHyfNYo5CBxYnrx9Ln8w";
     private apiKey = "56b69359df896ff0135fe5d08e1ceaa8";
     private _createCustomer = this.baseUrl+"/createCharge";
-    private _subscribeFCM = this.baseUrl+"/subscribeTopic";
+    private _subscribeFCM =this.baseUrl+"/subscribeTopic";
     private _sendFCM = this.baseUrl+"/messageTopic";
     private _sendInvitation = this.baseUrl+"/inviteUser";
     private _inviteChatroom = this.baseUrl+"/inviteChatroom";

@@ -13,7 +13,8 @@ const admin = require("firebase-admin");
 const igdb = require('igdb-api-node').default;
 const client = igdb('56b69359df896ff0135fe5d08e1ceaa8');
 const axios = require('axios');
-const api_key = "56b69359df896ff0135fe5d08e1ceaa8";
+const body = require('body-parser');
+const api_key = "f6852c0a510d23e7fb6af9575f0224bb";
 const cors = require("cors");
 const corsHandler = cors({ origin: true });
 // The Firebase Admin SDK to access the Firebase Realtime Database.
@@ -870,99 +871,169 @@ exports.unsubscribeTopic = functions.https.onRequest((req, res) => {
     });
 });
 exports.friendNotification = functions.https.onRequest((req, res) => {
-    const username = req.body.username;
-    const uid = req.body.userKey;
-    const photoUID = req.body.uid;
-    console.log('PHOTO UID:', photoUID);
-    db.ref('/users/' + photoUID).once('value').then((user) => {
-        const photo = user.val().coverPhoto;
-        db.ref('/notifications/' + uid).once('value').then((data) => {
-            let count = 0;
-            data.forEach((notification) => {
-                if (notification.val().data.type === 'social' && notification.val().data.uid === photoUID) {
-                    count++;
-                }
-                return false;
-            });
-            db.ref('/users/' + uid).once('value').then((data) => {
-                if (data.val().not_available_phone && data.val().not_available_browser) {
-                    console.log("user doesn't have a valid token");
-                    res.json({ error: true, message: 'user token is expired' });
-                }
-                else if (count > 0) {
-                    console.log('user has already been notificated');
-                    res.json({ message: 'user has already been notificated' });
-                }
-                else {
-                    const browserToken = data.val().browserToken;
-                    const phoneToken = data.val().phoneToken;
-                    const availablePhone = data.val().not_available_phone;
-                    const availableBrowser = data.val().not_available_browser;
-                    console.log('Retrieved browser token:', browserToken);
-                    console.log('Retrieved phoneToken:', phoneToken);
-                    const messageBrowser = {
-                        notification: {
-                            title: 'Friend Notification',
-                            body: username + ' added you as a friend!',
-                        },
-                        token: browserToken,
-                        data: {
-                            body: username + ' added you as a friend!',
-                            username: username,
-                            type: 'social',
-                            photo: photo,
-                            uid: photoUID,
-                            creationTime: Date.now().toString(),
-                        }
-                    };
-                    const messagePhone = {
-                        notification: {
-                            title: 'Friend Notification',
-                            body: username + ' added you as a friend!',
-                        },
-                        token: phoneToken,
-                        data: {
-                            body: username + ' added you as a friend!',
-                            username: username,
-                            type: 'social',
-                            photo: photo,
-                            uid: photoUID,
-                            creationTime: Date.now().toString(),
-                        }
-                    };
-                    // if(browserToken !== null){
-                    //     defaultMessaging.send(messageBrowser);
-                    // }
-                    // if(phoneToken !== null){
-                    //     defaultMessaging.send(messagePhone);
-                    // }
-                    if (browserToken !== undefined && phoneToken !== undefined && (!availableBrowser && !availablePhone)) {
-                        const browserRef = db.ref('/notifications/' + uid).push();
-                        browserRef.set({
+    corsHandler(req, res, () => {
+        const username = req.body.username;
+        const uid = req.body.userKey;
+        const photoUID = req.body.uid;
+        console.log('body:', req.body);
+        console.log('PHOTO UID:', photoUID);
+        db.ref('/users/' + photoUID).once('value').then((user) => {
+            const photo = user.val().coverPhoto;
+            db.ref('/notifications/' + uid).once('value').then((data) => {
+                let count = 0;
+                data.forEach((notification) => {
+                    if (notification.val().data.type === 'social' && notification.val().data.uid === photoUID) {
+                        count++;
+                    }
+                    return false;
+                });
+                db.ref('/users/' + uid).once('value').then((data) => {
+                    if (data.val().not_available_phone && data.val().not_available_browser) {
+                        console.log("user doesn't have a valid token");
+                        res.json({ error: true, message: 'user token is expired' });
+                    }
+                    else if (count > 0) {
+                        console.log('user has already been notificated');
+                        res.json({ message: 'user has already been notificated' });
+                    }
+                    else {
+                        const browserToken = data.val().browserToken;
+                        const phoneToken = data.val().phoneToken;
+                        const availablePhone = data.val().not_available_phone;
+                        const availableBrowser = data.val().not_available_browser;
+                        console.log('Retrieved browser token:', browserToken);
+                        console.log('Retrieved phoneToken:', phoneToken);
+                        const messageBrowser = {
+                            notification: {
+                                title: 'Friend Notification',
+                                body: username + ' added you as a friend!',
+                            },
+                            token: browserToken,
                             data: {
                                 body: username + ' added you as a friend!',
                                 username: username,
                                 type: 'social',
                                 photo: photo,
                                 uid: photoUID,
-                                creationTime: Date.now(),
-                                read: false
+                                creationTime: Date.now().toString(),
                             }
-                        }).then(() => {
-                            defaultMessaging.send(messageBrowser).then(() => {
-                                defaultMessaging.send(messagePhone).then(() => {
-                                    res.json({ message: 'friend notification sent!' });
+                        };
+                        const messagePhone = {
+                            notification: {
+                                title: 'Friend Notification',
+                                body: username + ' added you as a friend!',
+                            },
+                            token: phoneToken,
+                            data: {
+                                body: username + ' added you as a friend!',
+                                username: username,
+                                type: 'social',
+                                photo: photo,
+                                uid: photoUID,
+                                creationTime: Date.now().toString(),
+                            }
+                        };
+                        // if(browserToken !== null){
+                        //     defaultMessaging.send(messageBrowser);
+                        // }
+                        // if(phoneToken !== null){
+                        //     defaultMessaging.send(messagePhone);
+                        // }
+                        if (browserToken !== undefined && phoneToken !== undefined && (!availableBrowser && !availablePhone)) {
+                            const browserRef = db.ref('/notifications/' + uid).push();
+                            browserRef.set({
+                                data: {
+                                    body: username + ' added you as a friend!',
+                                    username: username,
+                                    type: 'social',
+                                    photo: photo,
+                                    uid: photoUID,
+                                    creationTime: Date.now(),
+                                    read: false
+                                }
+                            }).then(() => {
+                                defaultMessaging.send(messageBrowser).then(() => {
+                                    defaultMessaging.send(messagePhone).then(() => {
+                                        res.json({ message: 'friend notification sent!' });
+                                    }).catch((err) => {
+                                        console.log('Error sending phone message:', err.code);
+                                        if (err.code === "messaging/registration-token-not-registered") {
+                                            db.ref('/users/' + uid).update({
+                                                not_available_phone: true
+                                            })
+                                                .catch((err) => {
+                                                console.log('Error updating value:', err);
+                                            });
+                                        }
+                                        res.json(err);
+                                    });
                                 }).catch((err) => {
-                                    console.log('Error sending phone message:', err.code);
+                                    console.log('Error sending browser message:', err.code);
                                     if (err.code === "messaging/registration-token-not-registered") {
                                         db.ref('/users/' + uid).update({
-                                            not_available_phone: true
+                                            not_available_browser: true
                                         })
                                             .catch((err) => {
                                             console.log('Error updating value:', err);
                                         });
                                     }
                                     res.json(err);
+                                });
+                            })
+                                .catch((err) => {
+                                console.log('Error setting value:', err);
+                            });
+                        }
+                        else if (phoneToken !== undefined && !availablePhone) {
+                            defaultMessaging.send(messagePhone).then(() => {
+                                const phoneRef = db.ref('/notifications/' + uid).push();
+                                phoneRef.set({
+                                    data: {
+                                        body: username + ' added you as a friend!',
+                                        username: username,
+                                        type: 'social',
+                                        photo: photo,
+                                        uid: photoUID,
+                                        creationTime: Date.now(),
+                                        read: false
+                                    }
+                                }).then(() => {
+                                    res.json({ message: 'friend notification sent!' });
+                                })
+                                    .catch((err) => {
+                                    console.log('Error setting value:', err);
+                                });
+                            }).catch((err) => {
+                                console.log('Error sending phone message:', err.code);
+                                if (err.code === "messaging/registration-token-not-registered") {
+                                    db.ref('/users/' + uid).update({
+                                        not_available_phone: true
+                                    })
+                                        .catch((err) => {
+                                        console.log('Error updating value:', err);
+                                    });
+                                }
+                                res.json(err);
+                            });
+                        }
+                        else if (browserToken !== undefined && !availableBrowser) {
+                            defaultMessaging.send(messageBrowser).then(() => {
+                                const browserRef = db.ref('/notifications/' + uid).push();
+                                browserRef.set({
+                                    data: {
+                                        body: username + ' added you as a friend!',
+                                        type: 'social',
+                                        username: username,
+                                        photo: photo,
+                                        uid: photoUID,
+                                        creationTime: Date.now(),
+                                        read: false
+                                    }
+                                }).then(() => {
+                                    res.json({ message: 'friend notification sent!' });
+                                })
+                                    .catch((err) => {
+                                    console.log('Error setting value:', err);
                                 });
                             }).catch((err) => {
                                 console.log('Error sending browser message:', err.code);
@@ -976,80 +1047,16 @@ exports.friendNotification = functions.https.onRequest((req, res) => {
                                 }
                                 res.json(err);
                             });
-                        })
-                            .catch((err) => {
-                            console.log('Error setting value:', err);
-                        });
+                        }
+                        else {
+                            console.log('no token associated with this user...');
+                            res.json({ message: 'no token found!' });
+                        }
                     }
-                    else if (phoneToken !== undefined && !availablePhone) {
-                        defaultMessaging.send(messagePhone).then(() => {
-                            const phoneRef = db.ref('/notifications/' + uid).push();
-                            phoneRef.set({
-                                data: {
-                                    body: username + ' added you as a friend!',
-                                    username: username,
-                                    type: 'social',
-                                    photo: photo,
-                                    uid: photoUID,
-                                    creationTime: Date.now(),
-                                    read: false
-                                }
-                            }).then(() => {
-                                res.json({ message: 'friend notification sent!' });
-                            })
-                                .catch((err) => {
-                                console.log('Error setting value:', err);
-                            });
-                        }).catch((err) => {
-                            console.log('Error sending phone message:', err.code);
-                            if (err.code === "messaging/registration-token-not-registered") {
-                                db.ref('/users/' + uid).update({
-                                    not_available_phone: true
-                                })
-                                    .catch((err) => {
-                                    console.log('Error updating value:', err);
-                                });
-                            }
-                            res.json(err);
-                        });
-                    }
-                    else if (browserToken !== undefined && !availableBrowser) {
-                        defaultMessaging.send(messageBrowser).then(() => {
-                            const browserRef = db.ref('/notifications/' + uid).push();
-                            browserRef.set({
-                                data: {
-                                    body: username + ' added you as a friend!',
-                                    type: 'social',
-                                    username: username,
-                                    photo: photo,
-                                    uid: photoUID,
-                                    creationTime: Date.now(),
-                                    read: false
-                                }
-                            }).then(() => {
-                                res.json({ message: 'friend notification sent!' });
-                            })
-                                .catch((err) => {
-                                console.log('Error setting value:', err);
-                            });
-                        }).catch((err) => {
-                            console.log('Error sending browser message:', err.code);
-                            if (err.code === "messaging/registration-token-not-registered") {
-                                db.ref('/users/' + uid).update({
-                                    not_available_browser: true
-                                })
-                                    .catch((err) => {
-                                    console.log('Error updating value:', err);
-                                });
-                            }
-                            res.json(err);
-                        });
-                    }
-                    else {
-                        console.log('no token associated with this user...');
-                        res.json({ message: 'no token found!' });
-                    }
-                }
+                })
+                    .catch((err) => {
+                    console.log('Error getting value:', err);
+                });
             })
                 .catch((err) => {
                 console.log('Error getting value:', err);
@@ -1058,53 +1065,78 @@ exports.friendNotification = functions.https.onRequest((req, res) => {
             .catch((err) => {
             console.log('Error getting value:', err);
         });
-    })
-        .catch((err) => {
-        console.log('Error getting value:', err);
     });
 });
 exports.newDirectMessage = functions.https.onRequest((req, res) => {
-    console.log('new Direct');
-    const uid = req.body.uid;
-    const chatKey = req.body.chatKey;
-    const username = req.body.username;
-    const messageBody = req.body.message;
-    const photo = req.body.photo;
-    let receiverUid = {};
-    db.ref('/directChats/' + chatKey + '/participants').once('value').then((snap) => {
-        snap.forEach((participant) => {
-            if (participant.key !== uid) {
-                receiverUid = participant.key;
-            }
-            return false;
-        });
-        db.ref('/users/' + receiverUid).once('value').then((snap) => {
-            const receiverUsername = snap.val().username;
-            const browserToken = snap.val().browserToken;
-            const phoneToken = snap.val().phoneToken;
-            console.log('Receiver uid:', receiverUid);
-            console.log('CHAT DISABLE:', snap.val().chat_notification_disable);
-            console.log('BROWSER DISABLE:', snap.val().not_available_browser);
-            console.log('PHONE DISABLE:', snap.val().not_available_phone);
-            console.log('browser token:', browserToken);
-            console.log('phone Token:', phoneToken);
-            if (snap.val().not_available_browser && snap.val().not_available_phone) {
-                res.json({ message: "can't notificate this user" });
-            }
-            else if (snap.val().chat_notification_disable) {
-                res.json({ message: "can't notificate this user" });
-            }
-            else if (snap.val().not_available_browser) {
-                if (phoneToken !== undefined || phoneToken !== null) {
-                    const message = {
-                        token: phoneToken,
-                        android: {
-                            priority: 'high',
-                            notification: {
-                                title: username + ' sent you a direct message',
-                                body: username + ': ' + messageBody,
-                                clickAction: 'FCM_PLUGIN_ACTIVITY',
-                                sound: 'default'
+    corsHandler(req, res, () => {
+        console.log('new Direct');
+        const uid = req.body.uid;
+        const chatKey = req.body.chatKey;
+        const username = req.body.username;
+        const messageBody = req.body.message;
+        const photo = req.body.photo;
+        let receiverUid = {};
+        db.ref('/directChats/' + chatKey + '/participants').once('value').then((snap) => {
+            snap.forEach((participant) => {
+                if (participant.key !== uid) {
+                    receiverUid = participant.key;
+                }
+                return false;
+            });
+            db.ref('/users/' + receiverUid).once('value').then((snap) => {
+                const receiverUsername = snap.val().username;
+                const browserToken = snap.val().browserToken;
+                const phoneToken = snap.val().phoneToken;
+                console.log('Receiver uid:', receiverUid);
+                console.log('CHAT DISABLE:', snap.val().chat_notification_disable);
+                console.log('BROWSER DISABLE:', snap.val().not_available_browser);
+                console.log('PHONE DISABLE:', snap.val().not_available_phone);
+                console.log('browser token:', browserToken);
+                console.log('phone Token:', phoneToken);
+                if (snap.val().not_available_browser && snap.val().not_available_phone) {
+                    res.json({ message: "can't notificate this user" });
+                }
+                else if (snap.val().chat_notification_disable) {
+                    res.json({ message: "can't notificate this user" });
+                }
+                else if (snap.val().not_available_browser) {
+                    if (phoneToken !== undefined || phoneToken !== null) {
+                        const message = {
+                            token: phoneToken,
+                            android: {
+                                priority: 'high',
+                                notification: {
+                                    title: username + ' sent you a direct message',
+                                    body: username + ': ' + messageBody,
+                                    clickAction: 'FCM_PLUGIN_ACTIVITY',
+                                    sound: 'default'
+                                },
+                                data: {
+                                    body: username + ': ' + messageBody,
+                                    type: 'social',
+                                    photo: photo,
+                                    uid: uid,
+                                    creationTime: Date.now().toString(),
+                                    chatFlag: "true",
+                                    username: username,
+                                    chatKey: chatKey,
+                                    receiverUsername: receiverUsername,
+                                    receiverUid: receiverUid
+                                }
+                            },
+                            apns: {
+                                headers: {
+                                    'apns-priority': '10'
+                                },
+                                payload: {
+                                    aps: {
+                                        alert: {
+                                            title: username + ' sent you a direct message',
+                                            body: username + ': ' + messageBody,
+                                        },
+                                        badge: 42,
+                                    }
+                                }
                             },
                             data: {
                                 body: username + ': ' + messageBody,
@@ -1117,300 +1149,367 @@ exports.newDirectMessage = functions.https.onRequest((req, res) => {
                                 chatKey: chatKey,
                                 receiverUsername: receiverUsername,
                                 receiverUid: receiverUid
-                            }
-                        },
-                        apns: {
-                            headers: {
-                                'apns-priority': '10'
                             },
-                            payload: {
-                                aps: {
-                                    alert: {
-                                        title: username + ' sent you a direct message',
-                                        body: username + ': ' + messageBody,
-                                    },
-                                    badge: 42,
-                                }
-                            }
-                        },
-                        data: {
-                            body: username + ': ' + messageBody,
-                            type: 'social',
-                            photo: photo,
-                            uid: uid,
-                            creationTime: Date.now().toString(),
-                            chatFlag: "true",
-                            username: username,
-                            chatKey: chatKey,
-                            receiverUsername: receiverUsername,
-                            receiverUid: receiverUid
-                        },
-                    };
-                    defaultMessaging.send(message).then((data) => {
-                        res.json(data);
-                    })
-                        .catch((err) => {
-                        if (err.code === "messaging/registration-token-not-registered") {
-                            db.ref('/users/' + receiverUid).update({
-                                not_available_phone: true
+                        };
+                        const notificationRef = db.ref('/notifications/' + receiverUid).push();
+                        notificationRef.set(message).then(() => {
+                            defaultMessaging.send(message).then((data) => {
+                                res.json(data);
                             })
                                 .catch((err) => {
-                                console.log('Error updating value:', err);
-                            });
-                        }
-                        console.log('Error sending phone notification:', err);
-                        res.json(err);
-                    });
-                }
-                else {
-                    res.json({ message: 'no device to send' });
-                }
-            }
-            else if (snap.val().not_available_phone) {
-                if (browserToken !== null || browserToken !== undefined) {
-                    const message = {
-                        token: browserToken,
-                        notification: {
-                            title: username + ' sent you a direct message',
-                            body: username + ': ' + messageBody,
-                        },
-                        data: {
-                            body: username + ': ' + messageBody,
-                            type: 'social',
-                            photo: photo,
-                            uid: uid,
-                            creationTime: Date.now().toString(),
-                            chatFlag: "true",
-                            username: username,
-                            chatKey: chatKey,
-                            receiverUsername: receiverUsername,
-                            receiverUid: receiverUid
-                        }
-                    };
-                    defaultMessaging.send(message).then((data) => {
-                        res.json(data);
-                    })
-                        .catch((err) => {
-                        if (err.code === "messaging/registration-token-not-registered") {
-                            db.ref('/users/' + receiverUid).update({
-                                not_available_browser: true
-                            })
-                                .catch((err) => {
-                                console.log('Error updating value:', err);
-                            });
-                        }
-                        console.log('Error sending browser notification:', err);
-                        res.json(err);
-                    });
-                }
-                else {
-                    res.json({ message: 'no device to send' });
-                }
-            }
-            else {
-                if ((browserToken !== null || browserToken !== undefined) && (phoneToken !== null || phoneToken !== undefined)) {
-                    const messagePhone = {
-                        token: phoneToken,
-                        android: {
-                            priority: 'high',
-                            notification: {
-                                title: username + ' sent you a direct message',
-                                body: username + ': ' + messageBody,
-                                clickAction: 'FCM_PLUGIN_ACTIVITY',
-                                sound: 'default'
-                            },
-                            data: {
-                                body: username + ': ' + messageBody,
-                                type: 'social',
-                                photo: photo,
-                                uid: uid,
-                                creationTime: Date.now().toString(),
-                                chatFlag: "true",
-                                username: username,
-                                chatKey: chatKey,
-                                receiverUsername: receiverUsername,
-                                receiverUid: receiverUid
-                            }
-                        },
-                        apns: {
-                            headers: {
-                                'apns-priority': '10'
-                            },
-                            payload: {
-                                aps: {
-                                    alert: {
-                                        title: username + ' sent you a direct message',
-                                        body: username + ': ' + messageBody,
-                                    },
-                                    badge: 42,
+                                if (err.code === "messaging/registration-token-not-registered") {
+                                    db.ref('/users/' + receiverUid).update({
+                                        not_available_phone: true
+                                    })
+                                        .catch((err) => {
+                                        console.log('Error updating value:', err);
+                                    });
                                 }
-                            }
-                        },
-                        data: {
-                            body: username + ': ' + messageBody,
-                            type: 'social',
-                            photo: photo,
-                            uid: uid,
-                            creationTime: Date.now().toString(),
-                            chatFlag: "true",
-                            username: username,
-                            chatKey: chatKey,
-                            receiverUsername: receiverUsername,
-                            receiverUid: receiverUid
-                        },
-                    };
-                    const messageBrowser = {
-                        notification: {
-                            title: username + ' sent you a direct message',
-                            body: username + ': ' + messageBody,
-                        },
-                        token: browserToken,
-                        data: {
-                            body: username + ': ' + messageBody,
-                            type: 'social',
-                            photo: photo,
-                            uid: uid,
-                            creationTime: Date.now().toString(),
-                            chatFlag: "true",
-                            username: username,
-                            chatKey: chatKey,
-                            receiverUsername: receiverUsername,
-                            receiverUid: receiverUid
-                        }
-                    };
-                    defaultMessaging.send(messagePhone).then(() => {
-                        defaultMessaging.send(messageBrowser).then((data) => {
-                            res.json(data);
+                                console.log('Error sending phone notification:', err);
+                                res.json(err);
+                            });
                         })
                             .catch((err) => {
-                            if (err.code === "messaging/registration-token-not-registered") {
-                                db.ref('/users/' + receiverUid).update({
-                                    not_available_browser: true
-                                })
-                                    .catch((err) => {
-                                    console.log('Error updating value:', err);
-                                });
-                            }
-                            console.log('Error sending browser notification:', err);
+                            console.log('Error saving value:', err);
                             res.json(err);
                         });
-                    })
-                        .catch((err) => {
-                        if (err.code === "messaging/registration-token-not-registered") {
-                            db.ref('/users/' + receiverUid).update({
-                                not_available_phone: true
+                    }
+                    else {
+                        res.json({ message: 'no device to send' });
+                    }
+                }
+                else if (snap.val().not_available_phone) {
+                    if (browserToken !== null || browserToken !== undefined) {
+                        const message = {
+                            token: browserToken,
+                            notification: {
+                                title: username + ' sent you a direct message',
+                                body: username + ': ' + messageBody,
+                            },
+                            data: {
+                                body: username + ': ' + messageBody,
+                                type: 'social',
+                                photo: photo,
+                                uid: uid,
+                                creationTime: Date.now().toString(),
+                                chatFlag: "true",
+                                username: username,
+                                chatKey: chatKey,
+                                receiverUsername: receiverUsername,
+                                receiverUid: receiverUid
+                            }
+                        };
+                        const notificationRef = db.ref('/notifications/' + receiverUid).push();
+                        notificationRef.set(message).then(() => {
+                            defaultMessaging.send(message).then((data) => {
+                                res.json(data);
                             })
                                 .catch((err) => {
-                                console.log('error updating value:', err);
+                                if (err.code === "messaging/registration-token-not-registered") {
+                                    db.ref('/users/' + receiverUid).update({
+                                        not_available_browser: true
+                                    })
+                                        .catch((err) => {
+                                        console.log('Error updating value:', err);
+                                    });
+                                }
+                                console.log('Error sending browser notification:', err);
+                                res.json(err);
                             });
-                        }
-                        console.log('Error sending phone notification:', err);
-                        res.json(err);
-                    });
+                        })
+                            .catch((err) => {
+                            console.log('Error saving value:', err);
+                            res.json(err);
+                        });
+                    }
+                    else {
+                        res.json({ message: 'no device to send' });
+                    }
                 }
                 else {
-                    res.json({ message: 'no devices found' });
+                    if ((browserToken !== null || browserToken !== undefined) && (phoneToken !== null || phoneToken !== undefined)) {
+                        const messagePhone = {
+                            token: phoneToken,
+                            android: {
+                                priority: 'high',
+                                notification: {
+                                    title: username + ' sent you a direct message',
+                                    body: username + ': ' + messageBody,
+                                    clickAction: 'FCM_PLUGIN_ACTIVITY',
+                                    sound: 'default'
+                                },
+                                data: {
+                                    body: username + ': ' + messageBody,
+                                    type: 'social',
+                                    photo: photo,
+                                    uid: uid,
+                                    creationTime: Date.now().toString(),
+                                    chatFlag: "true",
+                                    username: username,
+                                    chatKey: chatKey,
+                                    receiverUsername: receiverUsername,
+                                    receiverUid: receiverUid
+                                }
+                            },
+                            apns: {
+                                headers: {
+                                    'apns-priority': '10'
+                                },
+                                payload: {
+                                    aps: {
+                                        alert: {
+                                            title: username + ' sent you a direct message',
+                                            body: username + ': ' + messageBody,
+                                        },
+                                        badge: 42,
+                                    }
+                                }
+                            },
+                            data: {
+                                body: username + ': ' + messageBody,
+                                type: 'social',
+                                photo: photo,
+                                uid: uid,
+                                creationTime: Date.now().toString(),
+                                chatFlag: "true",
+                                username: username,
+                                chatKey: chatKey,
+                                receiverUsername: receiverUsername,
+                                receiverUid: receiverUid
+                            },
+                        };
+                        const messageBrowser = {
+                            notification: {
+                                title: username + ' sent you a direct message',
+                                body: username + ': ' + messageBody,
+                            },
+                            token: browserToken,
+                            data: {
+                                body: username + ': ' + messageBody,
+                                type: 'social',
+                                photo: photo,
+                                uid: uid,
+                                creationTime: Date.now().toString(),
+                                chatFlag: "true",
+                                username: username,
+                                chatKey: chatKey,
+                                receiverUsername: receiverUsername,
+                                receiverUid: receiverUid
+                            }
+                        };
+                        const notificationRef = db.ref('/notifications/' + receiverUid).push();
+                        notificationRef.set(messageBrowser).then(() => {
+                            defaultMessaging.send(messagePhone).then(() => {
+                                defaultMessaging.send(messageBrowser).then((data) => {
+                                    res.json(data);
+                                })
+                                    .catch((err) => {
+                                    if (err.code === "messaging/registration-token-not-registered") {
+                                        db.ref('/users/' + receiverUid).update({
+                                            not_available_browser: true
+                                        })
+                                            .catch((err) => {
+                                            console.log('Error updating value:', err);
+                                        });
+                                    }
+                                    console.log('Error sending browser notification:', err);
+                                    res.json(err);
+                                });
+                            })
+                                .catch((err) => {
+                                if (err.code === "messaging/registration-token-not-registered") {
+                                    db.ref('/users/' + receiverUid).update({
+                                        not_available_phone: true
+                                    })
+                                        .catch((err) => {
+                                        console.log('error updating value:', err);
+                                    });
+                                }
+                                console.log('Error sending phone notification:', err);
+                                res.json(err);
+                            });
+                        })
+                            .catch((err) => {
+                            console.log('Error saving value:', err);
+                            res.json(err);
+                        });
+                    }
+                    else {
+                        res.json({ message: 'no devices found' });
+                    }
                 }
-            }
+            })
+                .catch((err) => {
+                console.log('error getting value:', err);
+            });
         })
             .catch((err) => {
-            console.log('error getting value:', err);
+            console.log('Error getting value:', err);
         });
-    })
-        .catch((err) => {
-        console.log('Error getting value:', err);
     });
 });
 exports.getGames = functions.https.onRequest((req, res) => {
     corsHandler(req, res, () => {
-        console.log(req.body);
-        if (req.body.query !== '') {
-            console.log(req.body.platformID);
-            const queryLowerCase = req.body.query.toLowerCase();
-            db.ref('/videogames/' + req.body.platformID).orderByChild('titleLower').startAt(queryLowerCase).endAt(queryLowerCase + '\uf8ff').limitToFirst(10).once('value')
-                .then((snap) => {
-                if (snap.val() !== null) {
-                    const array = [];
-                    snap.forEach((child) => {
-                        console.log(child.val());
-                        array.push(child.val());
-                        return false;
+        const platforms = [];
+        db.ref('/platformTable').once('value').then((snap) => {
+            snap.forEach((platform) => {
+                platforms.push(platform.val());
+                return false;
+            });
+            const idArray = platforms.map(e => e.id).join(',');
+            console.log('platform ids:', idArray);
+            console.log(req.body);
+            if (req.body.query !== '') {
+                if (req.body.platformID !== undefined && req.body.platformID !== null) {
+                    console.log(req.body.platformID);
+                    const queryLowerCase = req.body.query.toLowerCase();
+                    db.ref('/videogames/' + req.body.platformID).orderByChild('titleLower').startAt(queryLowerCase).endAt(queryLowerCase + '\uf8ff').limitToFirst(15).once('value')
+                        .then((snap) => {
+                        if (snap.val() !== null && snap.numChildren() > 10) {
+                            const array = [];
+                            snap.forEach((child) => {
+                                console.log(child.val());
+                                array.push(child.val());
+                                return false;
+                            });
+                            res.json(array);
+                        }
+                        else {
+                            console.log('no title found');
+                            axios.get('https://api-endpoint.igdb.com/games/?search=' + req.body.query + '&fields=name,cover,genres,first_release_date,esrb&filter[version_parent][not_exists]=1&expand=genres&filter[release_dates.platform][eq]=' + req.body.platformID, { headers: { 'user-key': api_key, 'Accept': 'application/json' } })
+                                .then(response => {
+                                response.data.forEach((videogame) => {
+                                    console.log(videogame);
+                                    const videogameRef = db.ref('/videogames/' + req.body.platformID + '/' + videogame.id);
+                                    if (videogame.genres !== undefined && videogame.first_release_date !== undefined && videogame.cover !== undefined) {
+                                        const coverImage = ("//images.igdb.com/igdb/image/upload/t_cover_small_2x/" + videogame.cover.cloudinary_id + '.jpg').substring(2);
+                                        if (videogame.esrb !== undefined) {
+                                            videogameRef.set({
+                                                id: videogame.id,
+                                                name: videogame.name,
+                                                titleLower: videogame.name.toLowerCase(),
+                                                offering_count: 0,
+                                                genres: [
+                                                    {
+                                                        name: videogame.genres[0].name
+                                                    }
+                                                ],
+                                                first_release_date: videogame.first_release_date,
+                                                esrb: {
+                                                    rating: videogame.esrb.rating
+                                                },
+                                                cover: {
+                                                    url: coverImage
+                                                }
+                                            })
+                                                .catch((error) => {
+                                                console.log('Error setting value:', error);
+                                            });
+                                        }
+                                        else {
+                                            videogameRef.set({
+                                                id: videogame.id,
+                                                name: videogame.name,
+                                                titleLower: videogame.name.toLowerCase(),
+                                                offering_count: 0,
+                                                genres: [
+                                                    {
+                                                        name: videogame.genres[0].name
+                                                    }
+                                                ],
+                                                first_release_date: videogame.first_release_date,
+                                                esrb: {
+                                                    rating: 'undefined'
+                                                },
+                                                cover: {
+                                                    url: coverImage
+                                                }
+                                            })
+                                                .catch((error) => {
+                                                console.log('Error setting value:', error);
+                                            });
+                                        }
+                                    }
+                                    // console.log(videogame);
+                                });
+                                res.json(response.data);
+                                // console.log(response.data)
+                            })
+                                .catch(error => {
+                                console.log(error);
+                            });
+                        }
+                    })
+                        .catch((error) => {
+                        console.log('Error getting value:', error);
                     });
-                    res.json(array);
                 }
                 else {
-                    console.log('no title found');
-                    axios.get('https://api-endpoint.igdb.com/games/?search=' + req.body.query + '&fields=name,cover,genres,first_release_date,esrb&filter[version_parent][not_exists]=1&expand=genres&filter[release_dates.platform][eq]=' + req.body.platformID, { headers: { 'user-key': api_key, 'Accept': 'application/json' } })
+                    const queryLowerCase = req.body.query.toLowerCase();
+                    axios.get('https://api-endpoint.igdb.com/games/?search=' + queryLowerCase + '&fields=name,cover,first_release_date,esrb,genres,platforms,popularity&order=popularity:desc&filter[version_parent][not_exists]=1&limit=15', { headers: { 'user-key': api_key, 'Accept': 'application/json' } })
                         .then(response => {
-                        response.data.forEach((videogame) => {
-                            console.log(videogame);
-                            const videogameRef = db.ref('/videogames/' + req.body.platformID + '/' + videogame.id);
-                            if (videogame.genres !== undefined && videogame.first_release_date !== undefined && videogame.cover !== undefined) {
-                                const coverImage = ("//images.igdb.com/igdb/image/upload/t_cover_small_2x/" + videogame.cover.cloudinary_id + '.jpg').substring(2);
-                                if (videogame.esrb !== undefined) {
-                                    videogameRef.set({
-                                        id: videogame.id,
-                                        name: videogame.name,
-                                        titleLower: videogame.name.toLowerCase(),
-                                        offering_count: 0,
-                                        genres: [
-                                            {
-                                                name: videogame.genres[0].name
-                                            }
-                                        ],
-                                        first_release_date: videogame.first_release_date,
-                                        esrb: {
-                                            rating: videogame.esrb.rating
-                                        },
-                                        cover: {
-                                            url: coverImage
+                        response.data.forEach((game, index) => {
+                            if (game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')) {
+                                response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/" + response.data[index].cover.cloudinary_id + '.jpg';
+                                game.platforms.forEach((gamePlatform, index2) => {
+                                    platforms.forEach((platform) => {
+                                        if (gamePlatform === platform.id) {
+                                            response.data[index].platforms[index2] = platform;
                                         }
-                                    })
-                                        .catch((err) => {
-                                        console.log('Error setting value', err);
                                     });
-                                }
-                                else {
-                                    videogameRef.set({
-                                        id: videogame.id,
-                                        name: videogame.name,
-                                        titleLower: videogame.name.toLowerCase(),
-                                        offering_count: 0,
-                                        genres: [
-                                            {
-                                                name: videogame.genres[0].name
-                                            }
-                                        ],
-                                        first_release_date: videogame.first_release_date,
-                                        esrb: {
-                                            rating: 'undefined'
-                                        },
-                                        cover: {
-                                            url: coverImage
-                                        }
-                                    })
-                                        .catch((err) => {
-                                        console.log('Error setting value', err);
-                                    });
-                                }
+                                });
                             }
-                            // console.log(videogame);
+                            else {
+                                response.data.splice(index, 1);
+                            }
                         });
-                        res.json(response.data);
-                        // console.log(response.data)
+                        response.data.forEach((game, index) => {
+                            if (game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')) {
+                                game.platforms.forEach((platform, index2) => {
+                                    if (typeof platform === 'number') {
+                                        response.data[index].platforms.splice(index2, 1);
+                                    }
+                                });
+                            }
+                        });
+                        const reads = [];
+                        response.data.forEach((game, index) => {
+                            if (game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')) {
+                                game.genres.forEach((genre, index2) => {
+                                    const promise = axios.get('https://api-endpoint.igdb.com/genres/' + genre + '?fields=*', { headers: { 'user-key': api_key, 'Accept': 'application/json' } }).then((res) => {
+                                        console.log('genre data:', res.data[0]);
+                                        response.data[index].genres[index2] = res.data[0];
+                                        return 'promise finished';
+                                    }, err => {
+                                        return 'promise rejected';
+                                    });
+                                    reads.push(promise);
+                                });
+                            }
+                            else {
+                                response.data.splice(index, 1);
+                            }
+                        });
+                        Promise.all(reads).then((values) => {
+                            return res.status(200).json(response.data);
+                        })
+                            .catch((err) => {
+                            return res.send(err);
+                        });
                     })
                         .catch(error => {
                         console.log(error);
+                        return res.status(400).send(error);
                     });
                 }
-            })
-                .catch((err) => {
-                console.log('Error getting value:', err);
-            });
-        }
-        else {
-            res.json({ value: "Empty request" });
-        }
+            }
+            else {
+                res.json({ value: "Empty request" });
+            }
+        })
+            .catch((error) => {
+            console.log('Error getting value');
+        });
     });
 });
 exports.getTrades = functions.https.onRequest((req, res) => {

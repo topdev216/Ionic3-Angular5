@@ -11,11 +11,12 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@ionic-native/keyboard": "^4.16.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "express": "^4.16.4",
-    "firebase-admin": "^6.0.0",
+    "firebase-admin": "^6.1.0",
     "firebase-functions": "^2.0.3",
     "igdb-api-node": "^3.1.7",
     "stripe": "^6.12.1"

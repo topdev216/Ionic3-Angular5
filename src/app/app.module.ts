@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule, ComponentRef } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, Tabs } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { HttpClient,HttpClientModule } from '@angular/common/http';
@@ -50,6 +50,10 @@ import { FriendListPage } from '../pages/friend-list/friend-list';
 import { FriendPopoverComponent } from '../components/friend-popover/friend-popover';
 import { GameTypePipe } from '../pipes/game-type/game-type';
 import { HomeFiltersPage } from '../pages/home-filters/home-filters';
+import { BugReportPage } from '../pages/bug-report/bug-report';
+import { Keyboard } from '@ionic-native/keyboard';
+import { BackButtonProvider } from '../providers/backbutton/backbutton';
+import { JoinPipe } from '../pipes/join/join';
 
 
 
@@ -100,7 +104,9 @@ const firebaseConfig = {
     FriendListPage,
     FriendPopoverComponent,
     GameTypePipe,
-    HomeFiltersPage
+    HomeFiltersPage,
+    BugReportPage,
+    JoinPipe
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -149,7 +155,8 @@ const firebaseConfig = {
     ShippingAddressFormPage,
     FriendListPage,
     FriendPopoverComponent,
-    HomeFiltersPage
+    HomeFiltersPage,
+    BugReportPage,
     
   ],
   providers: [
@@ -161,7 +168,9 @@ const firebaseConfig = {
     UrlEnvironment,
     UsernameValidator,
     FCM,
-    GooglePlus
+    GooglePlus,
+    Keyboard,
+    BackButtonProvider
   ]
 })
 export class AppModule {}

@@ -7,6 +7,7 @@ import * as firebase from 'firebase/app';
 import { PaymentModalPage } from '../../pages/payment-modal/payment-modal';
 import { GamelistPage } from '../../pages/gamelist/gamelist';
 import { ProfilePage } from '../../pages/profile/profile';
+import { BugReportPage } from '../../pages/bug-report/bug-report';
 /**
  * Generated class for the MenuComponent component.
  *
@@ -58,6 +59,10 @@ export class MenuComponent {
     //   this.popover.dismiss();
     // })
 
+  }
+
+  private goToFeedback(){
+    this.events.publish('report bug');
   }
 
   private presentPopover(myEvent:any,chatKey:string,username:string): void {

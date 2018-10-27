@@ -1,6 +1,6 @@
 declare let cordova: any;
 import { Component,ViewChild } from '@angular/core';
-import { Platform, Nav , NavParams, Events, NavController,MenuController, ModalController, ToastController, AlertController } from 'ionic-angular';
+import { Platform, Events, NavController,MenuController, ModalController, ToastController, AlertController, App, Tabs } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import * as firebase from 'firebase/app';
@@ -11,12 +11,15 @@ import 'rxjs/add/operator/first';
 import { MessagingPage } from '../pages/messaging/messaging';
 import { PaymentModalPage } from '../pages/payment-modal/payment-modal';
 import { FCM } from '@ionic-native/fcm';
-import { ProfilePage } from '../pages/profile/profile';
-import { ConfirmPaymentPage } from '../pages/confirm-payment/confirm-payment';
 import { GamelistPage } from '../pages/gamelist/gamelist';
 import { NotificationPage } from '../pages/notification/notification';
 import { AddUsernamePage } from '../pages/add-username/add-username';
 import { FriendListPage } from '../pages/friend-list/friend-list';
+import { BugReportPage } from '../pages/bug-report/bug-report';
+import { Globals } from '../providers/backbutton/app.config';
+import { BackButtonProvider } from '../providers/backbutton/backbutton';
+import { HomePage } from '../pages/home/home';
+import { TabsPageModule } from '../pages/tabs/tabs.module';
 
 @Component({
   templateUrl: 'app.html'
@@ -32,10 +35,13 @@ export class MyApp {
   username:string;
   messaging:any;
   debug:boolean = false;
+  alert;
+
+
 
   @ViewChild('mycontent') navCtrl: NavController;
 
-  constructor(platform: Platform, statusBar: StatusBar
+  constructor(public platform: Platform, statusBar: StatusBar
   , public dataService: DataService
   , splashScreen: SplashScreen
   , public events: Events
@@ -43,18 +49,87 @@ export class MyApp {
   , public modalCtrl: ModalController
   , public toastCtrl: ToastController
   , public alertCtrl: AlertController
-  , public fcm: FCM) {
+  , public fcm: FCM
+  , public backButtonService: BackButtonProvider
+  , public menu: MenuController
+  , public app: App) {
 
     if(this.debug){
       this.rootPage = AddUsernamePage;
     }
     else{
 
-    
+      
+      platform.registerBackButtonAction(() => {
+
+        let activeTab = this.dataService.activeTab;
+        let previousTab = this.dataService.previousTab;
+
+        if(this.navCtrl.canGoBack()){
+          console.log('nav stack')
+          //we got a nav stack
+          this.navCtrl.pop();
+        }
+        else{
+          console.log('we on tabs');
+
+          if(activeTab === 'HomePage'){
+            //we exit the app
+            let alert = this.alertCtrl.create({
+              title:'Exit app',
+              message:'Are you sure you want to exit?',
+              buttons:[
+                {
+                  text:'Cancel',
+                  role:'cancel',
+                  handler:()=>{
+                    console.log('cancel clicked');
+                  }
+                },
+                {
+                  text:'Exit',
+                  handler:()=>{
+                    platform.exitApp();
+                  }
+                }
+
+              ]
+            })
+            alert.present();
+          }
+          else{
+            console.log('we can go back');
+             //go back to other tab
+             const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
+            if(previousTab === 'ProfilePage'){
+              tabsNav.select(4);
+            }
+            else if(previousTab === 'DiscoverPage'){
+              tabsNav.select(3);
+            }
+            else if(previousTab === 'ChatPage'){
+              tabsNav.select(2);
+            }
+            else if(previousTab === 'TradeHistoryPage'){
+              tabsNav.select(1);
+            }
+            else{
+              tabsNav.select(0);
+            }
+          }
+        }
+        
+      });
 
     if(platform.is('core')){
       this.messaging = dataService.initialiazeWebFCM();
     }
+
+    
+
+    this.events.subscribe('report bug' , (data)=>{
+      this.navCtrl.push(BugReportPage);
+    })
     
     this.events.subscribe('user text',(data)=>{
 
@@ -95,8 +170,7 @@ export class MyApp {
     
 
     platform.ready().then(() => {
-
-
+      
       firebase.auth().onAuthStateChanged((user: firebase.User) => {
         let uid = null;
         console.log('entered!');
@@ -369,5 +443,6 @@ export class MyApp {
     });
     }
   }
+
 }
 

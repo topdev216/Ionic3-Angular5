@@ -29,7 +29,7 @@ export class AddVideogamePage {
   private type: string;
   private platforms: any [] = [];
   private platformID:any;
-  private platform:string;
+  private platform:string = null;
   private gameList:any [] = [];
   private genres: any [] = [];
   private genre:string;
@@ -44,6 +44,7 @@ export class AddVideogamePage {
   private platformPlaceholder: string = "Select Platform"
   private platformSelected:boolean = false;
   private searchCondition:boolean = false;
+  private offeringCount:number;
   @ViewChild ('mySearch') searchbar: Searchbar;
   @ViewChild('gameForm') documentEditForm: FormGroupDirective;
 
@@ -179,9 +180,7 @@ export class AddVideogamePage {
   ionViewWillEnter(){
     this.type = this.navParams.get('segment') || 'offer';
     let obj = this.navParams.get('platform') || null;
-    if(obj !== null){
-      this.platformChange(obj);
-    }
+    this.platformChange(obj);
   }
 
   ionViewDidLoad() {
@@ -250,6 +249,7 @@ export class AddVideogamePage {
     }
     console.log(this.coverPhoto);
     let game = {} as VideogameInterface;
+
 
     game.title = form.title;
     game.releaseDate = form.releaseDate;
@@ -392,6 +392,7 @@ export class AddVideogamePage {
     this.gameList = [];
     this.platform = name;
     console.log('platform:',name);
+    if(this.platform !== null){
     this.dataService.searchPlatformsAPI(name).subscribe((data:any)=>{
       console.log('data',data);
       this.searching = false;
@@ -410,6 +411,17 @@ export class AddVideogamePage {
       });
       toast.present();
     })
+    }
+    else{
+      this.searching = false;
+      this.platformID = null;
+      this.platformSelected = true;
+      inputs[0].disabled=false;
+      
+      this.searchPlaceholder = "Search Games";
+      this.submitPlaceholder = "Add";
+      this.platformPlaceholder = "Change Platform";
+    }
     
 
   }
@@ -448,6 +460,7 @@ export class AddVideogamePage {
     }
     else{
     this.dataService.searchGamesAPI(title.value,this.platformID).subscribe((data:any) =>{
+      console.log('games data:',data);
       this.gameList = data;
       this.searching = false;
       for(let i = 0; i < data.length ; i++){
@@ -490,6 +503,7 @@ private doSearch(){
     }
     else{
     this.dataService.searchGamesAPI(input,this.platformID).subscribe((data:any) =>{
+      console.log('games data:',data);
       this.gameList = data;
       this.searching = false;
       for(let i = 0; i < data.length ; i++){
@@ -497,7 +511,7 @@ private doSearch(){
         this.gameList[i].first_release_date = date;
         if(data[i].genres !== undefined){
           this.genres[i] = {
-            genreId:data[i].genres[0],
+            genreId:data[i].genres[0].id,
           }
           
         }
@@ -522,8 +536,48 @@ private backToList(){
 }
 
 private selectedGame(game:any):void{
+
+  if(this.platform == null){
+    
+      let options = {
+        title:'Platforms',
+        message:'Please choose a platform',
+        buttons:[
+          {
+            text:'Cancel',
+            role:'cancel',
+            handler:()=>{
+              console.log('cancel clicked');
+              this.backToList();
+            }
+          },
+          {
+            text:'Ok',
+            handler:data =>{
+              this.platformID = data.id;
+              this.platform = data.name;
+            }
+          }
+        ],
+        inputs:[]
+      }
+
+      game.platforms.forEach((platform,index)=>{
+        if(index === 0){
+          options.inputs.push({name:'options',value:{id:platform.id,name:platform.name},label:platform.name,type:'radio',checked:true})
+        }
+        else{
+          options.inputs.push({name:'options',value:{id:platform.id,name:platform.name},label:platform.name,type:'radio',checked:false})
+        }
+      })
+
+      let alert = this.alertCtrl.create(options);
+      alert.present();
+  }
+
   this.title = game.name;
   this.gameId = game.id;
+  this.offeringCount = game.offering_count;
   if("genres" in game){
     this.genre = game.genres[0].name;
   }

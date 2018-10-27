@@ -107,7 +107,7 @@
 
     <ion-list *ngSwitchCase="'offer'">
         <ion-item *ngFor="let game of offeringGames" no-lines>
-            <ion-row no-padding align-items-center>
+            <ion-row no-padding align-items-center *ngIf="isOwnUser; else otherUser">
     
                 <ion-col col-2 padding-right>
                   <img src="https://{{game.game.coverPhoto}}" alt="cover">
@@ -124,7 +124,7 @@
                   
                   <ion-col col-5 no-padding>
   
-                    <ion-row justify-content-start align-items-center *ngIf="isOwnUser">
+                    <ion-row justify-content-start align-items-center>
                       <ion-col col-5>
                           <button ion-button outline icon-only id="decreaseButton" (click)="decreaseGame(game.key)"><ion-icon name="remove-circle"></ion-icon></button>
                       </ion-col>
@@ -153,6 +153,26 @@
                   </ion-col>
   
             </ion-row> 
+            <ng-template #otherUser>
+                <ion-row no-padding align-items-center>
+    
+                    <ion-col col-4 padding-right>
+                      <img src="https://{{game.game.coverPhoto}}" alt="cover">
+                      <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
+                    </ion-col>
+        
+                    <ion-col col-8 no-padding>
+                        <div text-wrap> {{game.game.title}} </div>
+                        <p text-wrap>{{game.game.platform}}</p>
+                        <p text-wrap>{{game.game.genre}}</p>
+                        <p text-wrap>{{game.game.releaseDate}}</p>
+                        <p style="font-weight:bold;">Available units: <span>{{game.game.quantity}}</span></p>
+                      </ion-col>
+                      
+                      
+      
+                </ion-row> 
+            </ng-template>
         </ion-item>
 
         <ion-item *ngIf="offeringGames.length === 0">

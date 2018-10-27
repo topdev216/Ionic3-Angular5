@@ -6,6 +6,7 @@ import { ProfilePage } from '../../pages/profile/profile';
 import { ChatPage } from '../../pages/chat/chat';
 import { DiscoverPage } from '../discover/discover';
 import { TradeHistoryPage } from '../trade-history/trade-history';
+import { DataService } from '../../providers/services/dataService';
 
 /**
  * Generated class for the TabsPage page.
@@ -28,7 +29,8 @@ export class TabsPage {
   tab5Root = ProfilePage;
   public enabled:boolean = false;
   
-  constructor(public navCtrl: NavController, public navParams: NavParams, public events: Events) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public events: Events, public dataService: DataService) {
+
     this.events.subscribe('user logged',(data) => {
       this.enabled = data.condition;
     })

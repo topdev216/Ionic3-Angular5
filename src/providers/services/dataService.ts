@@ -53,6 +53,8 @@ export class DataService {
   public phoneToken:string;
   public tradeKey:string;
   public games: any [] = [];
+  public activeTab;
+  public previousTab;
 
   constructor(public http: HttpClient
   , public platform: Platform
@@ -248,6 +250,25 @@ export class DataService {
         }
       });
     });
+  }
+
+  public saveBug(bug:any) :Promise<any>{
+    let bugRef = this.database.ref('/bugs').push();
+
+    if(bug.previousPage !== null){
+      return bugRef.set({
+        page:bug.page,
+        previousPage:bug.previousPage,
+        description:bug.description
+      })
+    }
+    else{
+      return bugRef.set({
+        page:bug.page,
+        description:bug.description
+      })
+    }
+    
   }
 
   public showLoading(): void {
@@ -1229,7 +1250,7 @@ export class DataService {
   }
 
   public sendFriendNotification(userKey:string) :Observable<any>{
-    return this.http.post(this.urlEnvironment.getFriendNotification(),{username:this.username,userKey:userKey,uid:this.uid})
+    return this.http.post(this.urlEnvironment.getFriendNotification(),{username:this.username,userKey:userKey,uid:this.uid,test:'test'})
   }
 
   public getNotifications() :Reference{

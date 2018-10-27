@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
+import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
+import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 
 /**
  * Generated class for the TradeHistoryPage page.
@@ -21,7 +23,8 @@ export class TradeHistoryPage {
   completedTrades: any[] = [];
   acceptedTrades: any[] = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService
+    , public backbuttonService: BackButtonProvider) {
 
     this.dataService.getTrades().on('value',(snap) =>{
       this.activeTrades = [];
@@ -48,6 +51,15 @@ export class TradeHistoryPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad TradeHistoryPage');
+  }
+
+  ionViewWillEnter() {
+    this.dataService.activeTab = 'TradeHistoryPage';
+    console.log(this.dataService.activeTab);
+  }
+
+  ionViewWillLeave(){
+    this.dataService.previousTab = 'TradeHistoryPage';
   }
 
 }

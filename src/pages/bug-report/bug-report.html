@@ -1,0 +1,42 @@
+<!--
+  Generated template for the BugReportPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Report a Bug</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <form [formGroup]="bugForm" (ngSubmit)="submit(bugForm)">
+    <ion-item>
+        <ion-label stacked>Bug Page</ion-label>
+        <ion-select [(ngModel)]="page" formControlName="page" placeholder="Select page" multiple="false" [selectOptions]="selectOptions">
+            <ion-option *ngFor="let page of pages">{{page}}</ion-option>
+        </ion-select>
+    </ion-item>
+
+    <ion-item>
+        <ion-label stacked>Previous Page (optional)</ion-label>
+        <ion-select [(ngModel)]="previousPage" formControlName="previousPage" placeholder="Select page" multiple="false" [selectOptions]="selectOptions">
+            <ion-option *ngFor="let page of pages">{{page}}</ion-option>
+        </ion-select>
+    </ion-item>
+   
+
+    <ion-item>
+      <ion-label stacked>Description</ion-label>
+      <ion-textarea [(ngModel)]="description" formControlName="description" placeholder="Enter a description">
+      </ion-textarea>
+    </ion-item>
+
+    <button ion-button block type="submit">submit</button>
+  </form>
+</ion-content>

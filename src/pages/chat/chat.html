@@ -13,11 +13,7 @@
                 <ion-title>
                   Chat
                 </ion-title>
-                <ion-buttons end>
-                  <button detail-none ion-button icon-only>
-                    <ion-icon name="exit"></ion-icon>
-                  </button>
-                </ion-buttons>
+                
         </ion-toolbar>
 </ion-header>
 
@@ -34,83 +30,99 @@
             <error-card errorMessage="{{error}}" *ngIf="showError"></error-card>
 
             <div *ngIf="!showError">
-            <ion-card>
-                <ion-list>
 
-                        <ion-list-header>
-                        Rooms
-                        </ion-list-header>
+                        <ion-segment [(ngModel)]="chatType">
+                                        <ion-segment-button value="chatroom">
+                                          Chatrooms
+                                        </ion-segment-button>
+                                        <ion-segment-button value="direct">
+                                          Direct
+                                        </ion-segment-button>
+                                        
+                        </ion-segment>
+                        <br>
+                        <br>
+                        <div [ngSwitch]="chatType">
 
-                        <ion-item *ngFor="let room of rooms" no-padding> 
-                            
-                            <ion-row no-padding>
-                                    <ion-col col-8 no-padding>
-                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(room,false)">{{room.name}}</button>
-                                    </ion-col>
+                                        <ion-card *ngSwitchCase="'chatroom'">
+                                                        <ion-list>
+                                        
+                                                                <ion-list-header>
+                                                                Rooms
+                                                                </ion-list-header>
+                                        
+                                                                <ion-item *ngFor="let room of rooms" no-padding> 
+                                                                    
+                                                                    <ion-row no-padding>
+                                                                            <ion-col col-8 no-padding>
+                                                                                <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(room,false)">{{room.name}}</button>
+                                                                            </ion-col>
+                                        
+                                                                            <ion-col col-2 no-padding>
+                                                                            <button detail-none ion-item outline text-wrap (click)="enterChat(room,false)"><ion-icon name="chatboxes" item-end></ion-icon>
+                                                                            </button>
+                                                                            </ion-col>
+                                        
+                                                                            <ion-col col-2 no-padding>
+                                                                            <button detail-none ion-item outline text-wrap (click)="presentPopover($event,room.key)">
+                                                                                <ion-icon name="more" item-end></ion-icon>
+                                                                            </button>
+                                                                            </ion-col>
+                                                                    </ion-row>
+                                                                   
+                                                                
+                                                                </ion-item>
+                                        
+                                                                <ion-item *ngIf="rooms?.length === 0">
+                                                                    <ion-row no padding justify-content-center>
+                                                                            You don't have any active rooms.
+                                                                    </ion-row>
+                                                                </ion-item>
+                                        
+                                                               
+                                                        
+                                                        </ion-list>
+                                                    </ion-card>
 
-                                    <ion-col col-2 no-padding>
-                                    <button detail-none ion-item outline text-wrap (click)="enterChat(room,false)"><ion-icon name="chatboxes" item-end></ion-icon>
-                                    </button>
-                                    </ion-col>
+                                                    <ion-card *ngSwitchCase="'direct'">
+                                                                <ion-list>
+                                                
+                                                                        <ion-list-header>
+                                                                        Chats
+                                                                        </ion-list-header>
+                                                
+                                                                        <ion-item no-padding *ngFor="let chat of directChats">
+                                                
+                                                
+                                                                            <ion-row align-items-center>
+                                                                                <ion-col col-9>
+                                                                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(chat,true)">{{chat.username}}</button>
+                                                                                </ion-col>
+                                                                                <ion-col col-3>
+                                                                                        <button color="primary" (click)="enterChat(chat,true)" ion-button clear icon-only>
+                                                                                                <ion-icon name="chatboxes"></ion-icon>
+                                                                                                <ion-badge *ngIf="chat.unread > 0">{{chat.unread}}</ion-badge>
+                                                                                        </button>  
+                                                                                </ion-col>
+                                                                            </ion-row>
+                                                                
+                                                                        </ion-item>
+                                                
+                                                                        <ion-item *ngIf="directChats.length === 0">
+                                                                            <ion-row no padding justify-content-center>
+                                                                                    You don't have any active chats.
+                                                                            </ion-row>
+                                                                        </ion-item>
+                                                
+                                                
+                                                                        
+                                                                        
+                                                                
+                                                                </ion-list>
+                                                            </ion-card>
 
-                                    <ion-col col-2 no-padding>
-                                    <button detail-none ion-item outline text-wrap (click)="presentPopover($event,room.key)">
-                                        <ion-icon name="more" item-end></ion-icon>
-                                    </button>
-                                    </ion-col>
-                            </ion-row>
-                           
-                        
-                        </ion-item>
-
-                        <ion-item *ngIf="rooms?.length === 0">
-                            <ion-row no padding justify-content-center>
-                                    You don't have any active rooms.
-                            </ion-row>
-                        </ion-item>
-
-                       
-                
-                </ion-list>
-            </ion-card>
-            <br>
-            <br>
-            <ion-card>
-                <ion-list>
-
-                        <ion-list-header>
-                        Chats
-                        </ion-list-header>
-
-                        <ion-item no-padding *ngFor="let chat of directChats">
-
-
-                            <ion-row align-items-center>
-                                <ion-col col-9>
-                                        <button detail-none ion-item outline text-wrap icon-only right (click)="enterChat(chat,true)">{{chat.username}}</button>
-                                </ion-col>
-                                <ion-col col-3>
-                                        <button color="primary" (click)="enterChat(chat,true)" ion-button clear icon-only>
-                                                <ion-icon name="chatboxes"></ion-icon>
-                                                <ion-badge *ngIf="chat.unread > 0">{{chat.unread}}</ion-badge>
-                                        </button>  
-                                </ion-col>
-                            </ion-row>
-                
-                        </ion-item>
-
-                        <ion-item *ngIf="directChats.length === 0">
-                            <ion-row no padding justify-content-center>
-                                    You don't have any active chats.
-                            </ion-row>
-                        </ion-item>
-
-
-                        
-                        
-                
-                </ion-list>
-            </ion-card>
+                        </div>
+           
             </div>
             
     </div>

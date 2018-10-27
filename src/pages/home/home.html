@@ -68,28 +68,46 @@
     </div>
 
   <div *ngIf="!loading" class="main-content">
-          <ion-row no-padding justify-content-center>
+          <!-- <ion-row no-padding justify-content-center>
                   <h1 id="liveTrades">{{trades_count}} live trades</h1>
+          </ion-row> -->
+          <ion-row justify-content-start>
+                  <h1 id="tradeCount">{{trades_count}} trades</h1>
           </ion-row>
-          <ion-row no-padding justify-content-start align-items-center>
-                  <ion-col col-8 no-padding> 
-                                <ion-searchbar
-                                [(ngModel)]="query"
-                                [placeholder]="searchPlaceholder"
-                                (ionInput)="doSearch($event)"
-                                showCancelButton
-                                >
-                              </ion-searchbar>
-                  </ion-col>
 
-                  <ion-col col-2 no-padding>
+          
+          <ion-row no-padding justify-content-center>
+                          <ion-list-header no-lines>
+                                <h1> <span class="live-trades">Live Trades</span></h1>
+                          </ion-list-header>
+          </ion-row>
+          
+                        <ion-item> 
+                                  
+                        <ion-input
+                        class="text-input"
+                        [(ngModel)]="query"
+                        [placeholder]="searchPlaceholder"
+                        (ionChange)="doSearch($event)"
+                        color="dark"
+                        showCancelButton
+                        >
+                        </ion-input>
+                                         
+                           <button ion-button clear item-right (click)="doSearch($event)">
+                                <ion-icon name="search" item-end></ion-icon>
+                           </button>
+                                         
+                            <button ion-button clear item-right (click)="goToFilters()">
+                                <ion-icon name="settings" item-end></ion-icon>
+                            </button>
+                                      
+                        </ion-item>
+
+                  <!-- <ion-col col-2 no-padding>
                           <button ion-button outline id="settingsBtn" (click)="doSearch($event)" icon-only><ion-icon name="search"></ion-icon></button>
-                  </ion-col>
-                  <ion-col col-2 no-padding>
-                          <button ion-button outline id="settingsBtn" (click)="goToFilters()" icon-only><ion-icon name="settings"></ion-icon></button>
-                  </ion-col>
-          </ion-row>
-
+                  </ion-col> -->
+                  
 
           
                   <ion-card class="animated fadeInLeft" *ngFor="let trade of trades; let i = index">

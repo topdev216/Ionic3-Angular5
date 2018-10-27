@@ -8,7 +8,7 @@ page-gamelist {
     }
 
     .list-container{
-        width:620px;        
+        width:620px;   
     }
     .toolbar-background {
         background-color:color($colors,primary);
@@ -19,6 +19,8 @@ page-gamelist {
           .item{
               background:transparent;
               color:white;
+              padding:0px;
+             
             //   font-weight:bold;
           }
 

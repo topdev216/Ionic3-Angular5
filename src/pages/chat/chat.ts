@@ -5,6 +5,8 @@ import { LoadingPage } from '../../pages/loading/loading';
 import { MessagingPage } from '../../pages/messaging/messaging';
 import { PopoverComponent } from '../../components/popover/popover';
 import * as firebase from 'firebase/app';
+import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
+import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 
 
 /**
@@ -26,6 +28,7 @@ export class ChatPage {
   private error: string;
   private user: any;
   private rooms:any [] = [];
+  private chatType:string = "chatroom";
   private directChats:any [] = [];
   private username:string;
   private toUsername:any [] = [];
@@ -37,7 +40,8 @@ export class ChatPage {
   , public popoverCtrl: PopoverController
   , public events: Events
   , public alertCtrl: AlertController
-  , public toastCtrl: ToastController) {
+  , public toastCtrl: ToastController
+  , public backbuttonService: BackButtonProvider) {
 
     this.dataService.fetchUserFromDatabase(this.dataService.uid).then((snapshot)=>{
       console.log('USER BACK:',snapshot.val());
@@ -79,8 +83,6 @@ export class ChatPage {
         this.directChats = values;
       });
 
-
-
     })
 
     this.events.subscribe('room leave', (data)=>{
@@ -109,9 +111,14 @@ export class ChatPage {
     console.log('ionViewDidLoad ChatPage');
   }
 
+  ionViewWillLeave(){
+    this.dataService.previousTab = 'ChatPage';
+  }
+
   ionViewWillEnter(){
 
-    
+    this.dataService.activeTab = 'ChatPage';
+    console.log(this.dataService.activeTab);
 
     this.loading = true;
     this.showError = false;

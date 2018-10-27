@@ -8,6 +8,8 @@ import * as firebase from 'firebase/app';
 import { GamelistPage } from '../gamelist/gamelist';
 import { MessagingPage } from '../messaging/messaging';
 import { PaymentModalPage } from '../payment-modal/payment-modal';
+import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
+import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 
 /**
  * Generated class for the ProfilePage page.
@@ -49,7 +51,8 @@ export class ProfilePage {
   , public alertCtrl: AlertController
   , public toastCtrl: ToastController
   , public zone: NgZone
-  , public loadingCtrl: LoadingController) {
+  , public loadingCtrl: LoadingController
+  , public backbuttonService: BackButtonProvider) {
 
     
     this.user = this.navParams.get('user');
@@ -96,7 +99,11 @@ export class ProfilePage {
 
   ionViewWillEnter(){
     this.comingFromSearch = this.navParams.get('search') || false;
+    this.dataService.activeTab = 'ProfilePage';
+    console.log(this.dataService.activeTab);
   }
+
+  
 
   openGameList(){
 
@@ -289,5 +296,6 @@ export class ProfilePage {
 
   ionViewWillLeave(){
     this.comingFromSearch = false;
+    this.dataService.previousTab = 'ProfilePage';
   }
 }

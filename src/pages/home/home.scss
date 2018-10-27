@@ -1,18 +1,63 @@
 page-home {
     .content{
-        background:url('../assets/imgs/home.jpg') center center/cover;
+        background:url('../assets/imgs/home.jpg') no-repeat center center fixed; 
+        background-size:cover;
+       
         // background: #000000;  /* fallback for old browsers */
         // background: -webkit-linear-gradient(to right, #434343, #000000);  /* Chrome 10-25, Safari 5.1-6 */
         // background: linear-gradient(to right, #434343, #000000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
         .main-content{
-          height:100%;
-          #liveTrades{
-            font-size: 34px;
-            font-weight:bold;
-            letter-spacing:0.06rem;
+
+
+          .item{
+            .text-input::-moz-placeholder {
+              color: color($colors,dark);
+            }
+            
+            .text-input:-ms-input-placeholder {
+              color: color($colors,dark);
+            }
+            
+            .text-input::-webkit-input-placeholder {
+              color: color($colors,dark);
+            }
+            padding:7px;
+            margin-bottom:10px;
             background:color($colors,primary);
-            opacity:0.6;
+            border-radius:4px;
+            opacity:0.7;
+            .button{
+              padding-left:15px;
+              padding-right:15px;
+              ion-icon{
+                color:black;
+                font-weight:bold;
+                font-size: 25px;
+              }
+            }
+          }
+          height:100%;
+          #tradeCount{
+            font-size: 20px;
+            color:white;
+          }
+          ion-list-header{
+            border-radius:4px;
+            opacity:0.7;
+            h1{
+              .live-trades{
+                border-bottom:4px solid black;
+              }
+              text-align:center;
+              color:black;
+              font-size: 25px;
+              font-weight:bold;
+              letter-spacing:0.06rem;
+            }
+          }
+          .searchbar-input{
+            font-size:14px;
           }
         }
 

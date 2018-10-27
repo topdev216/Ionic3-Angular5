@@ -37,38 +37,11 @@
         <ion-row justify-content-center>
           <h2 id="platformText">{{platform}}</h2>
         </ion-row>
-        <button ion-button type="button" full (click)="openPlatforms()" id="platformButton">{{platformPlaceholder}}</button>
+        <!-- <button ion-button type="button" full (click)="openPlatforms()" id="platformButton">{{platformPlaceholder}}</button> -->
 
       <ion-list no-lines>
-          <!-- <ion-item class="select-item"> -->
-              <!-- <ion-label item-left text-wrap>Select Platform</ion-label>
-              <ion-select
-              item-left
-              [(ngModel)]="platform"
-              interface="action-sheet"
-              formControlName="platform">
-              <ion-option *ngFor="let platform of platforms" (ionSelect)="platformChange(platform.name)">{{platform.name}}</ion-option>
-              </ion-select> -->
-          <!-- </ion-item> -->
 
-
-
-          
-              <!-- <select-searchable
-                
-                  [(ngModel)]="title"
-                  formControlName="title"
-                  [items]="gameList"
-                  itemValueField="title"
-                  itemTextField="title"
-                  [canSearch]="true"
-                  (onChange)="gameChange($event)">
-                  <ng-template selectSearchableLabelTemplate>
-                      Game Title
-                  </ng-template>
-              </select-searchable> -->
-
-            <ion-row justify-content-start align-items-center>
+            <!-- <ion-row justify-content-start align-items-center>
               <ion-col col-10> 
                   <ion-searchbar
                   #mySearch
@@ -86,7 +59,30 @@
               <ion-col col-2>
                 <button ion-button clear id="searchButton" *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" (click)="doSearch()" icon-only><ion-icon name="search"></ion-icon></button>
               </ion-col>
-            </ion-row>
+            </ion-row> -->
+
+            <ion-item no-lines> 
+                                  
+                <ion-input
+                id="input"
+                class="text-input"
+                #mySearch
+                (keyup.enter)="doSearch()"
+                [placeholder]="searchPlaceholder"
+                color="dark"
+                showCancelButton
+                >
+                </ion-input>
+                                 
+                   <button ion-button clear item-right (click)="doSearch()">
+                        <ion-icon name="search" item-end></ion-icon>
+                   </button>
+                                 
+                    <button ion-button clear item-right (click)="openPlatforms()">
+                        <ion-icon name="settings" item-end></ion-icon>
+                    </button>
+                              
+                </ion-item>
            
 
             <div *ngIf="searching" class="spinner-container">
@@ -103,11 +99,13 @@
 
                     <ion-col col-9 padding-left>
                       <div text-wrap> {{game.name}} </div>
-                      <p text-wrap>{{platform}}</p>
                       <div *ngFor="let genre of game.genres; let i = index">
                           <p *ngIf="i == 0" text-wrap>{{genre.name}}</p>
                       </div>
                       <p text-wrap>{{game.first_release_date}}</p>
+                      <p text-wrap *ngIf="platform == null">Platforms: {{game.platforms | joinPipe}}</p>
+                      <p text-wrap *ngIf="platform !== null">{{platform}}</p>
+                      <p text-wrap *ngIf="platform !== null" class="game-offer">{{game.offering_count}} offers</p>
                     </ion-col>
                     
                 </ion-row>
@@ -124,27 +122,24 @@
           
 
 
-          <ion-card *ngIf="gamePicked">
+          <ion-card class="game-card" *ngIf="gamePicked">
 
-              <!-- <ion-row justify-content-start>
-                  <button ion-button outline (click)="backToList()">Back to List</button>
-                </ion-row> -->
 <ion-row>
-  <ion-col>
-    <img src="https://{{coverPhoto}}" alt="cover">
+  <ion-col col-4 align-items-center>
+      <img src="https://{{coverPhoto}}" alt="cover">
   </ion-col>
 
-  <ion-col>
-      <ion-row>
+  <ion-col col-8 no-padding>
+      <ion-row no-padding>
 
-          <ion-col>
+          <ion-col col-6 no-padding>
           
               <ion-label>Title</ion-label>
               <ion-textarea text-wrap [(ngModel)]="title" formControlName="title" [disabled]="true"></ion-textarea>
         
           </ion-col>
 
-          <ion-col>
+          <ion-col col-6 no-padding>
         
               <ion-label>Release Date</ion-label>
               <ion-input text-wrap [(ngModel)]="releaseDate" formControlName="releaseDate" [disabled]="true"></ion-input>
@@ -154,15 +149,15 @@
         </ion-row>
 
 
-        <ion-row>
-          <ion-col>
+        <ion-row no-padding>
+          <ion-col col-6 no-padding>
           
               <ion-label>Genre</ion-label>
               <ion-input [(ngModel)]="genre" formControlName="genre" [disabled]="true"></ion-input>
           
         </ion-col>
 
-        <ion-col>
+        <ion-col col-6 no-padding>
           
               <ion-label>ESRB Rating</ion-label>
               <ion-input [(ngModel)]="esrbRating" formControlName="esrbRating" [disabled]="true"></ion-input>

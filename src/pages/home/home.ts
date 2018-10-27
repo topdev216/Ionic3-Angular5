@@ -7,6 +7,9 @@ import * as firebase from 'firebase/app';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 import { NotificationPage } from '../notification/notification';
 import { HomeFiltersPage } from '../home-filters/home-filters';
+import { Keyboard } from '@ionic-native/keyboard'; 
+import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
+import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 
 @Component({
   selector: 'page-home',
@@ -30,6 +33,7 @@ export class HomePage implements OnInit {
   private query:string = "";
   private trades:any[] = [];
   private games:any [] = [];
+  private tabBar:any;
   private temporalTrades:any[] = [];
   private showingTrades:any[] = [];
   constructor(public navCtrl: NavController
@@ -37,13 +41,26 @@ export class HomePage implements OnInit {
   , public events: Events
   , public zone: NgZone
   , public navParams: NavParams
-  , public popoverCtrl: PopoverController) {
+  , public popoverCtrl: PopoverController
+  , public keyboard: Keyboard
+  , public backbuttonService: BackButtonProvider) {
+
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
+
 
     this.zone=new NgZone({enableLongStackTrace: false});
 
     this.dataService.liveTradesService();
 
     this.dataService.liveTradesCount();
+
+    this.keyboard.onKeyboardShow().subscribe(()=>{
+      this.tabBar.style.display = 'none';
+    })
+
+    this.keyboard.onKeyboardHide().subscribe(()=>{
+      this.tabBar.style.display = 'flex';
+    })
 
     this.dataService.tradeCountChange.subscribe((value)=>{
       this.trades_count = value;
@@ -143,7 +160,7 @@ export class HomePage implements OnInit {
 
   doSearch(event:any){
         
-    console.log('query event:',event.target.value);
+    console.log('query event:',event);
     console.log('query:',this.query);
   
     this.trades = this.temporalTrades;
@@ -305,7 +322,14 @@ export class HomePage implements OnInit {
     }
   }
 
+  ionViewWillLeave(){
+    this.dataService.previousTab = 'HomePage';
+  }
+
   ionViewWillEnter(){
+
+    this.dataService.activeTab = 'HomePage';
+    console.log(this.dataService.activeTab);
 
     this.filter = this.navParams.get('filter') || null;
     if(this.filter !== null){
