@@ -105,18 +105,11 @@
                                       
                         </ion-item>
 
-                  <!-- <ion-col col-2 no-padding>
-                          <button ion-button outline id="settingsBtn" (click)="doSearch($event)" icon-only><ion-icon name="search"></ion-icon></button>
-                  </ion-col> -->
+              
                   
-                <ion-list *ngIf="filter !== 'partner'" no-lines> 
+                <ion-list *ngIf="!showGamecard" no-lines> 
                   <ion-card class="animated fadeInLeft" *ngFor="let trade of trades; let i = index">
-                         
-                        <!-- <div *ngIf="trade?.trade?.items?.length === 0">
-                                <ion-row justify-content-center>
-                                        <h3>No results have been found.</h3>
-                                </ion-row>
-                        </div> -->
+             
                         <div *ngIf="trade?.trade?.items?.length === 2; else elseBlock">
                                 <ion-row justify-content-center align-items-center>
                                         <ion-col col-5 *ngFor="let game of trade.trade.items | slice:0:1">
@@ -198,7 +191,7 @@
                 </ion-list>
           
 
-        <ion-list *ngIf="filter == 'partner'">
+        <ion-list *ngIf="showGamecard">
                 <ion-item class="animated fadeInLeft" id="gameCard" detail-push (click)="openGame(game)" *ngFor="let game of games" no-lines>
                         <ion-row no-padding>
         

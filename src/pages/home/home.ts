@@ -12,6 +12,7 @@ import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import * as moment from 'moment';
 import { GameDetailPage } from '../game-detail/game-detail';
+import { text } from '@angular/core/src/render3/instructions';
 
 @Component({
   selector: 'page-home',
@@ -20,7 +21,7 @@ import { GameDetailPage } from '../game-detail/game-detail';
 export class HomePage implements OnInit {
 
   @Input('card') card:Card
-  // @Input('infiniteScroll') infiniteScroll: InfiniteScroll;
+  @Input('infiniteScroll') infiniteScroll: InfiniteScroll;
   public authState:boolean = null;
   private username :string = "adasdasda";
   private loading:boolean;
@@ -50,6 +51,21 @@ export class HomePage implements OnInit {
   , public toastCtrl: ToastController
   , public modalCtrl: ModalController) {
 
+    document.addEventListener("keydown", (event:any)=>{
+      let key = event.key;
+      if(key === 'Backspace'){
+        console.log('key event:',event.target.value);
+        if(event.target.value === "" && event.target.value.trim().length === 0){
+          this.games = [];
+          if(this.trades.length === 0){
+          this.showGamecard = false;
+          this.lastKey = "";
+          this.loadTrades(this.infiniteScroll);
+          }
+        }
+      }
+    });
+    
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
 
@@ -192,16 +208,18 @@ export class HomePage implements OnInit {
   }
 
   searchGame(event:any){
-    if(this.filter === 'partner'){
+    
       this.loading = true;
       this.trades = [];
-      
+      this.lastKey = "";
       this.dataService.searchGamesAPI(this.query,null).subscribe((data:any)=>{
         this.games = data;
         for(let i = 0; i < data.length ; i++){
           let date = moment(this.games[i].first_release_date).format("MMM Do YYYY");
           this.games[i].first_release_date = date;
         }
+
+        this.showGamecard = true;
         this.loading = false;
         console.log(this.games);
       },(err)=>{
@@ -215,24 +233,16 @@ export class HomePage implements OnInit {
           
           console.log('An error has ocurred.');
       })
-    }
-    else{
-      this.doSearch(event);
-    }
+    
   }
 
   doSearch(event:any){
-    if(this.filter === 'partner'){
-      return;
-    }
-    else{
+    
     console.log('query event:',event);
     console.log('query:',this.query);
-  
+    this.showGamecard = false;
     this.trades = this.temporalTrades;
     if(this.query && this.query.trim() != ''){
-      this.games = [];
-      // this.infiniteScroll.enable(false);
       if(this.filter === 'platform'){
 
         const temporal = this.trades;
@@ -253,13 +263,6 @@ export class HomePage implements OnInit {
 
         console.log('parsed data',parsedData);
      
-      }
-      else if(this.filter === 'partner'){
-        this.showGamecard = true;
-        this.dataService.searchTradePartners(this.query).subscribe((data)=>{
-          console.log(data);
-          this.games = data;
-        })
       }
       else if(this.filter === 'game'){
         const temporal = this.trades;
@@ -333,29 +336,23 @@ export class HomePage implements OnInit {
     else{
       // this.infiniteScroll.enable(true);
     }
-    }
+    
   }
 
   loadTrades(infiniteScroll? : InfiniteScroll ){
-    if(this.filter === 'partner'){
-      // if(infiniteScroll){
-      //   infiniteScroll.complete();
-      //   infiniteScroll.enable(false);
-      //   this.finished = true;
-      // };
-      // return;
-    }
     if(this.finished){
-      infiniteScroll.complete();
+      this.showGamecard = false;
+      if(infiniteScroll){
       infiniteScroll.enable(false);
+      }
       return
     }
     else{
-    if(this.filter !== 'partner' || !this.initialLoad){
+    
     console.log('selected filter:',this.filter);
 
     this.dataService.liveTrades(this.lastKey).subscribe((data)=>{
-
+      this.showGamecard = false;
       const currentTrades = this.trades;
       console.log('current trades:',currentTrades);
       const newTrades = [];
@@ -393,7 +390,6 @@ export class HomePage implements OnInit {
       console.log('loaded trades',this.trades);
       console.log('loaded trades:',data.length);
     })
-    }
     }
   }
 
