@@ -52,8 +52,12 @@ import { GameTypePipe } from '../pipes/game-type/game-type';
 import { HomeFiltersPage } from '../pages/home-filters/home-filters';
 import { BugReportPage } from '../pages/bug-report/bug-report';
 import { Keyboard } from '@ionic-native/keyboard';
+import { NativeKeyboard } from '@ionic-native/native-keyboard';
 import { BackButtonProvider } from '../providers/backbutton/backbutton';
 import { JoinPipe } from '../pipes/join/join';
+import { PartnerResultsPage } from '../pages/partner-results/partner-results';
+import { PartnerPopoverComponent } from '../components/partner-popover/partner-popover';
+import { GameDetailPage } from '../pages/game-detail/game-detail';
 
 
 
@@ -106,7 +110,10 @@ const firebaseConfig = {
     GameTypePipe,
     HomeFiltersPage,
     BugReportPage,
-    JoinPipe
+    JoinPipe,
+    PartnerResultsPage,
+    PartnerPopoverComponent,
+    GameDetailPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -157,6 +164,9 @@ const firebaseConfig = {
     FriendPopoverComponent,
     HomeFiltersPage,
     BugReportPage,
+    PartnerResultsPage,
+    PartnerPopoverComponent,
+    GameDetailPage
     
   ],
   providers: [
@@ -170,7 +180,8 @@ const firebaseConfig = {
     FCM,
     GooglePlus,
     Keyboard,
-    BackButtonProvider
+    BackButtonProvider,
+    NativeKeyboard
   ]
 })
 export class AppModule {}

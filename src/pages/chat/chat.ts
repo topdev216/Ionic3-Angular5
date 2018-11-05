@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IonicPage, NavController, NavParams,PopoverController, Events, AlertController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams,PopoverController, Events, AlertController, ToastController, Platform } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { LoadingPage } from '../../pages/loading/loading';
 import { MessagingPage } from '../../pages/messaging/messaging';
@@ -41,7 +41,8 @@ export class ChatPage {
   , public events: Events
   , public alertCtrl: AlertController
   , public toastCtrl: ToastController
-  , public backbuttonService: BackButtonProvider) {
+  , public backbuttonService: BackButtonProvider
+  , public platform: Platform) {
 
     this.dataService.fetchUserFromDatabase(this.dataService.uid).then((snapshot)=>{
       console.log('USER BACK:',snapshot.val());
@@ -230,6 +231,9 @@ export class ChatPage {
 
   private presentPopover(myEvent,chatKey:string): void {
     let popover = this.popoverCtrl.create(PopoverComponent, {chatKey: chatKey});
+    let doDismiss = () => popover.dismiss();
+    let unregBackButton = this.platform.registerBackButtonAction(doDismiss, 5);
+    popover.onDidDismiss(()=>unregBackButton);
     popover.present({
       ev: myEvent
     });

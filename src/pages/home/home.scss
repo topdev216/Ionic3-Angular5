@@ -9,7 +9,10 @@ page-home {
 
         .main-content{
 
-
+          
+          .item#gameCard{
+            opacity:1 !important;
+          }
           .item{
             .text-input::-moz-placeholder {
               color: color($colors,dark);

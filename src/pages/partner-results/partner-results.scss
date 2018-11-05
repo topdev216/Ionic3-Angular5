@@ -1,0 +1,31 @@
+page-partner-results {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
+      .content{
+        background-color:#002147;
+        .item{
+            align-items: baseline;
+            background-color:#002857;
+            border-bottom:0.1px solid #01326b !important;
+            color:rgb(201, 201, 201);
+
+                img{
+                    height:80px;
+                    width:auto;
+                    border-radius: 50%;
+                    border: solid 0px color($colors,primary);
+                    margin: 0 auto;
+                }
+            
+        }
+      }
+
+    //   img {
+    //     border-radius: 50%;
+    //     border: solid 2px color($colors,primary);
+    //     margin: 0 auto;
+    // }
+
+}

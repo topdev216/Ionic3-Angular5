@@ -8,6 +8,7 @@ import { ActionPopoverComponent } from './action-popover/action-popover';
 import { AccordionComponent } from './accordion/accordion';
 import { NotificationPopoverComponent } from './notification-popover/notification-popover';
 import { FriendPopoverComponent } from './friend-popover/friend-popover';
+import { PartnerPopoverComponent } from './partner-popover/partner-popover';
 @NgModule({
 	declarations: [ErrorCardComponent,
     MenuComponent,
@@ -17,7 +18,8 @@ import { FriendPopoverComponent } from './friend-popover/friend-popover';
     ActionPopoverComponent,
     AccordionComponent,
     NotificationPopoverComponent,
-    FriendPopoverComponent],
+    FriendPopoverComponent,
+    PartnerPopoverComponent],
 	imports: [],
 	exports: [ErrorCardComponent,
     MenuComponent,
@@ -27,6 +29,7 @@ import { FriendPopoverComponent } from './friend-popover/friend-popover';
     ActionPopoverComponent,
     AccordionComponent,
     NotificationPopoverComponent,
-    FriendPopoverComponent]
+    FriendPopoverComponent,
+    PartnerPopoverComponent]
 })
 export class ComponentsModule {}

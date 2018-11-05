@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import { PopoverComponent } from '../../components/popover/popover';
 import { DataService } from '../../providers/services/dataService';
 import { PickGamePage } from '../pick-game/pick-game';
-
+import { NativeKeyboard, NativeKeyboardOptions } from '@ionic-native/native-keyboard';
 /**
  * Generated class for the MessagingPage page.
  *
@@ -38,7 +38,8 @@ export class MessagingPage {
       , public viewCtrl: ViewController
       , public appCtrl: App
       , public toastCtrl: ToastController
-      , public loadingCtrl: LoadingController) {
+      , public loadingCtrl: LoadingController
+      , public nativeKeyboard: NativeKeyboard) {
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.chatTitle = this.navParams.get('title');
     this.roomkey = this.navParams.get("key") as string;
@@ -117,12 +118,7 @@ export class MessagingPage {
         }, 1000);
 
       });
-    }
-
-
-
-    
-
+    }    
   }
 
  
@@ -341,6 +337,10 @@ export class MessagingPage {
   ionViewDidLoad() {
 
     console.log('ionViewDidLoad MessagingPage');
+  }
+
+  onSubmit(){
+
   }
 
   ionViewWillEnter(){

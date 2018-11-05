@@ -320,7 +320,8 @@ export class DataService {
       coverPhoto:url,
       online:true,
       chat_notification_disable:false,
-      paidMember:false
+      paidMember:false,
+      userKey:uid
     })
   }
 
@@ -587,6 +588,10 @@ export class DataService {
     return this.http.get(this.urlEnvironment.getGamesAPI())
   }
 
+  public getOfferingCount(gameId:number,platformId:number,) :Promise<any>{
+    return this.database.ref('/videogames/'+platformId+'/'+gameId+'/offering_count').once('value')
+  }
+
   public fetchUserOfferGames(userKey:string):Promise<any>{
     return this.database.ref('users/'+userKey+'/videogames/offer').once('value')
   }
@@ -667,6 +672,41 @@ export class DataService {
 
   public getUserDirectChats():Promise<any>{
     return this.database.ref('/directChats/').orderByChild('participants/'+this.uid+'/username').equalTo(this.username).once('value')
+  }
+
+  public findTradePartner(game:any,type:string):Promise<any>{
+    return this.database.ref('/users').once('value').then((snap)=>{
+      let users = [];
+      if(type === 'offering'){
+        snap.forEach((user)=>{
+          if(user.val().videogames !== undefined){
+            if(user.val().videogames.interested !== undefined){
+              let interestedGames = user.val().videogames.interested
+              if(game.key in interestedGames){
+                console.log('interested match found:',user.val().videogames.interested[game.key]);
+                users.push(user.val());
+              }
+            }
+          }
+        })
+        return users;
+      }
+      else{
+        snap.forEach((user)=>{
+          if(user.val().videogames !== undefined){
+            if(user.val().videogames.offer !== undefined){
+              let offeringGames = user.val().videogames.offer;
+              if(game.key in offeringGames){
+                console.log('offering match found:',user.val().videogames.offer[game.key]);
+                users.push(user.val());
+              }
+            }
+          }
+        })
+        return users;
+      }
+      
+    })
   }
   
 
@@ -769,9 +809,158 @@ export class DataService {
         items:games,
         status:'pending',
         creationTime: moment().utc().valueOf()
+      }).then(()=>{
+        return tradeKey;
       })
     })
     
+  }
+
+  public checkBlockedItems(userKey:string,games:any):Promise<any>{
+    return this.database.ref('/users/'+userKey+'/videogames/offer').once('value').then((snap)=>{
+     if(snap.val() !== null){
+        let blockedArray = [];
+        snap.forEach((item)=>{
+          let obj = {
+            gameId: item.key,
+            platformId: item.val().platformId,
+            blocked:item.val().blockedItem,
+            blockedAmount:item.val().blockedAmount
+          }
+          blockedArray.push(obj);
+        })
+
+        return blockedArray;
+      }
+    })
+  }
+
+  public blockInventory(tradeKey:string,isProposer:boolean):Promise<any>{
+    return this.database.ref('/trades/'+tradeKey).once('value').then((snap)=>{
+      let proposer = snap.val().proposer;
+      let receiver = snap.val().receiver;
+
+      let items = snap.val().items;
+      let proposerGames = [];
+      let receiverGames = [];
+
+      items.forEach((item)=>{
+        if(item.type === 'offering'){
+          proposerGames.push(item.game);
+        }
+        else{
+          receiverGames.push(item.game);
+        }
+      })
+
+
+      
+      if(isProposer){
+        return this.database.ref('/users/'+proposer+'/videogames/offer').once('value').then((res)=>{
+          
+          res.forEach((fetchedGame)=>{
+            proposerGames.forEach((game)=>{
+              if(game.title === fetchedGame.val().title && game.platform === fetchedGame.val().platform){
+                if(game.pickedGames === fetchedGame.val().quantity){
+                  // we completely block it
+                  fetchedGame.ref.update({
+                    blockedItem:true
+                  });
+
+                  console.log('completely block:',fetchedGame.key);
+                }
+                else{
+                  //we block only picked amount
+                  fetchedGame.ref.update({
+                    blockedAmount:game.pickedGames
+                  })
+                  console.log('partial block:',fetchedGame.key);
+                }
+              }
+            })
+          })
+
+        })
+      }
+      else{
+        return this.database.ref('/users/'+receiver+'/videogames/offer').once('value').then((res)=>{
+          
+          res.forEach((fetchedGame)=>{
+            receiverGames.forEach((game)=>{
+              if(game.title === fetchedGame.val().title && game.platform === fetchedGame.val().platform){
+                if(game.pickedGames === fetchedGame.val().quantity){
+                  // we completely block it
+                  fetchedGame.ref.update({
+                    blockedItem:true
+                  });
+
+                  console.log('completely block:',fetchedGame.key);
+                }
+                else{
+                  //we block only picked amount
+                  fetchedGame.ref.update({
+                    blockedAmount:game.pickedGames
+                  })
+                  console.log('partial block:',fetchedGame.key);
+                }
+              }
+            })
+          })
+
+        })
+      }
+    })
+  }
+
+  public unblockInventory(tradeKey:string){
+    return this.database.ref('/trades/'+tradeKey).once('value').then((snap)=>{
+    
+    let proposer = snap.val().proposer;
+    let items = snap.val().items;
+    let proposerGames = [];
+    let receiverGames = [];
+
+    items.forEach((item)=>{
+      if(item.type === 'offering'){
+        proposerGames.push(item.game);
+      }
+      else{
+        receiverGames.push(item.game);
+      }
+    })
+
+    return this.database.ref('/users/'+proposer+'/videogames/offer').once('value').then((res)=>{
+        
+      res.forEach((fetchedGame)=>{
+        proposerGames.forEach((game)=>{
+          if(game.title === fetchedGame.val().title && game.platform === fetchedGame.val().platform){
+            if(game.pickedGames === fetchedGame.val().quantity){
+              // we completely block it
+              fetchedGame.ref.update({
+                blockedItem:false
+              });
+
+              console.log('completely block:',fetchedGame.key);
+            }
+            else{
+              //we block only picked amount
+              fetchedGame.ref.update({
+                blockedAmount: (fetchedGame.val().blockedAmount - game.pickedGames)
+              })
+              console.log('partial block:',fetchedGame.key);
+            }
+          }
+        })
+      })
+
+    })
+
+
+
+
+
+
+    })
   }
 
   // public incrementTradeCounter() :Promise<any>{
@@ -928,6 +1117,8 @@ export class DataService {
         if(game.type === "offer"){
           return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
             title:game.title,
+            blockedItem:false,
+            blockedAmount:0,
             genre:game.genre,
             releaseDate:game.releaseDate,
             coverPhoto:game.coverPhoto,
@@ -941,6 +1132,8 @@ export class DataService {
           return this.database.ref('users/'+this.uid+'/videogames/'+game.type+'/'+id).set({
             title:game.title,
             genre:game.genre,
+            blockedItem:false,
+            blockedAmount:0,
             releaseDate:game.releaseDate,
             coverPhoto:game.coverPhoto,
             esrbRating:game.esrbRating,

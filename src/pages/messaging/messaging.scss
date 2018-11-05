@@ -2,9 +2,16 @@ page-messaging {
   .toolbar-background {
     background-color:color($colors,primary);
   } 
-    ion-input{
-      // border-radius:.4em;
-      border-bottom:1px solid rgba(27, 27, 27, 0.952);
+  
+  #inputItem{
+    background:transparent;
+  }
+    input{
+      width: 100%;
+        background-color: transparent;
+        border: none;
+        border-bottom:2px solid rgba(27, 27, 27, 0.952);
+        padding-bottom:12px;
     }
 
     #swapIcon{

@@ -422,32 +422,33 @@ export class TradeCardComponent implements OnInit {
     loader.present();
     
     this.dataService.acceptTradeOffer(this.tradeKey).then(()=>{
-      this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',this.tradeKey,this.chatKey).subscribe((data:any)=>{
-        console.log(data);
-
-        loader.dismiss();
-        let toast = this.toastCtrl.create({
-          message:'The trade proposer has been notified!',
-          duration:2000
-        });
-        toast.present();
-        this.ngZone.run(() =>{
-          this.accepted = true;
-          this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
-          this.showWaitingMessage = true;
-          this.showButtons = false;
-          this.timer.secondsRemaining = 0;
+      this.dataService.blockInventory(this.tradeKey,false).then(()=>{
+        this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'accept',this.tradeKey,this.chatKey).subscribe((data:any)=>{
+          console.log(data);
+  
+          loader.dismiss();
+          let toast = this.toastCtrl.create({
+            message:'The trade proposer has been notified!',
+            duration:2000
+          });
+          toast.present();
+          this.ngZone.run(() =>{
+            this.accepted = true;
+            this.waitingMessage = "Trade has been accepted! Our staff will now proceed to approve the trade";
+            this.showWaitingMessage = true;
+            this.showButtons = false;
+            this.timer.secondsRemaining = 0;
+          })
+  
+        },(err)=>{
+          let toast = this.toastCtrl.create({
+            message:'An error has occurred while notifying the user',
+            duration:2000
+          });
+          loader.dismiss();
+          toast.present();
         })
-
-      },(err)=>{
-        let toast = this.toastCtrl.create({
-          message:'An error has occurred while notifying the user',
-          duration:2000
-        });
-        loader.dismiss();
-        toast.present();
-      })
-      
+      })  
     })
 
   }
@@ -462,27 +463,30 @@ export class TradeCardComponent implements OnInit {
     
         this.dataService.sendTradeNotification(this.dataService.browserToken,this.dataService.phoneToken,this.dataService.username,'decline',this.tradeKey,this.chatKey).subscribe((data:any)=>{
           console.log(data);
-          this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
-            console.log('trade declined and removed');
-            this.dataService.removeTradeMessage(this.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
-              let toast = this.toastCtrl.create({
-                message:'Trade has been declined, the proposer has been notified!',
-                duration:2000
-              });
-              loader.dismiss();
-              toast.present();
-              console.log('trade card message removed');
-          })
+          this.dataService.unblockInventory(this.tradeKey).then(()=>{
+            this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
+              console.log('trade declined and removed');
+              this.dataService.removeTradeMessage(this.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
+                let toast = this.toastCtrl.create({
+                  message:'Trade has been declined, the proposer has been notified!',
+                  duration:2000
+                });
+                loader.dismiss();
+                toast.present();
+                console.log('trade card message removed');
+            })
+        })
+       
+      },(err) =>{
+        let toast = this.toastCtrl.create({
+          message:'An error has occurred, while notifying the user.',
+          duration:2000
+        });
+        loader.dismiss();
+        toast.present();
       })
-     
-    },(err) =>{
-      let toast = this.toastCtrl.create({
-        message:'An error has occurred, while notifying the user.',
-        duration:2000
-      });
-      loader.dismiss();
-      toast.present();
     })
+          
   }
 
   getSecondsAsDigitalClock(inputSeconds: number) {

@@ -69,7 +69,8 @@ export class ConfirmTradePage {
             console.log('Confirm clicked');
             let chatKey = this.navParams.get('chatKey');
             this.dataService.createTrade(this.games,this.navParams.get('username'),chatKey).
-            then(()=>{
+            then((tradeKey)=>{
+              this.dataService.blockInventory(tradeKey,true).then(()=>{
               console.log('trade created:'); 
               let flag = false;                
               this.navCtrl.getViews().forEach(element => {
@@ -110,6 +111,8 @@ export class ConfirmTradePage {
                         })
                 })
               }
+              })
+              
 
                     
                   

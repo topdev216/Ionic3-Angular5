@@ -37,10 +37,37 @@ export class PickGamePage {
     , public viewCtrl: ViewController
     , public appCtrl: App) {
     this.games = this.navParams.get('games');
+    this.games.forEach((game,index)=>{
+      if(game.blockedAmount !== undefined){
+        this.games[index].available = game.quantity - game.blockedAmount
+      }
+      else if(game.blockedItem){
+        this.games[index].available = 0;
+      }
+      else{
+        this.games[index].available = game.quantity;
+      }
+    })
     this.pickedGames = this.navParams.get('pickedGames');
     this.username = this.navParams.get('username');
     this.chatKey = this.navParams.get('chatKey');
     this.isUser = this.navParams.get('isUser');
+
+    
+    if(this.isUser){
+      this.dataService.checkBlockedItems(this.dataService.uid,this.games).then((snap)=>{
+        console.log('blocked array:',snap);
+      })
+    }
+    else{
+      this.dataService.fetchUserKey(this.username).then((snap)=>{
+        var key = Object.keys(snap.val())[0];
+        console.log('blocked key:',key);
+        this.dataService.checkBlockedItems(key,this.games).then((res)=>{
+          console.log('blocked array:',res);
+        })
+      })
+    }
     this.isDirect = this.navParams.get('isDirect');
     this.count = 0;
 
@@ -71,7 +98,13 @@ export class PickGamePage {
       if(this.games[i].title == game.title){
         this.games[i]["selected"] = true;
 
-        if(this.games[i].quantity <= this.games[i].pickedGames){
+        // if(this.games[i].blockedAmount !== undefined){
+        //   if(count > this.games[i].quantity - this.games[i].blockedAmount){
+        //     this.games[i].pickedGames = this.games[i].pickedGames;
+        //   }
+        // }
+
+        if(this.games[i].quantity <= this.games[i].pickedGames || this.games[i].quantity - (this.games[i].blockedAmount + this.games[i].pickedGames) === 0){
           this.games[i].pickedGames = this.games[i].pickedGames;
         }
         else{

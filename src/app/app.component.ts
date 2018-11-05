@@ -20,6 +20,8 @@ import { Globals } from '../providers/backbutton/app.config';
 import { BackButtonProvider } from '../providers/backbutton/backbutton';
 import { HomePage } from '../pages/home/home';
 import { TabsPageModule } from '../pages/tabs/tabs.module';
+import { Keyboard } from '@ionic-native/keyboard';
+import { NativeKeyboard } from '@ionic-native/native-keyboard';
 
 @Component({
   templateUrl: 'app.html'
@@ -36,6 +38,9 @@ export class MyApp {
   messaging:any;
   debug:boolean = false;
   alert;
+  y:any;
+  h:any;
+  offsetY:any;
 
 
 
@@ -52,13 +57,13 @@ export class MyApp {
   , public fcm: FCM
   , public backButtonService: BackButtonProvider
   , public menu: MenuController
-  , public app: App) {
+  , public app: App
+  , public keyboard: Keyboard) {
 
     if(this.debug){
       this.rootPage = AddUsernamePage;
     }
     else{
-
       
       platform.registerBackButtonAction(() => {
 
@@ -101,21 +106,9 @@ export class MyApp {
             console.log('we can go back');
              //go back to other tab
              const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
-            if(previousTab === 'ProfilePage'){
-              tabsNav.select(4);
-            }
-            else if(previousTab === 'DiscoverPage'){
-              tabsNav.select(3);
-            }
-            else if(previousTab === 'ChatPage'){
-              tabsNav.select(2);
-            }
-            else if(previousTab === 'TradeHistoryPage'){
-              tabsNav.select(1);
-            }
-            else{
+            
               tabsNav.select(0);
-            }
+            
           }
         }
         
@@ -170,7 +163,7 @@ export class MyApp {
     
 
     platform.ready().then(() => {
-      
+
       firebase.auth().onAuthStateChanged((user: firebase.User) => {
         let uid = null;
         console.log('entered!');

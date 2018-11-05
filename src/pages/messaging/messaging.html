@@ -52,7 +52,9 @@
       <ion-row>
         <ion-col col-10>
             <form (ngSubmit)="sendMessage()">
-            <ion-input type="text" placeholder="Type a message" [(ngModel)]="data.message" name="message"></ion-input>
+              <ion-item no-lines id="inputItem">
+            <input type="text" placeholder="Type a message" [(ngModel)]="data.message" name="message">
+              </ion-item> 
             </form>
           </ion-col>
           <ion-col col-2 (click)="sendMessage()">

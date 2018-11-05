@@ -3,7 +3,24 @@ page-trade-history {
         background-color:color($colors,primary);
       }
 
+      ion-segment{
+        padding:25px;
+      }
+
+      .segment .segment-button{
+          font-size:17px;
+      }
+
+      #searchItem img {
+        border-radius: 50%;
+        border: solid 2px color($colors,primary);
+        margin: 0 auto;
+        }
+
       .content{
+          h1{
+              color:white;
+          }
           background-color:#002147;
           #moreButton{
             border:0;

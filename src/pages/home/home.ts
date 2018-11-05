@@ -1,5 +1,5 @@
 import { Component, NgZone, Input, OnInit } from '@angular/core';
-import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll } from 'ionic-angular';
+import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController } from 'ionic-angular';
 import { LoginPage } from '../../pages/login/login';
 import { LoadingPage } from '../../pages/loading/loading';
 import { DataService } from '../../providers/services/dataService';
@@ -10,6 +10,8 @@ import { HomeFiltersPage } from '../home-filters/home-filters';
 import { Keyboard } from '@ionic-native/keyboard'; 
 import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
+import * as moment from 'moment';
+import { GameDetailPage } from '../game-detail/game-detail';
 
 @Component({
   selector: 'page-home',
@@ -29,13 +31,14 @@ export class HomePage implements OnInit {
   private finished:boolean = false;
   private showGamecard: boolean = false;
   private searchPlaceholder: string = "Search Game";
-  private filter:string = "";
+  private filter:string = "game";
   private query:string = "";
   private trades:any[] = [];
   private games:any [] = [];
   private tabBar:any;
   private temporalTrades:any[] = [];
   private showingTrades:any[] = [];
+  private renderLoad:boolean = false;
   constructor(public navCtrl: NavController
   , public dataService: DataService
   , public events: Events
@@ -43,7 +46,9 @@ export class HomePage implements OnInit {
   , public navParams: NavParams
   , public popoverCtrl: PopoverController
   , public keyboard: Keyboard
-  , public backbuttonService: BackButtonProvider) {
+  , public backbuttonService: BackButtonProvider
+  , public toastCtrl: ToastController
+  , public modalCtrl: ModalController) {
 
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
@@ -158,13 +163,75 @@ export class HomePage implements OnInit {
     this.navCtrl.push(HomeFiltersPage,{filter:this.filter});
   }
 
+  openGame(game:any){
+    let reads = [];
+    console.log(game);
+    for(let i = 0 ; i < game.platforms.length ; i++){
+      let promise = this.dataService.getOfferingCount(game.id,game.platforms[i].id).then((snap)=>{
+        console.log('returned snap:',snap.val());
+        let count = snap.val();
+        let platformName = game.platforms[i].name;
+        if(snap.val() === null){
+          count = 0;
+        }
+        let obj = {
+          name: platformName,
+          offering_count:count
+        }
+        return obj;
+      },err=>{
+        console.log(err)
+        return null;
+      })
+      reads.push(promise);
+    }
+    Promise.all(reads).then((values)=>{
+      this.navCtrl.push(GameDetailPage,{data:values,game:game})
+      console.log(values);
+    })
+  }
+
+  searchGame(event:any){
+    if(this.filter === 'partner'){
+      this.loading = true;
+      this.trades = [];
+      
+      this.dataService.searchGamesAPI(this.query,null).subscribe((data:any)=>{
+        this.games = data;
+        for(let i = 0; i < data.length ; i++){
+          let date = moment(this.games[i].first_release_date).format("MMM Do YYYY");
+          this.games[i].first_release_date = date;
+        }
+        this.loading = false;
+        console.log(this.games);
+      },(err)=>{
+          this.loading = false;
+          let toast = this.toastCtrl.create({
+            message:'An error has occurred, please try again',
+            duration:2000
+          });
+    
+          toast.present();
+          
+          console.log('An error has ocurred.');
+      })
+    }
+    else{
+      this.doSearch(event);
+    }
+  }
+
   doSearch(event:any){
-        
+    if(this.filter === 'partner'){
+      return;
+    }
+    else{
     console.log('query event:',event);
     console.log('query:',this.query);
   
     this.trades = this.temporalTrades;
     if(this.query && this.query.trim() != ''){
+      this.games = [];
       // this.infiniteScroll.enable(false);
       if(this.filter === 'platform'){
 
@@ -266,16 +333,26 @@ export class HomePage implements OnInit {
     else{
       // this.infiniteScroll.enable(true);
     }
+    }
   }
 
   loadTrades(infiniteScroll? : InfiniteScroll ){
- 
+    if(this.filter === 'partner'){
+      // if(infiniteScroll){
+      //   infiniteScroll.complete();
+      //   infiniteScroll.enable(false);
+      //   this.finished = true;
+      // };
+      // return;
+    }
     if(this.finished){
       infiniteScroll.complete();
       infiniteScroll.enable(false);
       return
     }
     else{
+    if(this.filter !== 'partner' || !this.initialLoad){
+    console.log('selected filter:',this.filter);
 
     this.dataService.liveTrades(this.lastKey).subscribe((data)=>{
 
@@ -302,9 +379,6 @@ export class HomePage implements OnInit {
         }
       })
 
-      
-
-
       if(newTrades[newTrades.length-1] === undefined){
         this.finished = true;
       }
@@ -320,7 +394,9 @@ export class HomePage implements OnInit {
       console.log('loaded trades:',data.length);
     })
     }
+    }
   }
+
 
   ionViewWillLeave(){
     this.dataService.previousTab = 'HomePage';
@@ -331,7 +407,8 @@ export class HomePage implements OnInit {
     this.dataService.activeTab = 'HomePage';
     console.log(this.dataService.activeTab);
 
-    this.filter = this.navParams.get('filter') || null;
+    this.filter = this.navParams.get('filter') || 'game';
+    this.finished = false;
     if(this.filter !== null){
       if(this.filter === 'partner'){
         this.searchPlaceholder = "Search Game";
@@ -355,7 +432,6 @@ export class HomePage implements OnInit {
   ionViewDidLoad(){
     this.username = this.dataService.username;
   }
-
   
 
   private goToLogin() :void{
@@ -380,6 +456,6 @@ export class HomePage implements OnInit {
   }
 
   private goToNotifications() :void{
-    this.navCtrl.push(NotificationPage);
+    this.events.publish('notification page');
   }
 }

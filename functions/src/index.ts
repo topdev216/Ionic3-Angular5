@@ -1536,6 +1536,7 @@ export const getGames = functions.https.onRequest((req,res) => {
         const idArray = platforms.map( e => e.id).join(',');
 
         console.log('platform ids:',idArray)
+        console.log('platforms array:',platforms);
         console.log(req.body);
 
 
@@ -1590,7 +1591,8 @@ export const getGames = functions.https.onRequest((req,res) => {
                                                     rating:videogame.esrb.rating
                                                 },
                                             cover:{
-                                                url:coverImage
+                                                url:coverImage,
+                                                cloudinary_id:videogame.cover.cloudinary_id
                                                 }
                                         })
                                         .catch((error)=>{
@@ -1613,7 +1615,8 @@ export const getGames = functions.https.onRequest((req,res) => {
                                                     rating:'undefined'
                                                 },
                                             cover:{
-                                                url:coverImage
+                                                url:coverImage,
+                                                cloudinary_id:videogame.cover.cloudinary_id
                                                 }
                                         })
                                         .catch((error)=>{
@@ -1641,32 +1644,88 @@ export const getGames = functions.https.onRequest((req,res) => {
             else{
             const queryLowerCase = req.body.query.toLowerCase();
 
-            axios.get('https://api-endpoint.igdb.com/games/?search='+queryLowerCase+'&fields=name,cover,first_release_date,esrb,genres,platforms,popularity&order=popularity:desc&filter[version_parent][not_exists]=1&limit=15',{headers:{ 'user-key':api_key,'Accept':'application/json'}})
+            axios.get('https://api-endpoint.igdb.com/games/?search='+queryLowerCase+'&fields=name,cover,first_release_date,esrb,genres,platforms,popularity&filter[version_parent][not_exists]=1&limit=15',{headers:{ 'user-key':api_key,'Accept':'application/json'}})
 
                     .then( response => {
-                            response.data.forEach((game,index)=>{
+                            console.log('server returned:',response.data);
+                            for(let index = 0 ; index < response.data.length ; index++){
+                                const game = response.data[index];
                                 if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
-                                    response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
-                                    game.platforms.forEach((gamePlatform,index2)=>{
-                                        platforms.forEach((platform)=>{
-                                            if(gamePlatform === platform.id){
-                                                response.data[index].platforms[index2] = platform;
+                                    if(response.data[index].cover !== undefined){
+                                        response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
+                                    }
+
+                                    for(let i = 0; i < game.platforms.length; i++){
+                                        for(const platform of platforms){
+                                            if(game.platforms[i] === platform.id){
+                                                response.data[index].platforms[i] = platform;
                                             }
-                                        })
-                                    })
+                                        }
+                                    }
+                                    // game.platforms.forEach((gamePlatform,index2)=>{
+                                    //     console.log('game platform:',gamePlatform);
+                                    //     platforms.forEach((platform,index3)=>{
+                                    //         console.log('array platform',platform.id);
+                                    //         if(gamePlatform === platform.id){
+                                    //             response.data[index].platforms[index2] = platforms[index3];
+                                                
+                                    //         }
+                                    //     })
+                                    // })  
+                                    
                                 }
                                 else{
                                     response.data.splice(index,1);
                                 }
-                            })
+                            }
+                            // response.data.forEach((game,index)=>{
+                            //     if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
+                            //         if(response.data[index].cover !== undefined){
+                            //             response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
+                            //         }
+
+                            //         for(let i = 0; i < game.platforms.length; i++){
+                            //             for(const platform of platforms){
+                            //                 if(game.platforms[i] === platform.id){
+                            //                     response.data[index].platforms[i] = platform;
+                            //                 }
+                            //             }
+                            //         }
+                            //         // game.platforms.forEach((gamePlatform,index2)=>{
+                            //         //     console.log('game platform:',gamePlatform);
+                            //         //     platforms.forEach((platform,index3)=>{
+                            //         //         console.log('array platform',platform.id);
+                            //         //         if(gamePlatform === platform.id){
+                            //         //             response.data[index].platforms[index2] = platforms[index3];
+                                                
+                            //         //         }
+                            //         //     })
+                            //         // })  
+                                    
+                            //     }
+                            //     else{
+                            //         response.data.splice(index,1);
+                            //     }
+                            // })
 
                             response.data.forEach((game,index)=>{
                                 if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
-                                    game.platforms.forEach((platform,index2)=>{
-                                        if(typeof platform === 'number'){
-                                            response.data[index].platforms.splice(index2,1);
-                                        }
-                                    })
+                                    if(game.platforms.length === 0 || game.platforms.length === undefined){
+                                        response.data.splice(index,1);
+                                    }
+                                    else{
+                                        game.platforms.forEach((platform,index2)=>{
+                                            if(platform.id === undefined){
+                                                response.data[index].platforms.splice(index2,1);
+                                                if(response.data[index].platforms.length === 0){
+                                                    response.data.splice(index,1);
+                                                }
+                                            }
+                                        })
+                                    }
+                                }
+                                else{
+                                    response.data.splice(index,1); 
                                 }
                             })
 
@@ -1675,7 +1734,6 @@ export const getGames = functions.https.onRequest((req,res) => {
                                 if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
                                     game.genres.forEach((genre,index2)=>{
                                         const promise = axios.get('https://api-endpoint.igdb.com/genres/'+genre+'?fields=*',{headers:{ 'user-key':api_key,'Accept':'application/json'}}).then((res)=>{
-                                            console.log('genre data:',res.data[0]);
                                             response.data[index].genres[index2] = res.data[0];
                                             return 'promise finished';
                                         },err =>{

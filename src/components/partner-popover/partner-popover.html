@@ -1,0 +1,19 @@
+<!-- Generated template for the PartnerPopoverComponent component -->
+<div class="list container">
+  <ion-list>
+        <button ion-item *ngIf="data.name !== 'TUG'" (click)="viewProfile()">
+          <ion-icon name="person" item-end></ion-icon>
+          <div text-center>View Profile</div>
+        </button>
+
+        <button ion-item *ngIf="data.name !== 'TUG'" (click)="viewGames()">
+            <ion-icon name="game-controller-b" item-end></ion-icon>
+            <div text-center>View Games</div>
+        </button>
+
+        <button ion-item (click)="sendMessage()">
+          <ion-icon name="chatboxes" item-end></ion-icon>
+          <div text-center>Start Chatting</div>
+        </button>
+    </ion-list>
+</div>
