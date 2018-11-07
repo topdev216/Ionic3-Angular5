@@ -1,0 +1,49 @@
+page-game-information {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
+      .content{
+        background-color:#002147;
+
+        ion-slide{
+            img{
+                max-width:520px;
+            }
+            iframe{
+                max-width:520px;
+            }
+        }
+
+        .swiper-pagination{
+            top:0px !important;
+            // margin-bottom:10px !important;
+            bottom:inherit;
+        }
+
+        .swiper-container{
+            padding-top:25px !important;
+        }
+
+        .cover-image{
+            color:white;
+            background:#002c5e;
+            height:280px;
+            border-bottom:1px solid color($colors,primary);
+            img{
+                // height:200px;
+                // margin-right:15px;
+                // margin-top:15px
+            }
+        }
+        .game-summary{
+            padding:10px;
+            color:white;
+
+            .read-more{
+                color:cyan;
+                cursor: pointer;
+            }
+        }
+      }
+}

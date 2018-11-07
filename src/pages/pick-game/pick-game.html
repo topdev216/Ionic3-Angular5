@@ -22,51 +22,51 @@
       <h1>Your available games to trade </h1>
   </ion-row>
   <ion-list>
-    <ion-item *ngFor="let game of games" [class.selected]="game.selected" no-lines>
+    <ion-item *ngFor="let game of games" [class.selected]="game.game.selected" no-lines>
         <ion-row no-padding align-items-center>
 
             <ion-col col-3 no-padding>
-              <img src="https://{{game.coverPhoto}}" alt="">
+              <img src="https://{{game.game.coverPhoto}}" alt="">
               <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
             </ion-col>
 
             <ion-col col-5 padding-left> 
 
-              <div text-wrap> {{game.title}} </div>
-              <p text-wrap>{{game.platform}}</p>
-              <p text-wrap>{{game.genre}}</p>
-              <p text-wrap>{{game.releaseDate}}</p>
-              <p *ngIf="!game?.blockedItem" style="font-weight:bold;">Available units: <span>{{game?.available}}</span></p>
-              <p *ngIf="game.blockedItem" style="font-weight:bold;">No units available</p>
+              <div text-wrap> {{game.game.title}} </div>
+              <p text-wrap>{{game.game.platform}}</p>
+              <p text-wrap>{{game.game.genre}}</p>
+              <p text-wrap>{{game.game.releaseDate}}</p>
+              <p *ngIf="!game?.game?.blockedItem" style="font-weight:bold;">Available units: <span>{{game?.game.available}}</span></p>
+              <p *ngIf="game.game?.blockedItem" style="font-weight:bold;">No units available</p>
             </ion-col>
 
             <ion-col col-4 no-padding>
 
               <ion-row  justify-content-start align-items-center no-padding>
 
-                <ion-col *ngIf="!game?.blockedItem" col-4 no-padding>
-                    <button ion-button outline [disabled]="game.blockedItem" icon-only id="moreButton" (click)="gameRemoved(game)"><ion-icon name="remove-circle"></ion-icon></button>
+                <ion-col *ngIf="!game?.game?.blockedItem" col-4 no-padding>
+                    <button ion-button outline [disabled]="game.game.blockedItem" icon-only id="moreButton" (click)="gameRemoved(game.game)"><ion-icon name="remove-circle"></ion-icon></button>
                 </ion-col>
 
-                <ion-col *ngIf="!game?.blockedItem" class="mediaQuery" col-4 no-padding>
-                  <ion-row *ngIf="!game?.blockedItem" justify-content-center>
-                      {{game.pickedGames}} picked
+                <ion-col *ngIf="!game?.game?.blockedItem" class="mediaQuery" col-4 no-padding>
+                  <ion-row *ngIf="!game?.game?.blockedItem" justify-content-center>
+                      {{game.game.pickedGames}} picked
                   </ion-row>
                 </ion-col>
 
-                <ion-col *ngIf="!game?.blockedItem" col-4 no-padding>
-                   <button ion-button outline icon-only [disabled]="game.blockedItem" id="moreButton" (click)="gameSelected(game)"><ion-icon name="add-circle"></ion-icon></button>
+                <ion-col *ngIf="!game?.game?.blockedItem" col-4 no-padding>
+                   <button ion-button outline icon-only [disabled]="game.game.blockedItem" id="moreButton" (click)="gameSelected(game.game)"><ion-icon name="add-circle"></ion-icon></button>
                 </ion-col>
 
-                <div *ngIf="game.blockedItem" text-wrap>
+                <div *ngIf="game.game.blockedItem" text-wrap>
                   Item involved in trade
                 </div>
                   <!-- <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove"></ion-icon></button> -->
                   <!-- <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button> -->
               </ion-row>
 
-              <ion-row class="pickedQuery" *ngIf="!game?.blockedItem" justify-content-center>
-                  {{game.pickedGames}} picked
+              <ion-row class="pickedQuery" *ngIf="!game?.game?.blockedItem" justify-content-center>
+                  {{game.game.pickedGames}} picked
               </ion-row>
               
             </ion-col>

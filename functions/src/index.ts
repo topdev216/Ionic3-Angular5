@@ -1847,6 +1847,54 @@ export const getTrades = functions.https.onRequest((req,res) => {
   }
 })
 })
+
+export const getGame = functions.https.onRequest((req,res)=>{
+    corsHandler(req,res,()=>{
+
+        const gameId = req.body.id;
+        const platforms = [];
+
+        db.ref('/platformTable').once('value').then((snap)=>{
+            snap.forEach((platform)=>{
+                platforms.push(platform.val());
+                return false;
+            });
+
+            axios.get('https://api-endpoint.igdb.com/games/'+gameId+'?fields=*',{headers:{ 'user-key':api_key,'Accept':'application/json'}})
+            .then((response) =>{
+                const coverImage = ("//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[0].cover.cloudinary_id+'.jpg').substring(2);
+
+                response.data[0].screenshots.forEach((screenshot,index)=>{
+                    const coverImage = ("//images.igdb.com/igdb/image/upload/t_screenshot_huge/"+screenshot.cloudinary_id+'.jpg').substring(2);
+                    response.data[0].screenshots[index].url = coverImage;
+                })
+
+                response.data[0].cover.url = coverImage;
+                response.data[0].platforms.forEach((dataPlatform,index)=>{
+                    platforms.forEach((platform)=>{
+                        if(platform.id === dataPlatform){
+                            response.data[0].platforms[index] = platform;
+                        }
+                    });
+                });
+
+                axios.get('https://api-endpoint.igdb.com/genres/'+response.data[0].genres[0]+'?fields=*',{headers:{ 'user-key':api_key,'Accept':'application/json'}})
+                .then((genre)=>{
+                    response.data[0].genres[0] = genre.data[0];
+                    return res.status(200).json(response.data);
+                })
+
+            })
+        })
+        .catch((err)=>{
+            console.log('Error retrieving data:',err);
+            return res.send(err);
+        })
+
+        
+
+    })
+})
 // Keeps track of the length of the 'likes' child list in a separate property.
 export const countTrade = functions.database.ref('/trades/{tradeid}').onWrite(
     async (change) => {

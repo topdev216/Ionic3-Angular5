@@ -58,6 +58,11 @@ import { JoinPipe } from '../pipes/join/join';
 import { PartnerResultsPage } from '../pages/partner-results/partner-results';
 import { PartnerPopoverComponent } from '../components/partner-popover/partner-popover';
 import { GameDetailPage } from '../pages/game-detail/game-detail';
+import { GameInformationPage } from '../pages/game-information/game-information';
+import { PhotoViewer } from '@ionic-native/photo-viewer';
+import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player';
+
+
 
 
 
@@ -113,7 +118,8 @@ const firebaseConfig = {
     JoinPipe,
     PartnerResultsPage,
     PartnerPopoverComponent,
-    GameDetailPage
+    GameDetailPage,
+    GameInformationPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -166,7 +172,8 @@ const firebaseConfig = {
     BugReportPage,
     PartnerResultsPage,
     PartnerPopoverComponent,
-    GameDetailPage
+    GameDetailPage,
+    GameInformationPage
     
   ],
   providers: [
@@ -181,7 +188,9 @@ const firebaseConfig = {
     GooglePlus,
     Keyboard,
     BackButtonProvider,
-    NativeKeyboard
+    NativeKeyboard,
+    PhotoViewer,
+    YoutubeVideoPlayer
   ]
 })
 export class AppModule {}

@@ -38,14 +38,15 @@ export class PickGamePage {
     , public appCtrl: App) {
     this.games = this.navParams.get('games');
     this.games.forEach((game,index)=>{
-      if(game.blockedAmount !== undefined){
-        this.games[index].available = game.quantity - game.blockedAmount
+      console.log('for each game:',game);
+      if(game.game.blockedAmount !== undefined){
+        this.games[index].game.available = game.game.quantity - game.game.blockedAmount
       }
-      else if(game.blockedItem){
-        this.games[index].available = 0;
+      else if(game.game.blockedItem){
+        this.games[index].game.available = 0;
       }
       else{
-        this.games[index].available = game.quantity;
+        this.games[index].game.available = game.game.quantity;
       }
     })
     this.pickedGames = this.navParams.get('pickedGames');
@@ -53,33 +54,23 @@ export class PickGamePage {
     this.chatKey = this.navParams.get('chatKey');
     this.isUser = this.navParams.get('isUser');
 
+    const games = [];
+    this.games.forEach((game)=>{
+      games.push(game.game);
+    });
     
-    if(this.isUser){
-      this.dataService.checkBlockedItems(this.dataService.uid,this.games).then((snap)=>{
-        console.log('blocked array:',snap);
-      })
-    }
-    else{
-      this.dataService.fetchUserKey(this.username).then((snap)=>{
-        var key = Object.keys(snap.val())[0];
-        console.log('blocked key:',key);
-        this.dataService.checkBlockedItems(key,this.games).then((res)=>{
-          console.log('blocked array:',res);
-        })
-      })
-    }
     this.isDirect = this.navParams.get('isDirect');
     this.count = 0;
 
     for(let i = 0; i < this.games.length ; i++){
-      this.games[i].pickedGames = 0;
+      this.games[i].game.pickedGames = 0;
     }
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad PickGamePage');
     for(let i = 0; i < this.pickedGames.length ; i++){
-      console.log('Picked game:',this.pickedGames[i])
+      console.log('Picked game:',this.pickedGames[i].game)
     }
   }
 
@@ -87,7 +78,7 @@ export class PickGamePage {
     console.log('popped back');
     console.log('count:',this.count);
     for(let i = 0; i < this.games.length ; i++){
-      console.log('selected games:',this.games[i]);
+      console.log('selected games:',this.games[i].game);
     }
   }
 
@@ -95,23 +86,17 @@ export class PickGamePage {
     this.selected = true;
     let count = 0;
     for(let i = 0; i < this.games.length ; i++){
-      if(this.games[i].title == game.title){
-        this.games[i]["selected"] = true;
+      if(this.games[i].game.title == game.title){
+        this.games[i].game["selected"] = true;
 
-        // if(this.games[i].blockedAmount !== undefined){
-        //   if(count > this.games[i].quantity - this.games[i].blockedAmount){
-        //     this.games[i].pickedGames = this.games[i].pickedGames;
-        //   }
-        // }
-
-        if(this.games[i].quantity <= this.games[i].pickedGames || this.games[i].quantity - (this.games[i].blockedAmount + this.games[i].pickedGames) === 0){
-          this.games[i].pickedGames = this.games[i].pickedGames;
+        if(this.games[i].game.quantity <= this.games[i].game.pickedGames || this.games[i].game.quantity - (this.games[i].game.blockedAmount + this.games[i].game.pickedGames) === 0){
+          this.games[i].game.pickedGames = this.games[i].game.pickedGames;
         }
         else{
-          this.games[i].pickedGames++;
+          this.games[i].game.pickedGames++;
         }
       }
-      count = this.games[i].pickedGames + count;
+      count = this.games[i].game.pickedGames + count;
     }
 
     this.count = count;
@@ -123,18 +108,18 @@ export class PickGamePage {
     this.selected = false;
     let count = 0;
     for(let i = 0; i < this.games.length; i++){
-      if(this.games[i].title == game.title){
-        if(this.games[i].pickedGames === 0){
-          this.games[i].pickedGames = this.games[i].pickedGames;
+      if(this.games[i].game.title == game.title){
+        if(this.games[i].game.pickedGames === 0){
+          this.games[i].game.pickedGames = this.games[i].game.pickedGames;
         }
         else{
-          this.games[i].pickedGames--;
-          if(this.games[i].pickedGames === 0){
-            this.games[i]["selected"] = false;
+          this.games[i].game.pickedGames--;
+          if(this.games[i].game.pickedGames === 0){
+            this.games[i].game["selected"] = false;
           }
         }
       }
-      count = this.games[i].pickedGames + count;
+      count = this.games[i].game.pickedGames + count;
     }
 
     this.count = count;
@@ -151,16 +136,21 @@ export class PickGamePage {
     this.dataService.fetchUserOfferGames(this.dataService.uid).then((snap) =>{
       let myGames = [];
       snap.forEach((game) =>{
-        myGames.push(game.val());
+        let obj = {
+          game:game.val(),
+          key:game.key
+        }
+        myGames.push(obj);
       })
 
       for(let i = 0; i < this.games.length; i++){
-          if(this.games[i]["selected"] === true){
+          if(this.games[i].game["selected"] === true){
             if(this.isUser){
 
 
                 let obj = {
-                  game:this.games[i],
+                  game:this.games[i].game,
+                  key:this.games[i].key,
                   type:'offering'
                 }
                 let count = 0;
@@ -178,7 +168,8 @@ export class PickGamePage {
             
             else{
               let obj = {
-                game:this.games[i],
+                game:this.games[i].game,
+                key:this.games[i].key,
                 type:'interested'
               }
               let count = 0;
@@ -203,12 +194,13 @@ export class PickGamePage {
 
   createTrade(){
     for(let i = 0; i < this.games.length; i++){
-        if(this.games[i]["selected"] == true){
+        if(this.games[i].game["selected"] == true){
           if(this.isUser){
 
 
               let obj = {
-                game:this.games[i],
+                game:this.games[i].game,
+                key:this.games[i].key,
                 type:'offering'
               }
               let count = 0;
@@ -227,7 +219,8 @@ export class PickGamePage {
           }
           else{
             let obj = {
-              game:this.games[i],
+              game:this.games[i].game,
+              key:this.games[i].key,
               type:'interested'
             }
 

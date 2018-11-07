@@ -25,6 +25,7 @@
         </host>
     </universal-links>
     <platform name="android">
+        <preference name="YouTubeDataApiKey" value="AIzaSyA9RMaRNiybHZvMLsQcGB0aFR8bE7TYdcI" />
         <preference name="AndroidLaunchMode" value="singleTask" />
         <preference name="loadUrlTimeoutValue" value="700000" />
         <allow-intent href="market:*" />
@@ -91,9 +92,10 @@
     <plugin name="cordova-universal-links-plugin" spec="^1.2.1" />
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
-    <plugin name="cordova-plugin-firebase" spec="^2.0.0" />
     <allow-navigation href="http://localhost:8100" />
     <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="^2.2.4" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <engine name="android" spec="^7.1.1" />
+    <plugin name="com-sarriaroman-photoviewer" spec="1.1.18" />
+    <plugin name="cordova-plugin-youtube-video-player" spec="2.1.0" />
+    <engine name="android" spec="~7.1.1" />
 </widget>

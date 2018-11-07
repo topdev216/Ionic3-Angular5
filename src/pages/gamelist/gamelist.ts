@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController, LoadingController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
 import { AddVideogamePage } from '../add-videogame/add-videogame';
 import { ActionPopoverComponent } from '../../components/action-popover/action-popover';
+import { GameInformationPage } from '../game-information/game-information';
 
 
 /**
@@ -34,7 +35,8 @@ export class GamelistPage{
     , public alertCtrl: AlertController
     , public popoverCtrl: PopoverController
     , public events: Events
-    , public viewCtrl: ViewController) {
+    , public viewCtrl: ViewController
+    , public loadingCtrl: LoadingController) {
 
     console.log('called constructor!');
 
@@ -133,11 +135,32 @@ export class GamelistPage{
       // this.removeGame(data.game,data.list);
     })
 
+    this.events.subscribe('view game',(data)=>{
+      console.log('called!');
+      
+      let loader = this.loadingCtrl.create({
+        content:'Please wait...',
+        spinner:'crescent'
+      });
+      loader.present();
+      this.dataService.getGame(data.key).subscribe((data)=>{
+
+        console.log('server data:',data);
+        this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+          loader.dismiss();
+        })
+      },(err)=>{
+        console.log('server error:',err);
+        loader.dismiss();
+      })
+    })
+
     this.type = this.navParams.get('segment') || 'offer';
   }
 
   ionViewWillLeave(){
     this.events.unsubscribe('removeGame');
+    this.events.unsubscribe('view game');
   }
 
   showPopover(myEvent,game):void{

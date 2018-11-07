@@ -1,0 +1,68 @@
+<!--
+  Generated template for the GameInformationPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Game Info</ion-title>
+
+    <ion-buttons right>
+        <button ion-button (click)="findPartner()" icon-right>
+                Find Partner
+                <ion-icon name="search"></ion-icon>
+        </button>
+</ion-buttons>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content no-padding>
+
+
+<div class="cover-image" [ngStyle]="styleObject()">
+  <ion-row justify-content-end>
+    <ion-col align-self-end col-8>
+      <h1>{{game.name}}</h1>
+      <h3 *ngIf="!showTbd">{{year}}</h3>
+      <h3 *ngIf="showTbd">{{tbd}}</h3>
+      <p text-wrap>Platforms: {{game.platforms | joinPipe}}</p>
+      <p >Genre: {{genre}}</p>
+      <p>ESRB: {{esrbValue}}</p>
+    </ion-col>
+    <ion-col align-self-center col-4>
+        <img src="https://{{game.cover.url}}" alt="cover">
+    </ion-col>
+  </ion-row>
+</div>
+
+<div class="game-summary">
+  <p *ngIf="!expanded && game.summary !== undefined">{{(game?.summary?.length>250)? (game?.summary | slice:0:250)+'..':(game?.summary) }} <span class="read-more" (click)="expandText()" *ngIf="game?.summary.length > 250">Read More</span></p>
+  <p *ngIf="expanded">{{game?.summary}} <span class="read-more" (click)="reduceText()" *ngIf="game?.summary.length > 250">Read Less</span></p>
+</div>
+
+
+<div class="game-screenshots">
+    <ion-slides pager>
+      <div *ngFor="let item of carouselItems">
+        <ion-slide (click)="viewVideo(item.video.video_id)" *ngIf="item.type == 'video'">
+            <img *ngIf="isMobile" src="assets/imgs/video-placeholder.jpg" alt="video">
+            <iframe width="520" height="290" *ngIf="!isMobile" [src]="videoURL(item.video.video_id)"></iframe>
+        </ion-slide>
+
+        <ion-slide (click)="viewImage(item.screenshot.url)" *ngIf="item.type == 'screenshot'">
+            <img src="https://{{item.screenshot.url}}" alt="screenshot">
+        </ion-slide>
+      </div>
+      <!-- <ion-slide (click)="viewImage(pic.url)" *ngFor="let pic of game.screenshots">
+        <img src="https://{{pic.url}}" alt="screenshot">
+      </ion-slide> -->
+    </ion-slides>
+</div>
+
+
+</ion-content>

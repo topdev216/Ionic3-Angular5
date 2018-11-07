@@ -33,4 +33,9 @@ export class ActionPopoverComponent {
     this.viewCtrl.dismiss();
   }
 
+  viewGame(){
+    this.events.publish('view game',this.game);
+    this.viewCtrl.dismiss();
+  }
+
 }

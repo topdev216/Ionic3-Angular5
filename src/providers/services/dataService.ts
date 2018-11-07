@@ -1295,7 +1295,9 @@ export class DataService {
     return this.http.post(this.urlEnvironment.getPartners(),{query:query})
   }
 
-  
+  public getGame(gameId:any):Observable<any>{
+    return this.http.post(this.urlEnvironment.getGame(),{id:gameId});
+  }
 
   public checkExistingDirect(firstUsername:string,secondUsername:string,secondUid:string):Promise<any>{
 

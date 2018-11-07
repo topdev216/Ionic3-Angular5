@@ -24,11 +24,16 @@ export class UrlEnvironment {
     private _newDirectMessage = this.baseUrl+'/newDirectMessage';
     private _getTrades = this.baseUrl+'/getTrades';
     private _getPartners = this.baseUrl+'/getPartners';
+    private _getGame = this.baseUrl+'/getGame';
 
     
 
     constructor(public platformLocation: PlatformLocation) {        
         
+    }
+
+    public getGame() :string{
+        return this._getGame;
     }
 
     public getPartners() :string{

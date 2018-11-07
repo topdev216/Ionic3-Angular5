@@ -10,7 +10,6 @@
                                 </button>
                        
                 </ion-buttons>
-               
 
                 
 
@@ -114,7 +113,7 @@
                                 <ion-row justify-content-center align-items-center>
                                         <ion-col col-5 *ngFor="let game of trade.trade.items | slice:0:1">
                                                 <ion-row justify-content-center>
-                                                        <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
+                                                        <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
                                                         <ion-badge>{{game.game?.pickedGames}}</ion-badge>
                                                 </ion-row>
                                                 <ion-row justify-content-center>
@@ -133,7 +132,7 @@
 
                                         <ion-col col-5 *ngFor="let game of trade.trade.items | slice:1">
                                                 <ion-row justify-content-center>
-                                                        <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
+                                                        <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
                                                         <ion-badge>{{game.game?.pickedGames}}</ion-badge>
                                                 </ion-row>
                                                 <ion-row justify-content-center>
@@ -152,7 +151,7 @@
                                         <ion-slides pager>
                                                 <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'interested'}">
                                                 <ion-row justify-content-center>
-                                                                <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                                                 <ion-badge>{{game.game?.pickedGames}}</ion-badge>
                                                 </ion-row>
                                                 <ion-row justify-content-center>
@@ -168,7 +167,7 @@
                                         <ion-slides pager>
                                                         <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'offering'}">
                                                         <ion-row justify-content-center>
-                                                                        <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                        <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                                                         <ion-badge>{{game.game?.pickedGames}}</ion-badge>
                                                         </ion-row>
                                                         <ion-row justify-content-center>

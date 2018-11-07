@@ -1,5 +1,5 @@
 import { Component, NgZone, Input, OnInit } from '@angular/core';
-import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController } from 'ionic-angular';
+import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController, LoadingController } from 'ionic-angular';
 import { LoginPage } from '../../pages/login/login';
 import { LoadingPage } from '../../pages/loading/loading';
 import { DataService } from '../../providers/services/dataService';
@@ -13,6 +13,7 @@ import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import * as moment from 'moment';
 import { GameDetailPage } from '../game-detail/game-detail';
 import { text } from '@angular/core/src/render3/instructions';
+import { GameInformationPage } from '../game-information/game-information';
 
 @Component({
   selector: 'page-home',
@@ -49,7 +50,8 @@ export class HomePage implements OnInit {
   , public keyboard: Keyboard
   , public backbuttonService: BackButtonProvider
   , public toastCtrl: ToastController
-  , public modalCtrl: ModalController) {
+  , public modalCtrl: ModalController
+  , public loadingCtrl: LoadingController) {
 
     document.addEventListener("keydown", (event:any)=>{
       let key = event.key;
@@ -337,6 +339,24 @@ export class HomePage implements OnInit {
       // this.infiniteScroll.enable(true);
     }
     
+  }
+
+  viewGame(id:string){
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    });
+    loader.present();
+    this.dataService.getGame(id).subscribe((data)=>{
+
+      console.log('server data:',data);
+      this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+        loader.dismiss();
+      })
+    },(err)=>{
+      console.log('server error:',err);
+      loader.dismiss();
+    })
   }
 
   loadTrades(infiniteScroll? : InfiniteScroll ){

@@ -236,7 +236,11 @@ export class MessagingPage {
             this.dataService.fetchUserOfferGames(data.key).then((snap)=>{
               let gameArray = [];
               snap.forEach((game)=>{
-                gameArray.push(game.val());
+                let obj = {
+                  key: game.key,
+                  game: game.val()
+                }
+                gameArray.push(obj);
               })
 
               
