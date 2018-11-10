@@ -27,7 +27,7 @@ page-confirm-payment {
         }
 
         .main{
-            height:480px;
+            height:580px;
             display:flex;
             flex-direction:row;
             justify-content:center;
@@ -93,15 +93,11 @@ page-confirm-payment {
             font-weight:bold;
         }
 
-        img{
-            width:220px;
-        }
-
         .image-container{
-            display:flex;
-            height:50px;
-            flex-direction:row;
-            justify-content:center;
+           img{
+               height:150px;
+               width:auto;
+           }
         }
     }
 }

@@ -808,7 +808,7 @@ export class DataService {
         },
         items:games,
         status:'pending',
-        creationTime: moment().utc().valueOf()
+        creationTime: new Date().getTime()
       }).then(()=>{
         return tradeKey;
       })

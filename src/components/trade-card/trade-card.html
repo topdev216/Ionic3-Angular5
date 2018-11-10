@@ -23,7 +23,7 @@
             <ion-col *ngFor="let game of games; let i=index; trackBy: trackById" >
 
               <ion-row justify-content-center>
-                    <img src="https://{{game.game?.coverPhoto}}" alt="asd" class="game-photo">
+                    <img (click)="viewGame(game.key)" src="https://{{game.game?.coverPhoto}}" alt="asd" class="game-photo">
               </ion-row>
               <ion-row justify-content-center>
                 <span>{{game.game?.platform}}</span>
@@ -75,21 +75,10 @@
                 </ng-template>
 
 
-                <!-- <ion-row justify-content-center align-items-center> -->
-
-                    <!-- <ion-col *ngFor="let game of offeringGames">
-                        <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
-                    </ion-col> -->
-
-                    <!-- <ion-col col-2 *ngIf="offeringGames.length > 1">
-                            <button type="submit" float-left ion-button clear icon-only color="primary" class="btnPrev" (click)="prevOffering()"><ion-icon name="arrow-back"></ion-icon></button>
-                    </ion-col> -->
-
-                    <!-- <ion-col col-8> -->
                             <ion-slides pager slidesPerView="1.5" centeredSlides initialSlide="0" spaceBetween="3" #offeringSlides>
                                     <ion-slide *ngFor="let game of offeringGames">
                                         <ion-row justify-content-center>
-                                                    <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                    <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                                     <ion-badge>{{game.game?.pickedGames}} units</ion-badge>
                                         </ion-row>
                                     </ion-slide>
@@ -115,19 +104,11 @@
 
                 <ion-row justify-content-center align-items-center>
 
-                        <!-- <ion-col *ngFor="let game of offeringGames">
-                            <img class="game-photo" src="https://{{game.game.coverPhoto}}" alt="">
-                        </ion-col> -->
-    
-                        <!-- <ion-col col-2 *ngIf="receivingGames.length > 1">
-                                <button type="submit" float-left ion-button clear icon-only color="primary" class="btnPrev" (click)="prevReceiving()"><ion-icon name="arrow-back"></ion-icon></button>
-                        </ion-col> -->
-    
-                        <!-- <ion-col col-8> -->
+                       
                                 <ion-slides pager slidesPerView="1.5" centeredSlides initialSlide="0" spaceBetween="0" #receivingSlides>
                                         <ion-slide *ngFor="let game of receivingGames">
                                             <ion-row justify-content-center>
-                                                    <img class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                    <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                                     <ion-badge>{{game.game?.pickedGames}}</ion-badge>
                                             </ion-row>
                                         </ion-slide>
@@ -166,31 +147,5 @@
 
     
     </ion-card>
-
-    <!-- <ion-card *ngIf="timer">
-        <ion-card-header>
-          <button ion-button *ngIf="timeInSeconds && timeInSeconds > 0" large block clear class="timer-button x-large">{{timer.displayTime}}</button>
-          <button ion-button *ngIf="!timeInSeconds || timeInSeconds == 0" large block clear class="timer-button">Timer set up incorrectly</button>
-        </ion-card-header>
-        <ion-item *ngIf="timeInSeconds && timeInSeconds > 0">
-          <button ion-button clear class="large" color="danger" (click)="initTimer()" item-start *ngIf="!timer.runTimer && (timer.hasStarted || timer.hasFinished) || timer.hasFinished">
-                  <ion-icon name="refresh"></ion-icon>
-                  Restart
-              </button>
-          <button ion-button clear class="large" (click)="pauseTimer()" item-end *ngIf="timer.runTimer && timer.hasStarted && !timer.hasFinished">
-                  <ion-icon name="pause"></ion-icon>
-                  Pause
-              </button>
-          <button ion-button clear class="large" (click)="resumeTimer()" item-end *ngIf="!timer.runTimer && timer.hasStarted && !timer.hasFinished">
-                  <ion-icon name="play"></ion-icon>
-                  Resume
-              </button>
-          <button ion-button clear class="large" (click)="startTimer()" item-end *ngIf="!timer.hasStarted">
-                  <ion-icon name="play"></ion-icon>
-                  Start
-              </button>
-        </ion-item>
-      </ion-card> -->
-    
     
 </div>

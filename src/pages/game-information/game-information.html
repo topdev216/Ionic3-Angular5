@@ -27,12 +27,14 @@
 <div class="cover-image" [ngStyle]="styleObject()">
   <ion-row justify-content-end>
     <ion-col align-self-end col-8>
+      <div class="game-text">
       <h1>{{game.name}}</h1>
       <h3 *ngIf="!showTbd">{{year}}</h3>
       <h3 *ngIf="showTbd">{{tbd}}</h3>
       <p text-wrap>Platforms: {{game.platforms | joinPipe}}</p>
       <p >Genre: {{genre}}</p>
       <p>ESRB: {{esrbValue}}</p>
+      </div>
     </ion-col>
     <ion-col align-self-center col-4>
         <img src="https://{{game.cover.url}}" alt="cover">

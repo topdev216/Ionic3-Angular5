@@ -6,6 +6,7 @@ import { NavController, LoadingController, ToastController } from 'ionic-angular
 import * as firebase from 'firebase';
 import { Slides } from 'ionic-angular';
 import { THROW_IF_NOT_FOUND } from '@angular/core/src/di/injector';
+import { GameInformationPage } from '../../pages/game-information/game-information';
 
 
 /**
@@ -133,7 +134,7 @@ export class TradeCardComponent implements OnInit {
             this.expired = true;
             this.showWaitingMessage = true;
 
-            let now = moment().utc().valueOf();
+            let now = new Date().getTime();
     
             let timePassed = now - snap.val().creationTime;
             
@@ -163,7 +164,7 @@ export class TradeCardComponent implements OnInit {
             console.log('timer undefined!');
             this.expired = true;
             this.waitingMessage = "Trade expired";
-            let now = moment().utc().valueOf();
+            let now = new Date().getTime();
     
             let timePassed = now - snap.val().creationTime;
             
@@ -272,34 +273,7 @@ export class TradeCardComponent implements OnInit {
         }
         else{
 
-          // let games = snap.val().items;
-
-          // if(this.receiverUid === this.dataService.uid){
-          //   this.showButtons = true;
-          //   for(let i = 0 ; i < games.length; i++){
-          //     if(games[i].type === 'offering'){
-          //       this.receivingGames.push(games[i])
-          //     }
-          //     else{
-          //       this.offeringGames.push(games[i]);
-          //     }
-          //   }
-          // }
-          // if(this.fromUid === this.dataService.uid){
-          //   this.showWaitingMessage = true;
-          //   for(let i = 0 ; i < games.length; i++){
-          //     if(games[i].type === 'offering'){
-          //       this.offeringGames.push(games[i])
-          //     }
-          //     else{
-          //       this.receivingGames.push(games[i]);
-          //     }
-          //   }
-          // }
-
-          
-          
-          let now = moment().utc().valueOf();
+          let now = new Date().getTime();
           let test = moment().utc().valueOf();
   
           let timePassed = now - snap.val().creationTime;
@@ -381,6 +355,26 @@ export class TradeCardComponent implements OnInit {
 
   resumeTimer() {
     this.startTimer();
+  }
+
+  viewGame(id:string){
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    })
+
+    loader.present();
+
+    this.dataService.getGame(id).subscribe((data)=>{
+
+      console.log('server data:',data);
+      this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+        loader.dismiss();
+      })
+    },(err)=>{
+      console.log('server error:',err);
+      loader.dismiss();
+    })
   }
 
   timerTick() {

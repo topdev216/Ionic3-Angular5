@@ -26,7 +26,7 @@
         <ion-row no-padding align-items-center>
 
             <ion-col col-3 no-padding>
-              <img src="https://{{game.game.coverPhoto}}" alt="">
+              <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game.coverPhoto}}" alt="cover">
               <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
             </ion-col>
 

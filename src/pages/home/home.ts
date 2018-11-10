@@ -1,19 +1,27 @@
 import { Component, NgZone, Input, OnInit } from '@angular/core';
-import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController, LoadingController } from 'ionic-angular';
+import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController, LoadingController, Keyboard} from 'ionic-angular';
 import { LoginPage } from '../../pages/login/login';
-import { LoadingPage } from '../../pages/loading/loading';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 import { NotificationPage } from '../notification/notification';
 import { HomeFiltersPage } from '../home-filters/home-filters';
-import { Keyboard } from '@ionic-native/keyboard'; 
 import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import * as moment from 'moment';
 import { GameDetailPage } from '../game-detail/game-detail';
-import { text } from '@angular/core/src/render3/instructions';
 import { GameInformationPage } from '../game-information/game-information';
+
+export interface CountdownTimer {
+  seconds: number;
+  secondsRemaining: number;
+  runTimer: boolean;
+  hasStarted: boolean;
+  hasFinished: boolean;
+  displayTime: string;
+  tradeKey:string;
+  message:string;
+}
 
 @Component({
   selector: 'page-home',
@@ -26,6 +34,8 @@ export class HomePage implements OnInit {
   public authState:boolean = null;
   private username :string = "adasdasda";
   private loading:boolean;
+  private timerArray: CountdownTimer [] = [];
+  private timeInSeconds:number;
   private unreadNotifications:number;
   private initialLoad:boolean = false;
   private lastKey:string = "";
@@ -47,7 +57,6 @@ export class HomePage implements OnInit {
   , public zone: NgZone
   , public navParams: NavParams
   , public popoverCtrl: PopoverController
-  , public keyboard: Keyboard
   , public backbuttonService: BackButtonProvider
   , public toastCtrl: ToastController
   , public modalCtrl: ModalController
@@ -57,7 +66,7 @@ export class HomePage implements OnInit {
       let key = event.key;
       if(key === 'Backspace'){
         console.log('key event:',event.target.value);
-        if(event.target.value === "" && event.target.value.trim().length === 0){
+        if(event.target.value.trim().length === 1){
           this.games = [];
           if(this.trades.length === 0){
           this.showGamecard = false;
@@ -77,13 +86,14 @@ export class HomePage implements OnInit {
 
     this.dataService.liveTradesCount();
 
-    this.keyboard.onKeyboardShow().subscribe(()=>{
-      this.tabBar.style.display = 'none';
-    })
 
-    this.keyboard.onKeyboardHide().subscribe(()=>{
+    window.addEventListener('keyboardDidShow', ()=>{
+      this.tabBar.style.display = 'none';
+    });
+
+    window.addEventListener('keyboardDidHide', ()=>{
       this.tabBar.style.display = 'flex';
-    })
+    });
 
     this.dataService.tradeCountChange.subscribe((value)=>{
       this.trades_count = value;
@@ -91,36 +101,93 @@ export class HomePage implements OnInit {
 
     this.dataService.tradesChange.subscribe((value)=>{
 
-        value.sort((a,b) => b.creationTime - a.creationTime);
+        value.sort((a,b) => a.trade.creationTime - b.trade.creationTime);
 
-        console.log('trade new value:',value);
+        console.log('trade new value:',value);  
         console.log('trade new value length',value.length);
-        console.log('trade new value current length:',this.trades.length)
-        if(value.length > this.trades.length){
+        console.log('trade new value current length:',this.temporalTrades.length)
+        if(value.length > this.temporalTrades.length){
           if(this.initialLoad){
             console.log('pushing new value:',value)
-            this.zone.run(()=>{
-              this.trades.unshift(value[value.length-1]);
-              this.temporalTrades = this.trades;
-            });
+            console.log('pushing new trade:',value[value.length-1]);
+              this.zone.run(()=>{
+                this.trades.unshift(value[value.length-1]);
+                let timer = <CountdownTimer>{
+                  seconds: 180,
+                  runTimer: false,
+                  hasStarted: false,
+                  hasFinished: false,
+                  secondsRemaining: 180,
+                  tradeKey:value[value.length-1].key
+                };
+                this.timerArray.unshift(timer);
+                this.initTimer(180,value[value.length-1].key,0);
+                this.temporalTrades = value;
+              });
+            
           }
           else{
             this.initialLoad = true;
+            this.trades.forEach((trade,index)=>{
+              if(trade.trade.status === 'accepted'){
+                this.zone.run(()=>{
+                  this.timerArray[index].hasFinished = true;
+                  this.timerArray[index].message = 'Trade Accepted';
+                })
+              }
+              else if(trade.trade.status === 'expired'){
+                this.zone.run(()=>{
+                  this.trades.splice(index,1);
+                  this.timerArray.splice(index,1);
+                })
+              }
+            })
+            this.temporalTrades = value;
           }
         }
+        else if(value.length < this.temporalTrades.length){
+          this.initialLoad = true;
+
+            let newTradeKeys = [];
+            value.forEach((trade)=>{
+              newTradeKeys.push(trade.key);
+            })
+  
+            this.trades.forEach((trade,index)=>{
+              if(!newTradeKeys.includes(trade.key)){
+                this.trades.splice(index,1);
+                this.timerArray.splice(index,1);
+              }
+            })
+            this.temporalTrades = value;
+        }
         else{
-            this.initialLoad = true;
-            // this.trades = value;
-          //  this.trades.map((trade,index)=>{
-          //    if(!value.includes(trade)){
-          //     this.zone.run(()=>{
-          //       this.trades.splice(index,1);
-          //     });
-          //    }
-          //  })
-          // this.zone.run(()=>{
-          //   this.trades.shift();
-          // })
+          this.initialLoad = true;
+          let expiredKey = "";
+          let acceptedKey = "";
+          value.forEach((trade)=>{
+            if(trade.trade.status === "expired"){
+              expiredKey = trade.key;
+            }
+            if(trade.trade.status === "accepted"){
+              acceptedKey = trade.key;
+            }
+          });
+
+          this.trades.forEach((trade,index)=>{
+            if(trade.key === expiredKey){
+              this.zone.run(()=>{
+                this.trades.splice(index,1);
+              })
+            }
+            if(trade.key === acceptedKey){
+              this.zone.run(()=>{
+                this.timerArray[index].hasFinished = true;
+                this.timerArray[index].message = "Trade Accepted";
+              })
+            }
+          })
+          this.temporalTrades = value;
         }
       
       console.log('trade service:',this.trades);
@@ -140,6 +207,7 @@ export class HomePage implements OnInit {
 
       
           console.log('new value!');
+
     
           let count = 0;
     
@@ -181,6 +249,74 @@ export class HomePage implements OnInit {
     this.navCtrl.push(HomeFiltersPage,{filter:this.filter});
   }
 
+  initTimer(remainingSeconds:number,tradeKey:string,timerIndex: number) {
+    if (!this.timeInSeconds) { 
+      this.timeInSeconds = 0; 
+    }
+
+    this.timerArray[timerIndex] = <CountdownTimer>{
+      seconds: 180,
+      runTimer: false,
+      hasStarted: false,
+      hasFinished: false,
+      secondsRemaining: remainingSeconds,
+      tradeKey:tradeKey
+    };
+
+    this.timerArray[timerIndex].displayTime = this.getSecondsAsDigitalClock(this.timerArray[timerIndex].secondsRemaining);
+    this.startTimer(tradeKey,timerIndex);
+  }
+
+  startTimer(tradeKey:string,timerIndex:number) {
+    this.timerArray[timerIndex].hasStarted = true;
+    this.timerArray[timerIndex].runTimer = true;
+    this.timerTick(tradeKey,timerIndex);
+  }
+
+  timerTick(tradeKey:string,timerIndex: number) {
+    setTimeout(() => {
+      if (!this.timerArray[timerIndex].runTimer) { return; }
+      this.timerArray[timerIndex].secondsRemaining--;
+      this.timerArray[timerIndex].displayTime = this.getSecondsAsDigitalClock(this.timerArray[timerIndex].secondsRemaining);
+      if (this.timerArray[timerIndex].secondsRemaining > 0) {
+        this.timerTick(tradeKey,timerIndex);
+      } else {
+        this.timerArray[timerIndex].hasFinished = true;
+          
+
+          this.dataService.checkTradeStatus(tradeKey).then((snap) =>{
+            if(snap.val() !== null){
+              if(snap.val().status !== 'accepted'){
+                this.dataService.updateTradeStatus(tradeKey,'expired').then(()=>{
+                  this.zone.run(()=>{
+                    this.timerArray[timerIndex].hasFinished = true;
+                    this.timerArray.splice(timerIndex,1);
+                    this.trades.splice(timerIndex,1);
+                  });
+                });     
+              }
+            }
+          })
+                                                                                                                                                                                                                                                                                            
+        
+      }
+    }, 1000);
+  }
+
+  getSecondsAsDigitalClock(inputSeconds: number) {
+    const secNum = parseInt(inputSeconds.toString(), 10); // don't forget the second param
+    const hours = Math.floor(secNum / 3600);
+    const minutes = Math.floor((secNum - (hours * 3600)) / 60);
+    const seconds = secNum - (hours * 3600) - (minutes * 60);
+    let hoursString = '';
+    let minutesString = '';
+    let secondsString = '';
+    hoursString = (hours < 10) ? '0' + hours : hours.toString();
+    minutesString = (minutes < 10) ? '0' + minutes : minutes.toString();
+    secondsString = (seconds < 10) ? '0' + seconds : seconds.toString();
+    return hoursString + ':' + minutesString + ':' + secondsString;
+  }
+
   openGame(game:any){
     let reads = [];
     console.log(game);
@@ -212,8 +348,8 @@ export class HomePage implements OnInit {
   searchGame(event:any){
     
       this.loading = true;
-      this.trades = [];
-      this.lastKey = "";
+      // this.trades = [];
+      // this.lastKey = "";
       this.dataService.searchGamesAPI(this.query,null).subscribe((data:any)=>{
         this.games = data;
         for(let i = 0; i < data.length ; i++){
@@ -243,7 +379,6 @@ export class HomePage implements OnInit {
     console.log('query event:',event);
     console.log('query:',this.query);
     this.showGamecard = false;
-    this.trades = this.temporalTrades;
     if(this.query && this.query.trim() != ''){
       if(this.filter === 'platform'){
 
@@ -370,7 +505,6 @@ export class HomePage implements OnInit {
     else{
     
     console.log('selected filter:',this.filter);
-
     this.dataService.liveTrades(this.lastKey).subscribe((data)=>{
       this.showGamecard = false;
       const currentTrades = this.trades;
@@ -389,12 +523,45 @@ export class HomePage implements OnInit {
 
       console.log('new trades:',newTrades);
 
-      this.zone.run(()=>{
-        this.trades = currentTrades.concat(newTrades);
-        if(this.trades.length > this.temporalTrades.length){
-          this.temporalTrades = this.trades;
-        }
-      })
+
+      if(newTrades.length > 0){
+
+          this.trades = currentTrades.concat(newTrades);
+          this.trades.forEach((trade,index)=>{
+
+            let now = moment().unix() * 1000;
+            let timePassed = now - trade.trade.creationTime;
+            let secondsPassed = timePassed / 1000;
+            let remainingSeconds = 180 - secondsPassed;
+
+            console.log('remaining seconds scroll:',remainingSeconds);
+
+            this.timerArray[index] = <CountdownTimer>{
+              seconds: 180,
+              runTimer: false,
+              hasStarted: false,
+              hasFinished: false,
+              secondsRemaining: remainingSeconds,
+              tradeKey:trade.key
+            };
+
+            if(remainingSeconds > 0){
+              this.initTimer(remainingSeconds,trade.key,index);
+            }
+            else{
+              this.timerArray[index].hasFinished = true;
+              if(trade.trade.status === 'accepted'){
+                this.timerArray[index].message = 'Trade Accepted';
+              }
+              else if(trade.trade.status === 'expired'){
+                this.trades.splice(index,1);
+              }
+            }
+          });
+          // if(this.trades.length > this.temporalTrades.length){
+          //   this.temporalTrades = this.trades;
+          // }
+      }
 
       if(newTrades[newTrades.length-1] === undefined){
         this.finished = true;
@@ -411,6 +578,7 @@ export class HomePage implements OnInit {
       console.log('loaded trades:',data.length);
     })
     }
+    
   }
 
 

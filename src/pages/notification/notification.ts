@@ -4,6 +4,7 @@ import { DataService } from '../../providers/services/dataService';
 import { ProfilePage } from '../profile/profile';
 import { NotificationPopoverComponent } from '../../components/notification-popover/notification-popover';
 import { TradeDetailsPage } from '../trade-details/trade-details';
+import { MessagingPage } from '../messaging/messaging';
 
 /**
  * Generated class for the NotificationPage page.
@@ -191,6 +192,16 @@ export class NotificationPage {
       console.log('received',data);
       this.viewProfile(data.data);
     })
+
+
+    this.events.subscribe('text notification',(data)=>{
+      console.log(data);
+      let user = JSON.parse(data.user);
+      this.dataService.createDirectChat(user.username,data.uid).then((chatKey)=>{
+        this.navCtrl.push(MessagingPage,{title:user.username,key:chatKey.key,username:this.dataService.username,condition:true});
+        })
+    })
+
     this.notificationData = this.navParams.get('data') || null;
     if(this.notificationData !== null){
       if(this.notificationData.type === 'offering' || this.notificationData.type === 'interested' ){
@@ -208,6 +219,7 @@ export class NotificationPage {
 
   ionViewWillLeave(){
     this.events.unsubscribe('open profile');
+    this.events.unsubscribe('text notification');
   }
 
   readNotifications(type:string){

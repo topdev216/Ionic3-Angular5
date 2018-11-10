@@ -5,6 +5,7 @@ import * as firebase from 'firebase/app';
 import { AddVideogamePage } from '../add-videogame/add-videogame';
 import { ActionPopoverComponent } from '../../components/action-popover/action-popover';
 import { GameInformationPage } from '../game-information/game-information';
+import { PartnerResultsPage } from '../partner-results/partner-results';
 
 
 /**
@@ -170,6 +171,28 @@ export class GamelistPage{
     });
   }
 
+  findPartner(game:any){
+    console.log(game);
+    let loader = this.loadingCtrl.create({
+      content:'Finding partners...',
+      spinner:'crescent'
+    });
+    let type = "";
+    if(this.type === 'offer'){
+      type = "offering";
+    }
+    else{
+      type = "interested";
+    }
+    loader.present();
+    this.dataService.findTradePartner(game,type).then((results)=>{
+      this.navCtrl.push(PartnerResultsPage,{results:results,type:this.type}).then(()=>{
+        loader.dismiss();
+      })
+      console.log('results:',results);
+    })
+  }
+
   //Method to override the default back button action
   setBackButtonAction(){
     if(this.condition){
@@ -178,6 +201,24 @@ export class GamelistPage{
         this.navCtrl.popToRoot();
       }
     }
+ }
+
+ viewGame(game:any){
+  let loader = this.loadingCtrl.create({
+    content:'Please wait...',
+    spinner:'crescent'
+  });
+  loader.present();
+  this.dataService.getGame(game.key).subscribe((data)=>{
+
+    console.log('server data:',data);
+    this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+      loader.dismiss();
+    })
+  },(err)=>{
+    console.log('server error:',err);
+    loader.dismiss();
+  })
  }
 
  addGame(gameId:any){

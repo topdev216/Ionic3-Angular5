@@ -14,7 +14,7 @@ const igdb = require('igdb-api-node').default;
 const client = igdb('56b69359df896ff0135fe5d08e1ceaa8');
 const axios = require('axios');
 const body = require('body-parser');
-const api_key = "f6852c0a510d23e7fb6af9575f0224bb";
+const api_key = "56b69359df896ff0135fe5d08e1ceaa8";
 const cors = require("cors");
 const corsHandler = cors({ origin: true });
 // The Firebase Admin SDK to access the Firebase Realtime Database.
@@ -25,7 +25,7 @@ const defaultMessaging = admin.messaging();
 exports.getPlatforms = functions.https.onRequest((req, res) => {
     console.log(req.body.query);
     corsHandler(req, res, () => {
-        axios.get('https://api-endpoint.igdb.com/platforms/?search=' + req.body.query + '&fields=name&limit=50&filter[name][prefix]=' + req.body.query, { headers: { 'user-key': api_key, 'Accept': 'application/json' } })
+        axios.get('https://api-endpoint.igdb.com/platforms/?search=' + req.body.query + '&fields=*&limit=50&filter[name][prefix]=' + req.body.query, { headers: { 'user-key': api_key, 'Accept': 'application/json' } })
             .then(response => {
             console.log('PLATFORMS:', response.data);
             return res.status(200).json(response.data);
@@ -538,6 +538,22 @@ exports.tradeNotification = functions.https.onRequest((req, res) => {
                     read: (false).toString()
                 }
             };
+            const messageTopicReceiver = {
+                notification: {
+                    body: 'You have accepted the trade! Please wait until our staff approves the trade.',
+                    title: 'Trade Notification',
+                },
+                topic: '/topics/' + tradeKey,
+                data: {
+                    body: 'You have accepted the trade! Please wait until our staff approves the trade.',
+                    // chatKey:chatroomKey,
+                    title: 'Trade Notification',
+                    type: 'trade-accept',
+                    key: tradeKey,
+                    creationTime: Date.now().toString(),
+                    read: (false).toString()
+                }
+            };
             messageBrowser = {
                 notification: {
                     body: 'Your trade has been accepted! Please wait until our staff approves the trade.',
@@ -573,11 +589,21 @@ exports.tradeNotification = functions.https.onRequest((req, res) => {
             if (browserToken !== undefined && phoneToken !== undefined) {
                 db.ref('/trades/' + tradeKey).once('value').then((snap) => {
                     const uid = snap.val().proposer;
+                    const receiver = snap.val().receiver;
                     const tokens = [browserToken, phoneToken];
                     defaultMessaging.subscribeToTopic(tokens, '/topics/' + tradeKey).then((response) => {
                         console.log('Successfully subscribed to topic:', response);
                         defaultMessaging.send(messageTopic).then((response) => {
                             const notificationRefBrowser = db.ref('/notifications/' + uid).push();
+                            const receiverNotificationBrowser = db.ref('/notifications/' + receiver).push();
+                            receiverNotificationBrowser.set(messageTopicReceiver).then(() => {
+                                console.log('Browser message sent successfully: ', response);
+                                res.json(response);
+                            })
+                                .catch((err) => {
+                                console.log('Error setting data:', err);
+                                res.json(err);
+                            });
                             notificationRefBrowser.set(messageTopic).then(() => {
                                 console.log('Browser message sent successfully: ', response);
                                 res.json(response);
@@ -1634,10 +1660,12 @@ exports.getGame = functions.https.onRequest((req, res) => {
             axios.get('https://api-endpoint.igdb.com/games/' + gameId + '?fields=*', { headers: { 'user-key': api_key, 'Accept': 'application/json' } })
                 .then((response) => {
                 const coverImage = ("//images.igdb.com/igdb/image/upload/t_cover_small_2x/" + response.data[0].cover.cloudinary_id + '.jpg').substring(2);
-                response.data[0].screenshots.forEach((screenshot, index) => {
-                    const coverImage = ("//images.igdb.com/igdb/image/upload/t_screenshot_huge/" + screenshot.cloudinary_id + '.jpg').substring(2);
-                    response.data[0].screenshots[index].url = coverImage;
-                });
+                if (response.data[0].screenshots !== undefined) {
+                    response.data[0].screenshots.forEach((screenshot, index) => {
+                        const coverImage = ("//images.igdb.com/igdb/image/upload/t_screenshot_huge/" + screenshot.cloudinary_id + '.jpg').substring(2);
+                        response.data[0].screenshots[index].url = coverImage;
+                    });
+                }
                 response.data[0].cover.url = coverImage;
                 response.data[0].platforms.forEach((dataPlatform, index) => {
                     platforms.forEach((platform) => {

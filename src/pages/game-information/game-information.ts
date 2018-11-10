@@ -87,8 +87,11 @@ export class GameInformationPage {
         this.showTbd = true;
         this.tbd = "TBA"; 
       }
-  
-      this.imageIndex = Math.floor(Math.random() * this.game.screenshots.length  );
+      
+
+      if(this.game.screenshots !== undefined){
+        this.imageIndex = Math.floor(Math.random() * this.game.screenshots.length  );
+      }
   
       console.log('random index:',this.imageIndex);
   
@@ -116,9 +119,10 @@ export class GameInformationPage {
   }
 
   styleObject(){
-    return { 'background-image':'url('+'https://'+this.game.screenshots[this.imageIndex].url+')','background-size': 'cover' }
-  }
-
+    if(this.game.screenshots !== undefined){
+      return { 'background-image':'url('+'https://'+this.game.screenshots[this.imageIndex].url+')','background-size': 'cover' }
+    }
+}
   expandText(){
     this.expanded = true;
   }

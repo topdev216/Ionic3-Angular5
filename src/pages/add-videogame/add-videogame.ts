@@ -34,6 +34,7 @@ export class AddVideogamePage {
   private genres: any [] = [];
   private genre:string;
   private title:string;
+  private tabBar:any;
   private releaseDate:string;
   private esrbRating:string;
   private coverPhoto:string;
@@ -45,6 +46,7 @@ export class AddVideogamePage {
   private platformSelected:boolean = false;
   private searchCondition:boolean = false;
   private offeringCount:number;
+  private filter:string = "game";
   @ViewChild ('mySearch') searchbar: Searchbar;
   @ViewChild('gameForm') documentEditForm: FormGroupDirective;
 
@@ -59,7 +61,7 @@ export class AddVideogamePage {
   , public actionCtrl: ActionSheetController
   , public keyboard: Keyboard
   , public appPlatform: Platform) {
-    
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
     this.postForm = formBuilder.group({
       title: ['', Validators.compose([Validators.required])],
@@ -179,8 +181,13 @@ export class AddVideogamePage {
 
   ionViewWillEnter(){
     this.type = this.navParams.get('segment') || 'offer';
+    this.tabBar.style.display = 'none';
     let obj = this.navParams.get('platform') || null;
     this.platformChange(obj);
+  }
+
+  ionViewWillLeave(){
+    this.tabBar.style.display = 'none';
   }
 
   ionViewDidLoad() {
@@ -502,32 +509,38 @@ private doSearch(){
       return input;
     }
     else{
-    this.dataService.searchGamesAPI(input,this.platformID).subscribe((data:any) =>{
-      console.log('games data:',data);
-      this.gameList = data;
-      this.searching = false;
-      for(let i = 0; i < data.length ; i++){
-        let date = moment(this.gameList[i].first_release_date).format("MMM Do YYYY");
-        this.gameList[i].first_release_date = date;
-        if(data[i].genres !== undefined){
-          this.genres[i] = {
-            genreId:data[i].genres[0].id,
+    if(this.filter === 'game'){
+      this.dataService.searchGamesAPI(input,this.platformID).subscribe((data:any) =>{
+        console.log('games data:',data);
+        this.gameList = data;
+        this.searching = false;
+        for(let i = 0; i < data.length ; i++){
+          let date = moment(this.gameList[i].first_release_date).format("MMM Do YYYY");
+          this.gameList[i].first_release_date = date;
+          if(data[i].genres !== undefined){
+            this.genres[i] = {
+              genreId:data[i].genres[0].id,
+            }
+            
           }
-          
+          console.log(this.genres[i]);
         }
-        console.log(this.genres[i]);
-      }
-      console.log(data);
-    },(err) =>{
-      this.searching = false;
-      let toast = this.toastCtrl.create({
-        message:'An error has occurred, please try again',
-        duration:2000
-      });
+        console.log(data);
+      },(err) =>{
+        this.searching = false;
+        let toast = this.toastCtrl.create({
+          message:'An error has occurred, please try again',
+          duration:2000
+        });
 
-      toast.present();
-      console.log('An error has ocurred.');
-    })
+        toast.present();
+        console.log('An error has ocurred.');
+      })
+    }
+    else if(this.filter === 'console'){
+      this.searching = false;
+      return;
+    }
   }
 }
 

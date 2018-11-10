@@ -94,8 +94,8 @@
     <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <allow-navigation href="http://localhost:8100" />
     <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="^2.2.4" />
-    <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <plugin name="com-sarriaroman-photoviewer" spec="1.1.18" />
     <plugin name="cordova-plugin-youtube-video-player" spec="2.1.0" />
-    <engine name="android" spec="~7.1.1" />
+    <plugin name="cordova-plugin-firebase" spec="2.0.5" />
+    <engine name="android" spec="^7.1.2" />
 </widget>

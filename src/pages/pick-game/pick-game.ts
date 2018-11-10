@@ -1,9 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, App } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, App, LoadingController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { ConfirmTradePage } from '../confirm-trade/confirm-trade';
 import { Navbar } from 'ionic-angular';
 import { ArrayType } from '@angular/compiler/src/output/output_ast';
+import { GameInformationPage } from '../game-information/game-information';
 
 /**
  * Generated class for the PickGamePage page.
@@ -35,7 +36,8 @@ export class PickGamePage {
   constructor(public navCtrl: NavController, public navParams: NavParams
     , public dataService: DataService
     , public viewCtrl: ViewController
-    , public appCtrl: App) {
+    , public appCtrl: App
+    , public loadingCtrl: LoadingController) {
     this.games = this.navParams.get('games');
     this.games.forEach((game,index)=>{
       console.log('for each game:',game);
@@ -72,6 +74,26 @@ export class PickGamePage {
     for(let i = 0; i < this.pickedGames.length ; i++){
       console.log('Picked game:',this.pickedGames[i].game)
     }
+  }
+
+  viewGame(id:string){
+    let loader = this.loadingCtrl.create({
+      content:'Please wait...',
+      spinner:'crescent'
+    })
+
+    loader.present();
+
+    this.dataService.getGame(id).subscribe((data)=>{
+
+      console.log('server data:',data);
+      this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+        loader.dismiss();
+      })
+    },(err)=>{
+      console.log('server error:',err);
+      loader.dismiss();
+    })
   }
 
   ionViewDidEnter(){

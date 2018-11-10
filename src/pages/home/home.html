@@ -110,6 +110,12 @@
                   <ion-card class="animated fadeInLeft" *ngFor="let trade of trades; let i = index">
              
                         <div *ngIf="trade?.trade?.items?.length === 2; else elseBlock">
+                                <ion-row justify-content-end>
+                                        <div class="timer-text">
+                                                <h1 *ngIf="!timerArray[i]?.hasFinished">{{timerArray[i]?.displayTime}}</h1> 
+                                                <h1 *ngIf="timerArray[i]?.hasFinished">{{timerArray[i]?.message}}</h1>       
+                                        </div>
+                                </ion-row>
                                 <ion-row justify-content-center align-items-center>
                                         <ion-col col-5 *ngFor="let game of trade.trade.items | slice:0:1">
                                                 <ion-row justify-content-center>
@@ -146,6 +152,12 @@
                         </div>
 
                         <ng-template #elseBlock>
+                                        <ion-row justify-content-end>
+                                                <div class="timer-text">
+                                                                <h1 *ngIf="!timerArray[i]?.hasFinished">{{timerArray[i]?.displayTime}}</h1> 
+                                                                <h1 *ngIf="timerArray[i]?.hasFinished">{{timerArray[i]?.message}}</h1>    
+                                                </div>
+                                        </ion-row>
                                 <ion-row justify-content-center>
                                         <ion-col col-6>
                                         <ion-slides pager>
@@ -191,7 +203,7 @@
           
 
         <ion-list *ngIf="showGamecard">
-                <ion-item class="animated fadeInLeft" id="gameCard" detail-push (click)="openGame(game)" *ngFor="let game of games" no-lines>
+                <ion-item class="animated fadeInLeft" id="gameCard" detail-push (click)="viewGame(game.id)" *ngFor="let game of games" no-lines>
                         <ion-row no-padding>
         
                             <ion-col col-3 no-padding>

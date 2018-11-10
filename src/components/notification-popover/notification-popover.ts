@@ -44,7 +44,7 @@ export class NotificationPopoverComponent {
   }
 
   sendMessage(){
-    this.events.publish('user text',this.data.username);
+    this.events.publish('text notification',this.data);
     this.viewCtrl.dismiss();
   }
 

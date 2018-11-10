@@ -37,6 +37,7 @@ export class ProfilePage {
   state: string = null;
   zipCode:string = null;
   country:string = null;
+  tabBar:any;
   disabled:boolean = true;
   loading: boolean;
   isFriend:boolean = false;
@@ -53,6 +54,7 @@ export class ProfilePage {
   , public zone: NgZone
   , public loadingCtrl: LoadingController
   , public backbuttonService: BackButtonProvider) {
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
     
     this.user = this.navParams.get('user');
@@ -98,6 +100,7 @@ export class ProfilePage {
   }
 
   ionViewWillEnter(){
+    this.tabBar.style.display = 'flex';
     this.comingFromSearch = this.navParams.get('search') || false;
     this.dataService.activeTab = 'ProfilePage';
     console.log(this.dataService.activeTab);

@@ -218,6 +218,27 @@ export class MessagingPage {
       content:'Please wait...',
       spinner:'crescent'
     });
+    if(this.isDirect){
+      loader.present();
+      this.dataService.fetchUserOfferGames(this.receiverKey).then((snap)=>{
+        let gameArray = [];
+        snap.forEach((game)=>{
+          let obj = {
+            key: game.key,
+            game: game.val()
+          }
+          gameArray.push(obj);
+        })
+
+        
+          this.navCtrl.push(PickGamePage,{games:gameArray,username:this.chatTitle,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect})
+          .then(()=>{
+            loader.dismiss();
+          })
+        
+      })
+    }
+    else{
     loader.present();
     let options = {
       title:'Members',
@@ -254,6 +275,7 @@ export class MessagingPage {
     }
 
     this.fillRadioInputs(options,loader);
+    }
   }
 
   fillRadioInputs(options:any,loader:any){

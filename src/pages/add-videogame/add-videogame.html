@@ -61,7 +61,7 @@
               </ion-col>
             </ion-row> -->
 
-            <ion-item no-lines> 
+            <ion-item no-lines *ngIf="filter == 'game'" > 
                                   
                 <ion-input
                 id="input"
@@ -195,4 +195,32 @@
     <ion-row *ngIf="gamePicked" justify-content-center>
         <button ion-button block (click)="backToList()">Back to List</button>
     </ion-row>
+
+
+    <ion-segment [(ngModel)]="filter" class="item-filter">
+        <ion-segment-button value="home">
+            <ion-icon name="home"></ion-icon>
+            <div style="margin-top: -20px !important; ">
+              Home
+            </div>
+          </ion-segment-button>
+        <ion-segment-button value="game">
+          <ion-icon name="game-controller-b"></ion-icon>
+          <div style="margin-top: -20px !important; ">
+              Games
+            </div>
+        </ion-segment-button>
+        <ion-segment-button value="console">
+          <ion-icon name="game-controller-a"></ion-icon>
+          <div style="margin-top: -20px !important; ">
+              Consoles
+            </div>
+        </ion-segment-button>
+        <ion-segment-button value="accesories">
+          <ion-icon name="basket"></ion-icon>
+          <div style="margin-top: -20px !important; ">
+              Accessories
+            </div>
+        </ion-segment-button>
+    </ion-segment>
 </ion-footer>

@@ -14,6 +14,10 @@ page-gamelist {
         background-color:color($colors,primary);
       }
 
+      img{
+          cursor: pointer;
+      }
+
       .content{
           background-color:#002147;
           .item{

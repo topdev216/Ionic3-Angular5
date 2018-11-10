@@ -4,6 +4,7 @@ page-add-videogame {
         background: #002147;
         padding-left:10px;
         padding-right:10px;
+        // height: 100px;
     }
     .toolbar-background {
         background-color:color($colors,primary);
@@ -11,6 +12,15 @@ page-add-videogame {
     .content{
         // background:linear-gradient(to right,#005C97 ,#363795);
         background-color:#002147;
+    }
+
+    .item-filter{
+        padding-bottom:0px !important;
+        ion-segment-button{
+            height:60px !important;
+            font-size:12px !important;
+            text-align:center !important;
+        }
     }
 
     .item {
