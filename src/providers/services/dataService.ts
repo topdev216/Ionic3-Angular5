@@ -467,6 +467,39 @@ export class DataService {
 
   }
 
+
+  public checkAmountConsole(type:string,id:any) :Promise<any>{
+    return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+id).once('value').then((snap)=>{
+      if(snap.val()!== null){
+        let amount = snap.val().quantity;
+        return amount;
+      }
+      else{
+        return 0;
+      }
+    })
+  }
+
+  public addConsole(platform:any,type:string) :Promise<any>{
+
+      return this.checkAmountConsole(type,platform.id).then((result)=>{
+        if(result>0){
+          return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+platform.id).set({
+            name: platform.name,
+            quantity:(result + 1),
+            platformId:platform.id
+          })
+        }
+        else{
+          return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+platform.id).set({
+            name: platform.name,
+            quantity:1,
+            platformId:platform.id
+          })
+        }
+      })
+  }
+
   public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string,tradeKey:string,chatKey:string): Observable<any>{
 
       return this.http.post(this.urlEnvironment.getTradeNotification(),{phoneToken:phoneToken,browserToken:browserToken,username:username,tradeKey:tradeKey,message:message,games:this.games,chatKey:chatKey})

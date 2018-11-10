@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController, LoadingController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
@@ -37,7 +37,8 @@ export class GamelistPage{
     , public popoverCtrl: PopoverController
     , public events: Events
     , public viewCtrl: ViewController
-    , public loadingCtrl: LoadingController) {
+    , public loadingCtrl: LoadingController
+    , public zone: NgZone) {
 
     console.log('called constructor!');
 
@@ -58,6 +59,10 @@ export class GamelistPage{
     if(userKey === this.dataService.uid){
       this.isOwnUser = true;
     }
+    if(userKey === undefined){
+      this.isOwnUser = true;
+      userKey = this.dataService.uid;
+    }
 
     firebase.database().ref('users/'+userKey+'/videogames/offer').on('value', (snap) =>{
       this.offeringGames = [];
@@ -66,7 +71,10 @@ export class GamelistPage{
           game:game.val(),
           key:game.key
         }
-        this.offeringGames.push(obj);
+
+        this.zone.run(()=>{
+          this.offeringGames.push(obj);
+        })
       })
     })
 
@@ -77,52 +85,13 @@ export class GamelistPage{
           game:game.val(),
           key:game.key
         }
-        this.interestedGames.push(obj);
+        this.zone.run(()=>{
+          this.interestedGames.push(obj);
+        })
       })
     })
-
-    
-    // this.dataService.fetchUserOfferGames(this.dataService.uid).then((snap)=>{
-    //   snap.forEach((game) =>{
-    //     let obj = {
-    //       game:game.val(),
-    //       key:game.key
-    //     }
-    //     this.offeringGames.push(obj);
-    //     console.log('game offer:',game.val());
-    //   })
-    // });
-
-    // this.dataService.fetchUserInterestedGames(this.dataService.uid).then((snap)=>{
-    //   snap.forEach((game) =>{
-    //     let obj = {
-    //       game:game.val(),
-    //       key:game.key
-    //     }
-    //     this.interestedGames.push(obj);
-    //     console.log('game interested:',game.val());
-    //   })
-    // });
     
   }
-
-  // ngOnInit(){
-
-  //   this.dataService.fetchUserOfferGames(this.dataService.uid).then((snap)=>{
-  //     snap.forEach((game) =>{
-  //       this.offeringGames.push(game.val());
-  //       console.log('game offer:',game.val());
-  //     })
-  //   });
-
-  //   this.dataService.fetchUserInterestedGames(this.dataService.uid).then((snap)=>{
-  //     snap.forEach((game) =>{
-  //       this.interestedGames.push(game.val());
-  //       console.log('game interested:',game.val());
-  //     })
-  //   });
-
-  // }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad GamelistPage');

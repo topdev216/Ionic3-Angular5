@@ -34,32 +34,11 @@
         </ion-segment>
         
 
-        <ion-row justify-content-center>
+        <ion-row *ngIf="filter == 'game'" justify-content-center>
           <h2 id="platformText">{{platform}}</h2>
         </ion-row>
-        <!-- <button ion-button type="button" full (click)="openPlatforms()" id="platformButton">{{platformPlaceholder}}</button> -->
 
       <ion-list no-lines>
-
-            <!-- <ion-row justify-content-start align-items-center>
-              <ion-col col-10> 
-                  <ion-searchbar
-                  #mySearch
-                  id="input"
-                  [showCancelButton]="true"
-                  (keyup.enter)="doSearch()"
-                  [placeholder]="searchPlaceholder"
-                  [debounce]="100"
-                  (ionInput)="onSearchInput($event)"
-                  (ionClear)="onClear($event)"
-                  (ionCancel)="onCancel($event)">
-                </ion-searchbar>
-              </ion-col>
-              
-              <ion-col col-2>
-                <button ion-button clear id="searchButton" *ngIf="!gamePicked" [disabled]="gamePicked || searching || !platform || !searchCondition" (click)="doSearch()" icon-only><ion-icon name="search"></ion-icon></button>
-              </ion-col>
-            </ion-row> -->
 
             <ion-item no-lines *ngIf="filter == 'game'" > 
                                   
@@ -82,14 +61,14 @@
                         <ion-icon name="settings" item-end></ion-icon>
                     </button>
                               
-                </ion-item>
+            </ion-item>
            
 
             <div *ngIf="searching" class="spinner-container">
               <ion-spinner></ion-spinner>
             </div>
 
-            <div *ngIf="gameList.length > 0 && !gamePicked">
+            <div *ngIf="gameList.length > 0 && !gamePicked && filter == 'game'">
               <ion-item detail-push id="searchItem" *ngFor="let game of gameList" (click)="selectedGame(game)">
                 <ion-row no-padding>
 
@@ -110,6 +89,24 @@
                     
                 </ion-row>
               </ion-item>
+            </div>
+
+            <div *ngIf="filter == 'console'">
+              <ion-list>
+                <ion-item detail-push (click)="pickConsole(console)" *ngFor="let console of consoles">
+                    <ion-row no-padding>
+
+                        <ion-col col-3 no-padding>
+                          <img src="{{console?.coverImage}}" alt="cover">
+                        </ion-col>
+    
+                        <ion-col col-9 padding-left>
+                          <div text-wrap> {{console.name}} </div>
+                        </ion-col>
+                        
+                    </ion-row>
+                </ion-item>
+              </ion-list>
             </div>
 
           </ion-list>

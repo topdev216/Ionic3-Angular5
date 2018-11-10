@@ -1,10 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController, Searchbar, Keyboard, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, AlertController, ActionSheetController, Searchbar, Keyboard, Platform, LoadingController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators, FormGroupDirective } from '@angular/forms';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { VideogameInterface } from '../../providers/interfaces/videogameInterface'; 
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
+import * as firebase from 'firebase';
 import { GamelistPage } from '../gamelist/gamelist';
 import { PlatformSelectionPage } from '../platform-selection/platform-selection';
 
@@ -47,6 +48,7 @@ export class AddVideogamePage {
   private searchCondition:boolean = false;
   private offeringCount:number;
   private filter:string = "game";
+  private consoles: any [] = [];
   @ViewChild ('mySearch') searchbar: Searchbar;
   @ViewChild('gameForm') documentEditForm: FormGroupDirective;
 
@@ -60,7 +62,8 @@ export class AddVideogamePage {
   , public alertCtrl: AlertController
   , public actionCtrl: ActionSheetController
   , public keyboard: Keyboard
-  , public appPlatform: Platform) {
+  , public appPlatform: Platform
+  , public loadingCtrl: LoadingController) {
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
     this.postForm = formBuilder.group({
@@ -74,6 +77,15 @@ export class AddVideogamePage {
     });
 
     this.type = this.navParams.get('segment') || 'offer';
+
+    firebase.database().ref('platformTable').once('value').then((snap)=>{
+      snap.forEach((platform)=>{
+        //PC or Mac
+        if(platform.val().id !== 6 && platform.val().id !== 14){
+          this.consoles.push(platform.val());
+        }
+      })
+    })
 
   
     this.platforms = [
@@ -174,6 +186,8 @@ export class AddVideogamePage {
 
 
     ]
+
+
     
 
 
@@ -242,6 +256,42 @@ export class AddVideogamePage {
     else{
       this.esrbRating = "AO"
     }
+  }
+
+  private pickConsole(platform:any){
+    let alert = this.alertCtrl.create({
+      title:'Confirm',
+      message:'Do you want to add '+platform.name+' to your consoles list?',
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler:()=>{
+            console.log('canceled');
+          }
+        },
+        {
+          text:'Add',
+          handler:() => {
+            let loader = this.loadingCtrl.create({
+              content:'Please wait...',
+              spinner:'crescent'
+            });
+            loader.present();
+            this.dataService.addConsole(platform,this.type).then(()=>{
+              let toast = this.toastCtrl.create({
+                message:'Console was added to your list successfully!',
+                duration:2000
+              });
+              loader.dismiss();
+              toast.present();
+            })
+          }
+        }
+      ]
+    })
+
+    alert.present();
   }
 
   
