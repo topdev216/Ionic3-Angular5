@@ -487,17 +487,84 @@ export class DataService {
           return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+platform.id).set({
             name: platform.name,
             quantity:(result + 1),
-            platformId:platform.id
+            platformId:platform.id,
+            coverImage:platform.coverImage
           })
         }
         else{
           return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+platform.id).set({
             name: platform.name,
             quantity:1,
-            platformId:platform.id
+            platformId:platform.id,
+            coverImage:platform.coverImage
           })
         }
       })
+  }
+
+  public removeConsole(platform:any,type:string) :Promise<any>{
+    return this.checkAmountConsole(type,platform.id).then((result)=>{
+      if(result === 1){
+        return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+platform.id).remove();
+      }
+      else{
+        return this.database.ref('/users/'+this.uid+'/consoles/'+type+'/'+platform.id).set({
+          name: platform.name,
+          quantity:(result-1),
+          platformId:platform.id,
+          coverImage:platform.coverImage
+        })
+      }
+    })
+  }
+
+  public checkAmountAccessory(type:string,id:any){
+    return this.database.ref('/users/'+this.uid+'/accessories/'+type+'/'+id).once('value').then((snap)=>{
+      if(snap.val()!== null){
+        let amount = snap.val().quantity;
+        return amount;
+      }
+      else{
+        return 0;
+      }
+    })
+  }
+
+  public addAccessory(item:any,type:string) :Promise<any>{
+    return this.checkAmountAccessory(type,item.id).then((result)=>{
+      if(result>0){
+        return this.database.ref('/users/'+this.uid+'/accessories/'+type+'/'+item.id).set({
+          name: item.name,
+          quantity:(result + 1),
+          itemId:item.id,
+          coverImage:item.coverImage
+        })
+      }
+      else{
+        return this.database.ref('/users/'+this.uid+'/accessories/'+type+'/'+item.id).set({
+          name: item.name,
+          quantity:1,
+          itemId:item.id,
+          coverImage:item.coverImage
+        })
+      }
+    })
+  }
+
+  public removeAccessory(item:any,type:string) :Promise<any>{
+    return this.checkAmountAccessory(type,item.id).then((result)=>{
+      if(result === 1){
+        return this.database.ref('/users/'+this.uid+'/accessories/'+type+'/'+item.id).remove();
+      }
+      else{
+        return this.database.ref('/users/'+this.uid+'/accessories/'+type+'/'+item.id).set({
+          name: item.name,
+          quantity:(result-1),
+          itemId:item.id,
+          coverImage:item.coverImage
+        })
+      }
+    })
   }
 
   public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string,tradeKey:string,chatKey:string): Observable<any>{
@@ -1483,6 +1550,15 @@ export class DataService {
 
   public getNotifications() :Reference{
     return this.database.ref('/notifications/'+this.uid);
+  }
+
+  public loadNotifications(lastKey:string) :Promise<any>{
+    if(lastKey !== null && lastKey !== undefined){ 
+      return this.database.ref('/notifications/'+this.uid).orderByKey().limitToLast(3).endAt(lastKey).once('value')
+    }
+    else{
+      return this.database.ref('/notifications/'+this.uid).orderByKey().limitToLast(3).once('value') 
+    }
   }
 
   public markReadDirectMessages(chatKey:string):Promise<any>{

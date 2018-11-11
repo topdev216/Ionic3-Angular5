@@ -47,6 +47,7 @@ export class AddVideogamePage {
   private platformSelected:boolean = false;
   private searchCondition:boolean = false;
   private offeringCount:number;
+  private accessories: any [] = [];
   private filter:string = "game";
   private consoles: any [] = [];
   @ViewChild ('mySearch') searchbar: Searchbar;
@@ -85,7 +86,13 @@ export class AddVideogamePage {
           this.consoles.push(platform.val());
         }
       })
-    })
+    });
+
+    firebase.database().ref('accessoriesTable').once('value').then((snap)=>{
+      snap.forEach((item)=>{
+        this.accessories.push(item.val());
+      });
+    });
 
   
     this.platforms = [
@@ -292,6 +299,43 @@ export class AddVideogamePage {
     })
 
     alert.present();
+  }
+
+  private pickAccessory(item:any){
+    let alert = this.alertCtrl.create({
+      title:'Confirm',
+      message:'Do you want to add '+item.name+' to your accessories list?',
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler:()=>{
+            console.log('canceled');
+          }
+        },
+        {
+          text:'Add',
+          handler:() => {
+            let loader = this.loadingCtrl.create({
+              content:'Please wait...',
+              spinner:'crescent'
+            });
+            loader.present();
+            this.dataService.addAccessory(item,this.type).then(()=>{
+              let toast = this.toastCtrl.create({
+                message:'Accessory was added to your list successfully!',
+                duration:2000
+              });
+              loader.dismiss();
+              toast.present();
+            })
+          }
+        }
+      ]
+    })
+
+    alert.present();
+
   }
 
   

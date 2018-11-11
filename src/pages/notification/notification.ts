@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, NgZone, Output, EventEmitter, AnimationKeyframe, Input } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, Gesture, PopoverController, Segment } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, Gesture, PopoverController, Segment, InfiniteScroll } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { ProfilePage } from '../profile/profile';
 import { NotificationPopoverComponent } from '../../components/notification-popover/notification-popover';
@@ -26,7 +26,8 @@ export class NotificationPage {
   type:string = "trading";
   notificationData: any;
   buttonCondition:boolean = false;
-
+  lastKey: string = null;
+  finished:boolean = false;
   socialNotifications: any [] = [];
   tradeNotifications: any [] = [];
   gameNotifications: any[] = [];
@@ -39,21 +40,194 @@ export class NotificationPage {
     , private zone: NgZone
     , private events: Events
     , private popoverCtrl: PopoverController) {
-      this.loading = true;
-      this.dataService.getNotifications().on('value',(data)=>{
-      this.loading = true;
-      this.socialNotifications = [];
-      this.tradeNotifications = [];
-      this.gameNotifications = [];
-      this.socialUnreadNotifications = 0;
-      this.tradeUnreadNotifications = 0;
-      this.gameUnreadNotifications = 0;
-      data.forEach( (notification) =>{
+
+    //   this.dataService.getNotifications().on('value',(data)=>{
+    //   this.loading = true;
+    //   this.socialNotifications = [];
+    //   this.tradeNotifications = [];
+    //   this.gameNotifications = [];
+    //   this.socialUnreadNotifications = 0;
+    //   this.tradeUnreadNotifications = 0;
+    //   this.gameUnreadNotifications = 0;
+    //   data.forEach( (notification) =>{
         
-        if(notification.val().data.type == 'social'){
-          if(!notification.val().data.read || notification.val().data.read === 'false'){
-            this.socialUnreadNotifications++;
-          }
+    //     if(notification.val().data.type == 'social'){
+    //       if(!notification.val().data.read || notification.val().data.read === 'false'){
+    //         this.socialUnreadNotifications++;
+    //       }
+    //       let obj = {
+    //         notification: notification.val(),
+    //         expanded:false,
+    //         timestamp: Number(notification.val().data.creationTime),
+    //         games:notification.val().games,
+    //         expandHeight:100,
+    //         notificationKey:notification.key
+    //       };
+
+    //       console.log('notification browser:',obj)
+
+    //       this.zone.run(() => {
+    //         this.socialNotifications.push(obj);
+    //       })
+    //     }
+    //     else if(notification.val().data.type == 'trade'){
+
+    //       if(!notification.val().data.read || notification.val().data.read === 'false'){
+    //         this.tradeUnreadNotifications++;
+    //       }
+          
+
+    //       this.dataService.checkTradeStatus(notification.val().data.key).then((snap) =>{
+    //         if(snap.val() !== null){
+    //           if(snap.val().status === 'pending'){
+    //             let obj = {
+    //               notification: notification.val(),
+    //               expanded:false,
+    //               timestamp: Number(notification.val().data.creationTime),
+    //               games:notification.val().games,
+    //               expandHeight:240,
+    //               buttonCondition:true,
+    //               tradeStatus:snap.val().status,
+    //               notificationKey:notification.key
+
+    //             };
+    //             this.zone.run(() => {
+    //               this.tradeNotifications.push(obj);
+    //             })
+    //             console.log('notification browser asdasdasd:',obj)
+
+
+    //           }
+    //           else{
+    //             let obj = {
+    //               notification: notification.val(),
+    //               expanded:false,
+    //               timestamp: Number(notification.val().data.creationTime),
+    //               games:notification.val().games,
+    //               expandHeight:240,
+    //               buttonCondition:false,
+    //               tradeStatus:snap.val().status,
+    //               notificationKey:notification.key
+    //             };
+    //             this.zone.run(() => {
+    //               this.tradeNotifications.push(obj);
+    //             })
+    //             console.log('notification browser asdasdasd:',obj)
+
+    //           }
+    //         }
+    //         else{
+    //             let obj = {
+    //               notification: notification.val(),
+    //               expanded:false,
+    //               timestamp: Number(notification.val().data.creationTime),
+    //               games:notification.val().games,
+    //               expandHeight:240,
+    //               buttonCondition:false,
+    //               notificationKey:notification.key
+    //             };
+    //             this.zone.run(() => {
+    //               this.tradeNotifications.push(obj);
+    //             })
+    //             console.log('notification browser asdasdasd:',obj)
+    //         }
+            
+    //       })
+          
+
+    //     }
+    //     else if(notification.val().data.type == 'offering' || notification.val().data.type == 'interested'){
+
+    //       if(!notification.val().data.read || notification.val().data.read === 'false'){
+    //         this.gameUnreadNotifications++;
+    //       }
+
+    //       let obj = {
+    //         notification: notification.val(),
+    //         expanded:false,
+    //         timestamp: Number(notification.val().data.creationTime),
+    //         games:notification.val().games,
+    //         expandHeight:100,
+    //         notificationKey:notification.key
+    //       };
+    //       console.log('notification browser:',obj)
+    //       this.zone.run(() => {
+    //         this.gameNotifications.push(obj);
+    //       })
+    //     }
+    //     else{
+    //       let obj = {
+    //         notification: notification.val(),
+    //         expanded:false,
+    //         timestamp: Number(notification.val().data.creationTime),
+    //         games:notification.val().games,
+    //         expandHeight:0,
+    //         notificationKey:notification.key
+    //       };
+    //       console.log('notification browser:',obj)
+    //       this.zone.run(() => {
+    //         this.tradeNotifications.push(obj);
+    //       })
+    //     }
+    //   })
+    //   this.socialNotifications.reverse();
+    //   this.tradeNotifications.reverse();
+    //   this.gameNotifications.reverse();
+    //   this.loading = false;
+    // })
+
+    
+  }
+
+  loadNotifications(infiniteScroll? : InfiniteScroll){
+
+    if(this.finished){
+      if(infiniteScroll){
+      infiniteScroll.enable(false);
+      this.loading = false;
+      }
+      this.loading = false;
+      return;
+    }
+    else{
+    this.socialUnreadNotifications = 0;
+    this.tradeUnreadNotifications = 0;
+    this.gameUnreadNotifications = 0; 
+    let arrayKeys = [];
+    this.dataService.loadNotifications(this.lastKey).then((snap)=> {
+    console.log('snap length',snap.numChildren());
+    if(snap.numChildren()==1 && this.lastKey !== null){
+      this.finished = true;
+      setTimeout(()=>{
+        infiniteScroll.complete();
+      },3000);
+      return;
+    }
+    else{
+    let count = 0;
+    snap.forEach((notification,index)=>{
+      console.log('notification key:',notification.key);
+      arrayKeys.push({
+        key:notification.key,
+        data:notification.val().data
+      });
+      console.log('index:',count);
+      if(index === snap.numChildren()-1 && this.lastKey !== null){
+        return;
+      }
+      else{
+      if(notification.val().data.type == 'social'){
+        if(!notification.val().data.read || notification.val().data.read === 'false'){
+          this.socialUnreadNotifications++;
+        }
+
+        if(this.lastKey !== null && count === (snap.numChildren() - 1) ){
+          // this.zone.run(()=>{
+          //   this.socialNotifications.splice((this.socialNotifications.length - 1),1);
+          // })
+          return;
+        }
+        else{
           let obj = {
             notification: notification.val(),
             expanded:false,
@@ -63,84 +237,92 @@ export class NotificationPage {
             notificationKey:notification.key
           };
 
-          console.log('notification browser:',obj)
 
           this.zone.run(() => {
             this.socialNotifications.push(obj);
           })
         }
-        else if(notification.val().data.type == 'trade'){
+      }
+      else if(notification.val().data.type == 'trade'){
+        if(!notification.val().data.read || notification.val().data.read === 'false'){
+          this.tradeUnreadNotifications++;
+        }
 
-          if(!notification.val().data.read || notification.val().data.read === 'false'){
-            this.tradeUnreadNotifications++;
-          }
-          
+        if(this.lastKey !== null && count === (snap.numChildren() - 1) ){
+          // this.zone.run(()=>{
+          //   this.tradeNotifications.splice((this.tradeNotifications.length - 1),1)
+          // })
+          return;
+        }
+        else{
+        this.dataService.checkTradeStatus(notification.val().data.key).then((snap) =>{
+          if(snap.val() !== null){
+            if(snap.val().status === 'pending'){
+              let obj = {
+                notification: notification.val(),
+                expanded:false,
+                timestamp: Number(notification.val().data.creationTime),
+                games:notification.val().games,
+                expandHeight:240,
+                buttonCondition:true,
+                tradeStatus:snap.val().status,
+                notificationKey:notification.key
 
-          this.dataService.checkTradeStatus(notification.val().data.key).then((snap) =>{
-            if(snap.val() !== null){
-              if(snap.val().status === 'pending'){
-                let obj = {
-                  notification: notification.val(),
-                  expanded:false,
-                  timestamp: Number(notification.val().data.creationTime),
-                  games:notification.val().games,
-                  expandHeight:240,
-                  buttonCondition:true,
-                  tradeStatus:snap.val().status,
-                  notificationKey:notification.key
-
-                };
-                this.zone.run(() => {
-                  this.tradeNotifications.push(obj);
-                })
-                console.log('notification browser asdasdasd:',obj)
+              };
+              this.zone.run(() => {
+                this.tradeNotifications.push(obj);
+              })
 
 
-              }
-              else{
-                let obj = {
-                  notification: notification.val(),
-                  expanded:false,
-                  timestamp: Number(notification.val().data.creationTime),
-                  games:notification.val().games,
-                  expandHeight:240,
-                  buttonCondition:false,
-                  tradeStatus:snap.val().status,
-                  notificationKey:notification.key
-                };
-                this.zone.run(() => {
-                  this.tradeNotifications.push(obj);
-                })
-                console.log('notification browser asdasdasd:',obj)
-
-              }
             }
             else{
-                let obj = {
-                  notification: notification.val(),
-                  expanded:false,
-                  timestamp: Number(notification.val().data.creationTime),
-                  games:notification.val().games,
-                  expandHeight:240,
-                  buttonCondition:false,
-                  notificationKey:notification.key
-                };
-                this.zone.run(() => {
-                  this.tradeNotifications.push(obj);
-                })
-                console.log('notification browser asdasdasd:',obj)
+              let obj = {
+                notification: notification.val(),
+                expanded:false,
+                timestamp: Number(notification.val().data.creationTime),
+                games:notification.val().games,
+                expandHeight:240,
+                buttonCondition:false,
+                tradeStatus:snap.val().status,
+                notificationKey:notification.key
+              };
+              this.zone.run(() => {
+                this.tradeNotifications.push(obj);
+              })
+
             }
-            
-          })
-          
-
-        }
-        else if(notification.val().data.type == 'offering' || notification.val().data.type == 'interested'){
-
-          if(!notification.val().data.read || notification.val().data.read === 'false'){
-            this.gameUnreadNotifications++;
           }
+          else{
+              let obj = {
+                notification: notification.val(),
+                expanded:false,
+                timestamp: Number(notification.val().data.creationTime),
+                games:notification.val().games,
+                expandHeight:240,
+                buttonCondition:false,
+                notificationKey:notification.key
+              };
+              this.zone.run(() => {
+                this.tradeNotifications.push(obj);
+              })
+          }
+          
+        })
+      }
+        
+      }
+      else if(notification.val().data.type == 'offering' || notification.val().data.type == 'interested'){
+        if(!notification.val().data.read || notification.val().data.read === 'false'){
+          this.gameUnreadNotifications++;
+        }
 
+        if(this.lastKey !== null && count === (snap.numChildren() - 1) ){
+          // this.zone.run(()=>{
+          //   this.gameNotifications.splice((this.gameNotifications.length - 1),1);
+          // })
+          return;
+        }
+        else{
           let obj = {
             notification: notification.val(),
             expanded:false,
@@ -149,10 +331,17 @@ export class NotificationPage {
             expandHeight:100,
             notificationKey:notification.key
           };
-          console.log('notification browser:',obj)
           this.zone.run(() => {
             this.gameNotifications.push(obj);
           })
+        }
+      }
+      else{
+        if(this.lastKey !== null && count === (snap.numChildren() - 1) ){
+          return;
+          // this.zone.run(()=>{
+          //   this.tradeNotifications.splice((this.tradeNotifications.length-1),1);
+          // })
         }
         else{
           let obj = {
@@ -163,22 +352,41 @@ export class NotificationPage {
             expandHeight:0,
             notificationKey:notification.key
           };
-          console.log('notification browser:',obj)
           this.zone.run(() => {
             this.tradeNotifications.push(obj);
           })
         }
-      })
-      this.socialNotifications.reverse();
-      this.tradeNotifications.reverse();
-      this.gameNotifications.reverse();
-      this.loading = false;
+      }
+      }
+      count++;
     })
+    }
 
     
+    this.lastKey = arrayKeys[0].key;    
+    console.log('last key:',this.lastKey);
+
+    this.socialNotifications.reverse();
+    this.tradeNotifications.reverse();
+    this.gameNotifications.reverse();
+
+
+    console.log('social array length:',this.socialNotifications.length)
+    console.log('trade array length:',this.tradeNotifications.length);
+    console.log('game array length:',this.gameNotifications.length);
+    if(infiniteScroll){
+      setTimeout(()=>{
+        infiniteScroll.complete();
+      },3000);
+    }
+  })
+  }
+
+  
   }
 
   ngOnInit(){
+    this.loadNotifications();
     this.readNotifications(this.type);
   }
 
@@ -224,30 +432,8 @@ export class NotificationPage {
 
   readNotifications(type:string){
     console.log('type is:',type);
-    // if(type === 'social'){
-    //   for(let i = 0; i < this.socialNotifications.length; i++){
-    //     this.dataService.markReadNotifications(this.socialNotifications[i].notificationKey).then(()=>{
-    //       console.log('notification marked');
-    //     })
-    //   }
-    // }
-    // else if(type === 'trading'){
-    //   for(let i = 0; i < this.tradeNotifications.length; i++){
-    //     this.dataService.markReadNotifications(this.tradeNotifications[i].notificationKey).then(()=>{
-    //       console.log('notification marked');
-    //     })
-    //   }
-    // }
-    // else{
-    //   for(let i = 0; i < this.gameNotifications.length; i++){
-    //     this.dataService.markReadNotifications(this.gameNotifications[i].notificationKey).then(()=>{
-    //       console.log('notification marked');
-    //     })
-    //   }
-    // }
-
-    this.dataService.markReadNotifications(type);
-    
+   
+    this.dataService.markReadNotifications(type); 
     
   }
 

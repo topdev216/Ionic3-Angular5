@@ -10,6 +10,15 @@ page-gamelist {
     .list-container{
         width:620px;   
     }
+
+    .item-filter{
+        padding-bottom:0px !important;
+        ion-segment-button{
+            height:60px !important;
+            font-size:12px !important;
+            text-align:center !important;
+        }
+    }
     .toolbar-background {
         background-color:color($colors,primary);
       }

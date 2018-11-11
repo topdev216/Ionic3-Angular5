@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController, LoadingController, App, Tabs } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
 import { AddVideogamePage } from '../add-videogame/add-videogame';
@@ -28,9 +28,15 @@ export class GamelistPage{
   private type:string = "offer";
   private offeringGames: any [] = [];
   private interestedGames: any [] = [];
+  private offeringConsoles: any [] = [];
+  private interestedConsoles: any [] = [];
+  private offeringAccessories: any [] = [];
+  private interestedAccessories: any [] = [];
   private condition:boolean = false;
   private isOwnUser:boolean = false;
   private username:string;
+  private filter:string = "game";
+  private tabBar:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService
     , public alertCtrl: AlertController
@@ -38,22 +44,18 @@ export class GamelistPage{
     , public events: Events
     , public viewCtrl: ViewController
     , public loadingCtrl: LoadingController
-    , public zone: NgZone) {
+    , public zone: NgZone
+    , public app: App) {
 
     console.log('called constructor!');
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
+
 
     this.type = this.navParams.get('segment') || 'offer';
     
     this.condition = this.navParams.get('condition');
 
-    let userKey = this.navParams.get('userKey');
-
-    firebase.database().ref('users/'+userKey).once('value').then((snap)=>{
-      if(snap.val().username !== null){
-        this.username = snap.val().username;
-      }
-    })
-    
+    let userKey = this.navParams.get('userKey') || undefined;
     console.log('USER KEY PASSED:',userKey);
     console.log('UID:',this.dataService.uid);
     if(userKey === this.dataService.uid){
@@ -63,6 +65,14 @@ export class GamelistPage{
       this.isOwnUser = true;
       userKey = this.dataService.uid;
     }
+
+    firebase.database().ref('users/'+userKey).once('value').then((snap)=>{
+      if(snap.val().username !== null){
+        this.username = snap.val().username;
+      }
+    })
+    
+    
 
     firebase.database().ref('users/'+userKey+'/videogames/offer').on('value', (snap) =>{
       this.offeringGames = [];
@@ -90,7 +100,73 @@ export class GamelistPage{
         })
       })
     })
+
+    firebase.database().ref('users/'+userKey+'/consoles/offer').on('value', (snap) =>{
+      this.offeringConsoles = [];
+      snap.forEach((game)=>{
+        let obj = {
+          console:game.val(),
+          key:game.key
+        }
+
+        this.zone.run(()=>{
+          this.offeringConsoles.push(obj);
+        })
+      })
+    })
+
+    firebase.database().ref('users/'+userKey+'/consoles/interested').on('value', (snap) =>{
+      this.interestedConsoles = [];
+      if(snap.numChildren()>0){
+        snap.forEach((game)=>{
+          let obj = {
+            console:game.val(),
+            key:game.key
+          }
+
+          this.zone.run(()=>{
+            this.interestedConsoles.push(obj);
+          })
+        })
+      }
+      else{
+        this.interestedConsoles.length = 0;
+      }
+    })
+
+    firebase.database().ref('users/'+userKey+'/accessories/interested').on('value', (snap) =>{
+      this.interestedAccessories = [];
+      snap.forEach((game)=>{
+        let obj = {
+          accessory:game.val(),
+          key:game.key
+        }
+
+        this.zone.run(()=>{
+          this.interestedAccessories.push(obj);
+        })
+      })
+    })
+
+    firebase.database().ref('users/'+userKey+'/accessories/offer').on('value', (snap) =>{
+      this.offeringAccessories = [];
+      snap.forEach((game)=>{
+        let obj = {
+          accessory:game.val(),
+          key:game.key
+        }
+
+        this.zone.run(()=>{
+          this.offeringAccessories.push(obj);
+        })
+      })
+    })
     
+  }
+
+  selectedHome(){
+    console.log('selected home');
+    this.navCtrl.popToRoot();
   }
 
   ionViewDidLoad() {
@@ -99,6 +175,7 @@ export class GamelistPage{
   }
 
   ionViewWillEnter(){
+    this.tabBar.style.display = 'none';
     this.events.subscribe('removeGame', (data) =>{
       console.log('THE DATA:',data);
       this.decreaseGame(data.game.key);
@@ -126,11 +203,14 @@ export class GamelistPage{
     })
 
     this.type = this.navParams.get('segment') || 'offer';
+    this.filter = 'game';
   }
 
   ionViewWillLeave(){
+    this.tabBar.style.display = 'flex';
     this.events.unsubscribe('removeGame');
     this.events.unsubscribe('view game');
+    this.filter = 'game';
   }
 
   showPopover(myEvent,game):void{
@@ -153,13 +233,32 @@ export class GamelistPage{
     else{
       type = "interested";
     }
-    loader.present();
-    this.dataService.findTradePartner(game,type).then((results)=>{
-      this.navCtrl.push(PartnerResultsPage,{results:results,type:this.type}).then(()=>{
-        loader.dismiss();
+
+    if(this.filter === 'game'){
+      loader.present();
+      this.dataService.findTradePartner(game,type).then((results)=>{
+        this.navCtrl.push(PartnerResultsPage,{results:results,type:this.type}).then(()=>{
+          loader.dismiss();
+        })
+        console.log('results:',results);
       })
-      console.log('results:',results);
-    })
+    }
+  }
+
+  onSegmentChange(event:any){
+    console.log(event);
+    if(event.value === 'home'){
+      this.navCtrl.popToRoot().then(()=>{
+        console.log(this.navCtrl.getActive());
+        if(this.navCtrl.getActive().name !== 'TabsPage' && this.navCtrl.getActive().name !== 'HomePage'){
+          const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
+          tabsNav.select(0);
+        }
+        else{
+
+        }
+      })
+    }
   }
 
   //Method to override the default back button action
@@ -177,21 +276,26 @@ export class GamelistPage{
     content:'Please wait...',
     spinner:'crescent'
   });
-  loader.present();
-  this.dataService.getGame(game.key).subscribe((data)=>{
+  if(this.filter === 'game'){
+    loader.present();
+    this.dataService.getGame(game.key).subscribe((data)=>{
 
-    console.log('server data:',data);
-    this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+      console.log('server data:',data);
+      this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
+        loader.dismiss();
+      })
+    },(err)=>{
+      console.log('server error:',err);
       loader.dismiss();
     })
-  },(err)=>{
-    console.log('server error:',err);
-    loader.dismiss();
-  })
+  }
+  
  }
 
  addGame(gameId:any){
 
+
+  if(this.filter === 'game'){
    let alert = this.alertCtrl.create({
      
     title:'Confirmation',
@@ -212,31 +316,128 @@ export class GamelistPage{
       ]
     });
     alert.present();
+  }
+  else if(this.filter === 'console'){
+    let alert = this.alertCtrl.create({
+     
+      title:'Confirmation',
+        message:'Are you sure you want to add another copy of this console to your list?',
+        buttons:[
+          {
+            text:'Accept',
+            handler: data => {
+              gameId.id = gameId.platformId;
+              this.dataService.addConsole(gameId,this.type);
+            }
+          },
+          {
+            text:'Cancel',
+            handler: data =>{
+              console.log('cancel');
+            }
+          }
+        ]
+      });
+      alert.present();
+  }
+  else{
+    console.log(gameId);
+    let alert = this.alertCtrl.create({
+     
+      title:'Confirmation',
+        message:'Are you sure you want to add another copy of this accessory to your list?',
+        buttons:[
+          {
+            text:'Accept',
+            handler: data => {
+              gameId.id = gameId.itemId;
+              this.dataService.addAccessory(gameId,this.type);
+            }
+          },
+          {
+            text:'Cancel',
+            handler: data =>{
+              console.log('cancel');
+            }
+          }
+        ]
+      });
+      alert.present();
+  }
 
  }
 
  decreaseGame(gameId:any){
 
-  let alert = this.alertCtrl.create({
-    
-   title:'Confirmation',
-     message:'Are you sure you want to substract a copy of this game from your list?',
-     buttons:[
-       {
-         text:'Accept',
-         handler: data => {
-           this.dataService.decreaseGameQuantity(gameId,this.type);
-         }
-       },
-       {
-         text:'Cancel',
-         handler: data =>{
-           console.log('cancel');
-         }
-       }
-     ]
-   });
-   alert.present();
+
+  if(this.filter === 'game'){
+    let alert = this.alertCtrl.create({
+      
+    title:'Confirmation',
+      message:'Are you sure you want to substract a copy of this game from your list?',
+      buttons:[
+        {
+          text:'Accept',
+          handler: data => {
+            this.dataService.decreaseGameQuantity(gameId,this.type);
+          }
+        },
+        {
+          text:'Cancel',
+          handler: data =>{
+            console.log('cancel');
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+  else if(this.filter === 'console'){
+    let alert = this.alertCtrl.create({
+      
+      title:'Confirmation',
+        message:'Are you sure you want to substract a copy of this console from your list?',
+        buttons:[
+          {
+            text:'Accept',
+            handler: data => {
+              gameId.id = gameId.platformId;
+              this.dataService.removeConsole(gameId,this.type);
+            }
+          },
+          {
+            text:'Cancel',
+            handler: data =>{
+              console.log('cancel');
+            }
+          }
+        ]
+      });
+      alert.present();
+  }
+  else{
+    let alert = this.alertCtrl.create({
+      
+      title:'Confirmation',
+        message:'Are you sure you want to substract a copy of this console from your list?',
+        buttons:[
+          {
+            text:'Accept',
+            handler: data => {
+              gameId.id = gameId.itemId;
+              this.dataService.removeAccessory(gameId,this.type);
+            }
+          },
+          {
+            text:'Cancel',
+            handler: data =>{
+              console.log('cancel');
+            }
+          }
+        ]
+      });
+      alert.present();
+  }
 
 }
 

@@ -109,6 +109,24 @@
               </ion-list>
             </div>
 
+            <div *ngIf="filter == 'accessories'">
+                <ion-list>
+                    <ion-item detail-push (click)="pickAccessory(item)" *ngFor="let item of accessories">
+                        <ion-row no-padding>
+    
+                            <ion-col col-3 no-padding>
+                              <img src="{{item?.coverImage}}" alt="cover">
+                            </ion-col>
+        
+                            <ion-col col-9 padding-left>
+                              <div text-wrap> {{item.name}} </div>
+                            </ion-col>
+                            
+                        </ion-row>
+                    </ion-item>
+                  </ion-list>
+            </div>
+
           </ion-list>
 
           
@@ -213,7 +231,7 @@
               Consoles
             </div>
         </ion-segment-button>
-        <ion-segment-button value="accesories">
+        <ion-segment-button value="accessories">
           <ion-icon name="basket"></ion-icon>
           <div style="margin-top: -20px !important; ">
               Accessories
