@@ -204,6 +204,7 @@ export class AddVideogamePage {
     this.type = this.navParams.get('segment') || 'offer';
     this.tabBar.style.display = 'none';
     let obj = this.navParams.get('platform') || null;
+    this.filter = this.navParams.get('filter') || 'game';
     this.platformChange(obj);
   }
 

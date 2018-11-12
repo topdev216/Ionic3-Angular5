@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events, Navbar, ViewController, LoadingController, App, Tabs } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import * as firebase from 'firebase/app';
@@ -45,13 +45,15 @@ export class GamelistPage{
     , public viewCtrl: ViewController
     , public loadingCtrl: LoadingController
     , public zone: NgZone
-    , public app: App) {
+    , public app: App
+    , private cf: ChangeDetectorRef) {
 
     console.log('called constructor!');
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
 
     this.type = this.navParams.get('segment') || 'offer';
+    this.filter = this.navParams.get('filter') || 'game';      
     
     this.condition = this.navParams.get('condition');
 
@@ -175,6 +177,9 @@ export class GamelistPage{
   }
 
   ionViewWillEnter(){
+    console.log('enter game list');
+    console.log('enter filter:',this.filter);
+    this.type = this.navParams.get('segment') || 'offer';
     this.tabBar.style.display = 'none';
     this.events.subscribe('removeGame', (data) =>{
       console.log('THE DATA:',data);
@@ -201,9 +206,6 @@ export class GamelistPage{
         loader.dismiss();
       })
     })
-
-    this.type = this.navParams.get('segment') || 'offer';
-    this.filter = 'game';
   }
 
   ionViewWillLeave(){
@@ -245,20 +247,18 @@ export class GamelistPage{
     }
   }
 
-  onSegmentChange(event:any){
-    console.log(event);
-    if(event.value === 'home'){
-      this.navCtrl.popToRoot().then(()=>{
-        console.log(this.navCtrl.getActive());
-        if(this.navCtrl.getActive().name !== 'TabsPage' && this.navCtrl.getActive().name !== 'HomePage'){
-          const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
-          tabsNav.select(0);
-        }
-        else{
-
-        }
-      })
-    }
+  goHome(event:any){  
+    this.filter = "game";
+    this.navCtrl.popToRoot().then(()=>{
+      console.log(this.navCtrl.getActive());
+      if(this.navCtrl.getActive().name !== 'TabsPage' && this.navCtrl.getActive().name !== 'HomePage'){
+        const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
+        tabsNav.select(0);
+      }
+      else{
+        return;
+      }
+    })
   }
 
   //Method to override the default back button action
@@ -475,13 +475,19 @@ export class GamelistPage{
   goToAddGames(){
 
     console.log('clicked button!');
-    console.log('LAST',this.navCtrl.getPrevious().name);
-    if(this.navCtrl.getPrevious().name === 'AddVideogamePage'){
-      this.navCtrl.getPrevious().data.segment = this.type;
-      this.navCtrl.pop();
+    
+
+    if(this.navCtrl.getPrevious() !== null){
+      if(this.navCtrl.getPrevious().name === 'AddVideogamePage'){
+        this.navCtrl.getPrevious().data.segment = this.type;
+        this.navCtrl.pop();
+      }
+      else{
+        this.navCtrl.push(AddVideogamePage,{segment:this.type,filter:this.filter});
+      }
     }
     else{
-      this.navCtrl.push(AddVideogamePage,{segment:this.type});
+      this.navCtrl.push(AddVideogamePage,{segment:this.type,filter:this.filter});
     }
   }
 
