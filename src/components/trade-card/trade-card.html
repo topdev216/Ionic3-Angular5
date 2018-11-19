@@ -22,12 +22,32 @@
           <ion-row>
             <ion-col *ngFor="let game of games; let i=index; trackBy: trackById" >
 
+            <div *ngIf="game.itemType === 'game'">
               <ion-row justify-content-center>
                     <img (click)="viewGame(game.key)" src="https://{{game.game?.coverPhoto}}" alt="asd" class="game-photo">
               </ion-row>
               <ion-row justify-content-center>
                 <span>{{game.game?.platform}}</span>
               </ion-row>
+            </div>
+
+            <div *ngIf="game.itemType === 'console'">
+                    <ion-row justify-content-center>
+                          <img src="{{game.console?.coverImage}}" alt="asd" class="game-photo">
+                    </ion-row>
+                    <ion-row justify-content-center>
+                      <span>{{game.console?.name}}</span>
+                    </ion-row>
+            </div>
+
+            <div *ngIf="game.itemType === 'accessorie'">
+                    <ion-row justify-content-center>
+                          <img src="{{game.accesorie?.coverImage}}" alt="asd" class="game-photo">
+                    </ion-row>
+                    <ion-row justify-content-center>
+                      <span>{{game.accessorie?.name}}</span>
+                    </ion-row>
+            </div>
 
             </ion-col>
           </ion-row>
@@ -77,10 +97,28 @@
 
                             <ion-slides pager slidesPerView="1.5" centeredSlides initialSlide="0" spaceBetween="3" #offeringSlides>
                                     <ion-slide *ngFor="let game of offeringGames">
+                                        <div *ngIf="game.itemType === 'game'">
                                         <ion-row justify-content-center>
                                                     <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
                                                     <ion-badge>{{game.game?.pickedGames}} units</ion-badge>
                                         </ion-row>
+                                        </div>
+
+                                        <div *ngIf="game.itemType === 'console'">
+                                                <ion-row justify-content-center>
+                                                            <img class="game-photo" src="{{game.console?.coverImage}}" alt="">
+                                                            <ion-badge>{{game.console?.pickedConsoles}} units</ion-badge>
+                                                </ion-row>
+                                        </div>
+
+                                        <div *ngIf="game.itemType === 'accessorie'">
+                                                <ion-row justify-content-center>
+                                                            <img class="game-photo" src="{{game.accessorie?.coverImage}}" alt="">
+                                                            <ion-badge>{{game.accessorie?.pickedAccessories}} units</ion-badge>
+                                                </ion-row>
+                                        </div>
+
+
                                     </ion-slide>
                                 </ion-slides>
                     <!-- </ion-col> -->
@@ -107,10 +145,26 @@
                        
                                 <ion-slides pager slidesPerView="1.5" centeredSlides initialSlide="0" spaceBetween="0" #receivingSlides>
                                         <ion-slide *ngFor="let game of receivingGames">
-                                            <ion-row justify-content-center>
-                                                    <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
-                                                    <ion-badge>{{game.game?.pickedGames}}</ion-badge>
-                                            </ion-row>
+                                                <div *ngIf="game.itemType === 'game'">
+                                                        <ion-row justify-content-center>
+                                                                    <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                    <ion-badge>{{game.game?.pickedGames}} units</ion-badge>
+                                                        </ion-row>
+                                                        </div>
+                
+                                                        <div *ngIf="game.itemType === 'console'">
+                                                                <ion-row justify-content-center>
+                                                                            <img class="game-photo" src="{{game.console?.coverImage}}" alt="">
+                                                                            <ion-badge>{{game.console?.pickedConsoles}} units</ion-badge>
+                                                                </ion-row>
+                                                        </div>
+                
+                                                        <div *ngIf="game.itemType === 'accessorie'">
+                                                                <ion-row justify-content-center>
+                                                                            <img class="game-photo" src="{{game.accessorie?.coverImage}}" alt="">
+                                                                            <ion-badge>{{game.accessorie?.pickedAccessories}} units</ion-badge>
+                                                                </ion-row>
+                                                        </div>
                                         </ion-slide>
                                     </ion-slides>
                         <!-- </ion-col> -->

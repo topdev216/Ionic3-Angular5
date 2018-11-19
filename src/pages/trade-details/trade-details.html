@@ -9,59 +9,75 @@
   
   
   <ion-content padding>
+
+
   
     <ion-row justify-content-center>
-  
+      
+    <div *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
     
-    <div class="list-container">
+    <div *ngIf="!loading" class="list-container">
   
   
     <ion-list>
       <ion-row justify-content-center>
-          <h2>Items you get</h2>
+          <h2 *ngIf="!isNotInvolved">Items you get</h2>
+          <h2 *ngIf="isNotInvolved">{{userA?.username}}'s offering</h2>
       </ion-row>
       <ion-item *ngFor="let game of receivingGames">
         <ion-row>
   
        
         <ion-col col-4>
-          <img src="https://{{game.coverPhoto}}" alt="cover">
-        </ion-col>
+          <img *ngIf="game.coverPhoto !== undefined" src="https://{{game?.coverPhoto}}" alt="cover">
+          <img *ngIf="game.coverImage !== undefined" src="{{game?.coverImage}}" alt="cover">
+        </ion-col> 
   
         <ion-col col-8>
-            <div text-wrap> {{game.title}} </div>
-            <p text-wrap>{{game.platform}}</p>
-            <p text-wrap>{{game.genre}}</p>
-            <p text-wrap>{{game.releaseDate}}</p>
-            <p style="font-weight:bold;">Amount receiving: <span>{{game.pickedGames}} units</span></p>
+            <div text-wrap> {{game?.title}} </div>
+            <div text-wrap> {{game?.name}} </div>
+            <p text-wrap>{{game?.platform}}</p>
+            <p text-wrap>{{game?.genre}}</p>
+            <p text-wrap>{{game?.releaseDate}}</p>
+            <p *ngIf="game.pickedGames !== undefined" style="font-weight:bold;">Amount giving: <span>{{game?.pickedGames}} units</span></p>
+            <p *ngIf="game.pickedConsoles !== undefined" style="font-weight:bold;">Amount giving: <span>{{game?.pickedConsoles}} units</span></p>
+            <p *ngIf="game.pickedAccessories !== undefined" style="font-weight:bold;">Amount giving: <span>{{game?.pickedAccessories}} units</span></p>
         </ion-col>
   
       </ion-row>
       </ion-item>
     </ion-list>
+    <br>
     <ion-list>
       <ion-row justify-content-center>
-          <h2>Items you give</h2>
+          <h2 *ngIf="!isNotInvolved">Items you give</h2>
+          <h2 *ngIf="isNotInvolved">{{userB?.username}}'s offering</h2>
       </ion-row>
       <ion-item *ngFor="let game of givingGames">
         <ion-row>
           <ion-col col-4>
-              <img src="https://{{game.coverPhoto}}" alt="cover">
+            <img *ngIf="game.coverPhoto !== undefined" src="https://{{game?.coverPhoto}}" alt="cover">
+            <img *ngIf="game.coverImage !== undefined" src="{{game?.coverImage}}" alt="cover">
           </ion-col>
   
           <ion-col col-8>
-              <div text-wrap> {{game.title}} </div>
-              <p text-wrap>{{game.platform}}</p>
-              <p text-wrap>{{game.genre}}</p>
-              <p text-wrap>{{game.releaseDate}}</p>
-              <p style="font-weight:bold;">Amount giving: <span>{{game.pickedGames}} units</span></p>
+              <div text-wrap> {{game?.title}} </div>
+              <div text-wrap> {{game?.name}} </div>
+              <p text-wrap>{{game?.platform}}</p>
+              <p text-wrap>{{game?.genre}}</p>
+              <p text-wrap>{{game?.releaseDate}}</p>
+              <p *ngIf="game.pickedGames !== undefined" style="font-weight:bold;">Amount giving: <span>{{game?.pickedGames}} units</span></p>
+              <p *ngIf="game.pickedConsoles !== undefined" style="font-weight:bold;">Amount giving: <span>{{game?.pickedConsoles}} units</span></p>
+              <p *ngIf="game.pickedAccessories !== undefined" style="font-weight:bold;">Amount giving: <span>{{game?.pickedAccessories}} units</span></p>
           </ion-col>
         </ion-row>
         </ion-item>
     </ion-list>
   
     
-      <ion-row *ngIf="isReceiver && (!accepted && !expired)">
+      <!-- <ion-row *ngIf="isReceiver && (!accepted && !expired)">
           <ion-col>
               <button ion-button block icon-start (click)="acceptTrade()">
                   <ion-icon name='checkmark'></ion-icon>
@@ -86,9 +102,11 @@
                   Cancel Trade
                 </button>
           </ion-col>  
-      </ion-row>
+      </ion-row> -->
   
-  
+      <ion-row *ngIf="isNotInvolved" justify-content-center>
+          <button ion-button full (click)="offerBetterTrade()" >offer better trade</button>
+        </ion-row>
     </div>
   
   </ion-row>

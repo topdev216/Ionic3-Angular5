@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
+import { PickGamePage } from '../pick-game/pick-game';
 
 /**
  * Generated class for the TradeDetailsPage page.
@@ -27,8 +28,24 @@ export class TradeDetailsPage {
   notificationKey:string;
   accepted: boolean = false;
   expired:boolean = false;
+  userA:any;
+  userB:any;
+  tabBar:any;
+  items:any;
+  loading = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService: DataService
+    , public alertCtrl: AlertController
+    , public loadingCtrl: LoadingController) {
+    
+    // let loader = this.loadingCtrl.create({
+    //   content:'Please wait...',
+    //   spinner:'crescent'
+    // });
+    // loader.present();
+
+    this.loading = true;
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.tradeKey = this.navParams.get('tradeKey');
     console.log('trade key:',this.tradeKey);
     this.chatKey = this.navParams.get('chatKey');
@@ -41,9 +58,21 @@ export class TradeDetailsPage {
 
 
 
-      let games = snap.val().items;
+      let items = snap.val().items;
+      this.items = items;
+      this.chatKey = snap.val().chatKey;
       let proposer = snap.val().proposer;
       let receiver = snap.val().receiver;
+
+      this.dataService.fetchUserFromDatabase(proposer).then((res)=>{
+        this.userA = res.val();
+        console.log('userA:',this.userA);
+      
+      this.dataService.fetchUserFromDatabase(receiver).then((res)=>{
+        this.userB = res.val();
+
+        this.loading = false;
+
 
       if(snap.val().status === 'accepted'){
         this.accepted = true;
@@ -59,13 +88,29 @@ export class TradeDetailsPage {
 
       if(receiver === this.dataService.uid){
         this.isReceiver = true;
-        for(let i = 0 ; i < games.length ; i ++){
+        for(let i = 0 ; i < items.length ; i ++){
 
-          if(games[i].type === 'offering'){
-            this.receivingGames.push(games[i].game)
+          if(items[i].type === 'offering'){
+            if(items[i].hasOwnProperty('game')){
+              this.receivingGames.push(items[i].game)
+            }
+            else if(items[i].hasOwnProperty('console')){
+              this.receivingGames.push(items[i].console)
+            }
+            else{
+              this.receivingGames.push(items[i].accessorie)
+            }
           }
           else{
-            this.givingGames.push(games[i].game);
+            if(items[i].hasOwnProperty('game')){
+              this.receivingGames.push(items[i].game)
+            }
+            else if(items[i].hasOwnProperty('console')){
+              this.receivingGames.push(items[i].console)
+            }
+            else{
+              this.receivingGames.push(items[i].accessorie)
+            }
           }
 
         }
@@ -73,35 +118,75 @@ export class TradeDetailsPage {
 
       else if(proposer === this.dataService.uid){
         this.isProposer = true;
-        for(let i = 0 ; i < games.length ; i ++){
+        for(let i = 0 ; i < items.length ; i ++){
 
-          if(games[i].type === 'offering'){
-            this.givingGames.push(games[i].game)
+          if(items[i].type === 'offering'){
+            if(items[i].hasOwnProperty('game')){
+              this.givingGames.push(items[i].game)
+            }
+            else if(items[i].hasOwnProperty('console')){
+              this.givingGames.push(items[i].console)
+            }
+            else{
+              this.givingGames.push(items[i].accessorie)
+            }
           }
           else{
-            this.receivingGames.push(games[i].game);
+            if(items[i].hasOwnProperty('game')){
+              this.receivingGames.push(items[i].game)
+            }
+            else if(items[i].hasOwnProperty('console')){
+              this.receivingGames.push(items[i].console)
+            }
+            else{
+              this.receivingGames.push(items[i].accessorie)
+            }
           }
 
         }
       }
       else{
         this.isNotInvolved = true;
-        for(let i = 0 ; i < games.length ; i ++){
+        for(let i = 0 ; i < items.length ; i ++){
 
-          if(games[i].type === 'offering'){
-            this.receivingGames.push(games[i].game)
+          if(items[i].type === 'offering'){
+            if(items[i].hasOwnProperty('game')){
+              this.receivingGames.push(items[i].game)
+            }
+            else if(items[i].hasOwnProperty('console')){
+              this.receivingGames.push(items[i].console)
+            }
+            else{
+              this.receivingGames.push(items[i].accessorie)
+            }
           }
           else{
-            this.givingGames.push(games[i].game);
+            if(items[i].hasOwnProperty('game')){
+              this.givingGames.push(items[i].game)
+            }
+            else if(items[i].hasOwnProperty('console')){
+              this.givingGames.push(items[i].console)
+            }
+            else{
+              this.givingGames.push(items[i].accessorie)
+            }
           }
 
         }
       }
 
-      
-
+    })
+    })
     })
   
+  }
+
+  ionViewWillEnter(){
+    this.tabBar.style.display = 'none';
+  }
+
+  ionViewWillLeave(){
+    this.tabBar.style.display = 'flex';
   }
 
   ionViewDidLoad() {
@@ -134,6 +219,73 @@ export class TradeDetailsPage {
       })
      
     })
+  }
+
+  offerBetterTrade(){
+
+    let games = [];
+    let accessories = [];
+    let consoles = [];
+
+    let options = {
+      title:'Choose recipient',
+      message:'Please choose user you want to send the offer',
+      inputs:[],
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler: () => {}
+        },
+        {
+          text:'Accept',
+          handler: (data) => {
+            console.log(data);
+
+            if(data.username === this.userA.username){
+              this.items.forEach((item)=>{
+                if(item.type === 'offering'){
+                  if(item.hasOwnProperty('game')){
+                    games.push(item);
+                  }
+                  else if(item.hasOwnProperty('console')){
+                    consoles.push(item);
+                  }
+                  else{
+                    accessories.push(item);
+                  }
+                }
+              })
+              this.navCtrl.push(PickGamePage,{isDirect:true,pickedGames:[],isUser:false,chatKey:this.chatKey,games:games,consoles:consoles,accessories:accessories,username:data.username})
+            }
+            else{
+              this.items.forEach((item)=>{
+                if(item.type === 'interested'){
+                  if(item.hasOwnProperty('game')){
+                    games.push(item);
+                  }
+                  else if(item.hasOwnProperty('console')){
+                    consoles.push(item);
+                  }
+                  else{
+                    accessories.push(item);
+                  }
+                }
+              })
+              this.navCtrl.push(PickGamePage,{isDirect:true,pickedGames:[],isUser:false,chatKey:this.chatKey,games:games,consoles:consoles,accessories:accessories,username:data.username})
+            }
+            
+          }
+        }
+      ]
+    };
+
+    options.inputs.push({name:'options',type:'radio',value:{username:this.userA.username,key:this.userA.userKey}, label:this.userA.username})
+    options.inputs.push({name:'options',type:'radio',value:{username:this.userB.username,key:this.userB.userKey}, label:this.userB.username})
+
+    let alert = this.alertCtrl.create(options);
+    alert.present();
+
   }
 
 }

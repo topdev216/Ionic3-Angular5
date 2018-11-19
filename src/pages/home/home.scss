@@ -9,6 +9,11 @@ page-home {
 
         .main-content{
 
+          .offer-button{
+            border:1px solid black;
+            color:color($colors,dark);
+          }
+
           
           .item#gameCard{
             opacity:1 !important;

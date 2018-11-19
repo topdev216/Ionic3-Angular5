@@ -21,7 +21,11 @@
   <ion-row class="title" *ngIf="isUser" justify-content-center>
       <h1>Your available games to trade </h1>
   </ion-row>
-  <ion-list>
+
+
+  <div [ngSwitch]="filter">
+
+  <ion-list *ngIf="filter === 'game'">
     <ion-item *ngFor="let game of games" [class.selected]="game.game.selected" no-lines>
         <ion-row no-padding align-items-center>
 
@@ -74,10 +78,137 @@
     </ion-item>
   </ion-list>
 
+  <ion-list *ngIf="filter === 'console'">
+      <ion-item *ngFor="let console of consoles" [class.selected]="console.selected" no-lines>
+          <ion-row no-padding align-items-center>
+  
+              <ion-col col-3 no-padding>
+                <img class="game-photo" src="{{console.coverImage}}" alt="cover">
+              </ion-col>
+  
+              <ion-col col-5 padding-left> 
+  
+                <div text-wrap> {{console.name}} </div>
+                <p *ngIf="!console?.blockedItem" style="font-weight:bold;">Available units: <span>{{console?.available}}</span></p>
+                <p *ngIf="console?.blockedItem" style="font-weight:bold;">No units available</p>
+              </ion-col>
+  
+              <ion-col col-4 no-padding>
+  
+                <ion-row  justify-content-start align-items-center no-padding>
+  
+                  <ion-col *ngIf="!console?.blockedItem" col-4 no-padding>
+                      <button ion-button outline [disabled]="console?.blockedItem" icon-only id="moreButton" (click)="consoleRemoved(console)"><ion-icon name="remove-circle"></ion-icon></button>
+                  </ion-col>
+  
+                  <ion-col *ngIf="!console?.blockedItem" class="mediaQuery" col-4 no-padding>
+                    <ion-row *ngIf="!console?.blockedItem" justify-content-center>
+                        {{console.pickedGames}} picked
+                    </ion-row>
+                  </ion-col>
+  
+                  <ion-col *ngIf="!console?.blockedItem" col-4 no-padding>
+                     <button ion-button outline icon-only [disabled]="console?.blockedItem" id="moreButton" (click)="consoleSelected(console)"><ion-icon name="add-circle"></ion-icon></button>
+                  </ion-col>
+  
+                  <div *ngIf="console?.blockedItem" text-wrap>
+                    Item involved in trade
+                  </div>
+                    <!-- <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove"></ion-icon></button> -->
+                    <!-- <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button> -->
+                </ion-row>
+  
+                <ion-row class="pickedQuery" *ngIf="!console?.blockedItem" justify-content-center>
+                    {{console.pickedConsoles}} picked
+                </ion-row>
+                
+              </ion-col>
+          </ion-row> 
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="filter === 'accessories'">
+        <ion-item *ngFor="let console of accessories" [class.selected]="console.selected" no-lines>
+            <ion-row no-padding align-items-center>
+    
+                <ion-col col-3 no-padding>
+                  <img class="game-photo" src="{{console.coverImage}}" alt="cover">
+                </ion-col>
+    
+                <ion-col col-5 padding-left> 
+    
+                  <div text-wrap> {{console.name}} </div>
+                  <p *ngIf="!console?.blockedItem" style="font-weight:bold;">Available units: <span>{{console?.available}}</span></p>
+                  <p *ngIf="console?.blockedItem" style="font-weight:bold;">No units available</p>
+                </ion-col>
+    
+                <ion-col col-4 no-padding>
+    
+                  <ion-row  justify-content-start align-items-center no-padding>
+    
+                    <ion-col *ngIf="!console?.blockedItem" col-4 no-padding>
+                        <button ion-button outline [disabled]="console?.blockedItem" icon-only id="moreButton" (click)="accessorieRemoved(console)"><ion-icon name="remove-circle"></ion-icon></button>
+                    </ion-col>
+    
+                    <ion-col *ngIf="!console?.blockedItem" class="mediaQuery" col-4 no-padding>
+                      <ion-row *ngIf="!console?.blockedItem" justify-content-center>
+                          {{console.pickedAccessories}} picked
+                      </ion-row>
+                    </ion-col>
+    
+                    <ion-col *ngIf="!console?.blockedItem" col-4 no-padding>
+                       <button ion-button outline icon-only [disabled]="console?.blockedItem" id="moreButton" (click)="accessorieSelected(console)"><ion-icon name="add-circle"></ion-icon></button>
+                    </ion-col>
+    
+                    <div *ngIf="console?.blockedItem" text-wrap>
+                      Item involved in trade
+                    </div>
+                      <!-- <button ion-button round icon-only *ngIf="game.selected" (click)="gameRemoved(game)" ><ion-icon name="remove"></ion-icon></button> -->
+                      <!-- <button ion-button round icon-only *ngIf="!game.selected" (click)="gameSelected(game)"><ion-icon name="add"></ion-icon></button> -->
+                  </ion-row>
+    
+                  <ion-row class="pickedQuery" *ngIf="!console?.blockedItem" justify-content-center>
+                      {{console.pickedAccessories}} picked
+                  </ion-row>
+                  
+                </ion-col>
+            </ion-row> 
+        </ion-item>
+      </ion-list>
+
+  
+
+
+
+  </div>
+
 
   <ion-fab bottom right #fab>
-      <button *ngIf="!isUser" ion-fab [disabled]="count == 0" (click)="next()"><ion-icon name="arrow-forward"></ion-icon></button>
-      <button *ngIf="isUser" ion-fab [disabled]="count == 0" (click)="createTrade()"><ion-icon name="arrow-forward"></ion-icon></button>
+      <button *ngIf="!isUser" ion-fab [disabled]="getTotalCount() == 0" (click)="next()"><ion-icon name="arrow-forward"></ion-icon></button>
+      <button *ngIf="isUser" ion-fab [disabled]="getTotalCount() == 0" (click)="createTrade()"><ion-icon name="arrow-forward"></ion-icon></button>
   </ion-fab>
 
 </ion-content>
+
+<ion-footer>
+  <ion-segment [(ngModel)]="filter" class="item-filter">
+      <ion-segment-button value="game">
+        <ion-icon name="game-controller-b"></ion-icon>
+        <div style="margin-top: -20px !important; ">
+            Games
+          </div>
+      </ion-segment-button>
+      <ion-segment-button value="console">
+        <ion-icon name="game-controller-a"></ion-icon>
+        <div style="margin-top: -20px !important; ">
+            Consoles
+          </div>
+      </ion-segment-button>
+      <ion-segment-button value="accessories">
+        <ion-icon name="basket"></ion-icon>
+        <div style="margin-top: -20px !important; ">
+            Accessories
+          </div>
+      </ion-segment-button>
+  </ion-segment>
+</ion-footer>

@@ -33,10 +33,10 @@ export class ConfirmTradePage {
 
     for(let i = 0 ; i < this.games.length ; i++) {
       if(this.games[i].type == "offering"){
-        this.givingGames.push(this.games[i].game);
+        this.givingGames.push(this.games[i]);
       }
       else{
-        this.receivingGames.push(this.games[i].game);
+        this.receivingGames.push(this.games[i]);
       }
     }
     this.chatKey = this.navParams.get('chatKey');

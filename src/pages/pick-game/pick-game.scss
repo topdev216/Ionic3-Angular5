@@ -13,6 +13,15 @@ page-pick-game {
         }
     }
 
+    .item-filter{
+        padding-bottom:0px !important;
+        ion-segment-button{
+            height:60px !important;
+            font-size:12px !important;
+            text-align:center !important;
+        }
+    }
+
     .title{
         h1{
             border-bottom:3px solid white;

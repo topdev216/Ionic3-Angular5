@@ -1,9 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, App, LoadingController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { ConfirmTradePage } from '../confirm-trade/confirm-trade';
-import { Navbar } from 'ionic-angular';
-import { ArrayType } from '@angular/compiler/src/output/output_ast';
+import * as firebase from 'firebase/app';
 import { GameInformationPage } from '../game-information/game-information';
 
 /**
@@ -24,23 +23,32 @@ export class PickGamePage {
   private games:any [] = [];
   private username:string;
   private pickedGames:any[] = [];
-  private count:number = 0;
+  private gameCount:number = 0;
+  private consoleCount:number = 0;
+  private accessoryCount:number = 0;
   private pickedUnits:number = 0;
-  private selected:boolean = false;
   private isUser:boolean = false;
+  private filter:string = 'game';
   private chatKey:string;
   private phoneToken:string;
   private browserToken:string;
+  private accessories: any[] = [];
+  private consoles: any[] = [];
   private isDirect:boolean;
+  private tabBar:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
     , public dataService: DataService
     , public viewCtrl: ViewController
     , public appCtrl: App
     , public loadingCtrl: LoadingController) {
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
     this.games = this.navParams.get('games');
+    this.accessories = this.navParams.get('accessories');
+    this.consoles = this.navParams.get('consoles');
+    console.log('accessories array:',this.accessories);
+    console.log('console array:',this.consoles);
     this.games.forEach((game,index)=>{
-      console.log('for each game:',game);
       if(game.game.blockedAmount !== undefined){
         this.games[index].game.available = game.game.quantity - game.game.blockedAmount
       }
@@ -49,6 +57,29 @@ export class PickGamePage {
       }
       else{
         this.games[index].game.available = game.game.quantity;
+      }
+    })
+    this.consoles.forEach((game,index)=>{
+      if(game.blockedAmount !== undefined){
+        this.consoles[index].available = game.quantity - game.blockedAmount;
+      }
+      else if(game.blockedItem){
+        this.consoles[index].available = 0;
+      }
+      else{
+        this.consoles[index].available = game.quantity;
+      }
+    })
+
+    this.accessories.forEach((game,index)=>{
+      if(game.blockedAmount !== undefined){
+        this.accessories[index].available = game.quantity - game.blockedAmount;
+      }
+      else if(game.blockedItem){
+        this.accessories[index].available = 0;
+      }
+      else{
+        this.accessories[index].available = game.quantity;
       }
     })
     this.pickedGames = this.navParams.get('pickedGames');
@@ -62,18 +93,29 @@ export class PickGamePage {
     });
     
     this.isDirect = this.navParams.get('isDirect');
-    this.count = 0;
 
     for(let i = 0; i < this.games.length ; i++){
       this.games[i].game.pickedGames = 0;
+    }
+    for(let i = 0; i < this.consoles.length ; i++){
+      this.consoles[i].pickedConsoles = 0;
+    }
+    for(let i = 0; i < this.accessories.length ; i++){
+      this.accessories[i].pickedAccessories = 0;
     }
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad PickGamePage');
-    for(let i = 0; i < this.pickedGames.length ; i++){
-      console.log('Picked game:',this.pickedGames[i].game)
-    }
+    console.log('Picked game:',this.pickedGames);
+  }
+
+  ionViewWillLeave(){
+    this.tabBar.style.display = 'flex';
+  }
+
+  ionViewWillEnter(){
+    this.tabBar.style.display = 'none';
   }
 
   viewGame(id:string){
@@ -98,14 +140,12 @@ export class PickGamePage {
 
   ionViewDidEnter(){
     console.log('popped back');
-    console.log('count:',this.count);
     for(let i = 0; i < this.games.length ; i++){
       console.log('selected games:',this.games[i].game);
     }
   }
 
   gameSelected(game:any){
-    this.selected = true;
     let count = 0;
     for(let i = 0; i < this.games.length ; i++){
       if(this.games[i].game.title == game.title){
@@ -121,13 +161,50 @@ export class PickGamePage {
       count = this.games[i].game.pickedGames + count;
     }
 
-    this.count = count;
-    console.log('this count:',this.count);
+    this.gameCount = count;
+    console.log('this count:',this.gameCount);
 
   }
 
+  consoleSelected(item:any){
+    let count = 0;
+    for(let i = 0; i < this.consoles.length ; i++){
+      if(this.consoles[i].name == item.name){
+        this.consoles[i].selected = true;
+        if(this.consoles[i].quantity <= this.consoles[i].pickedConsoles || this.consoles[i].quantity - (this.consoles[i].blockedAmount + this.consoles[i].pickedConsoles) === 0){
+          this.consoles[i].pickedConsoles = this.consoles[i].pickedConsoles;
+        }
+        else{
+          this.consoles[i].pickedConsoles++;
+        }
+      }
+      count = this.consoles[i].pickedConsoles + count;
+    }
+
+    this.consoleCount = count;
+    console.log('this count:',this.consoleCount);
+  }
+
+  accessorieSelected(item:any){
+    let count = 0;
+    for(let i = 0; i < this.accessories.length ; i++){
+      if(this.accessories[i].name == item.name){
+        this.accessories[i].selected = true;
+        if(this.accessories[i].quantity <= this.accessories[i].pickedAccessories || this.accessories[i].quantity - (this.accessories[i].blockedAmount + this.accessories[i].pickedAccessories) === 0){
+          this.accessories[i].pickedAccessories = this.accessories[i].pickedAccessories;
+        }
+        else{
+          this.accessories[i].pickedAccessories++;
+        }
+      }
+      count = this.accessories[i].pickedAccessories + count;
+    }
+
+    this.accessoryCount = count;
+    console.log('this count:',this.accessoryCount);
+  }
+
   gameRemoved(game:any){
-    this.selected = false;
     let count = 0;
     for(let i = 0; i < this.games.length; i++){
       if(this.games[i].game.title == game.title){
@@ -144,19 +221,94 @@ export class PickGamePage {
       count = this.games[i].game.pickedGames + count;
     }
 
-    this.count = count;
-    console.log('this count:',this.count);
+    this.gameCount = count;
+    console.log('this count:',this.gameCount);
     
     for(let j = 0 ; j < this.pickedGames.length ; j++){
-      if(this.pickedGames[j].game === game){
-        this.pickedGames.splice(j,1);
+      if(this.pickedGames[j].game !== undefined){
+        if(this.pickedGames[j].game === game){
+          this.pickedGames.splice(j,1);
+        }
       }
     }
   }
 
+  consoleRemoved(item:any) { 
+    let count = 0;
+    for(let i = 0; i < this.consoles.length; i++){
+      if(this.consoles[i].name == item.name){
+        if(this.consoles[i].pickedConsoles === 0){
+          this.consoles[i].pickedConsoles = this.consoles[i].pickedConsoles;
+        }
+        else{
+          this.consoles[i].pickedConsoles--;
+          if(this.consoles[i].pickedConsoles === 0){
+            this.consoles[i].selected = false;
+          }
+        }
+      }
+      count = this.consoles[i].pickedConsoles + count;
+    }
+    this.consoleCount = count;
+    console.log('this count:',this.consoleCount);
+    
+    for(let j = 0 ; j < this.pickedGames.length ; j++){
+      if(this.pickedGames[j].console !== undefined){
+        if(this.pickedGames[j].console.name === item.name){
+          this.pickedGames.splice(j,1);
+        }
+      }
+    }
+  }
+
+  accessorieRemoved(item:any){
+    let count = 0;
+    for(let i = 0; i < this.accessories.length; i++){
+      if(this.accessories[i].name == item.name){
+        if(this.accessories[i].pickedAccessories === 0){
+          this.accessories[i].pickedAccessories = this.accessories[i].pickedAccessories;
+        }
+        else{
+          this.accessories[i].pickedAccessories--;
+          if(this.accessories[i].pickedAccessories === 0){
+            this.accessories[i].selected = false;
+          }
+        }
+      }
+      count = this.accessories[i].pickedAccessories + count;
+    }
+    this.accessoryCount = count;
+    console.log('this count:',this.accessoryCount);
+    
+    for(let j = 0 ; j < this.pickedGames.length ; j++){
+      if(this.pickedGames[j].accessorie !== undefined){
+        if(this.pickedGames[j].accessorie.name === item.name){
+          this.pickedGames.splice(j,1);
+        }
+      }
+    }
+  }
+
+  getTotalCount(){
+    return (this.gameCount+this.consoleCount+this.accessoryCount);
+  }
+
+
   next(){
     this.dataService.fetchUserOfferGames(this.dataService.uid).then((snap) =>{
+      firebase.database().ref('/users/'+this.dataService.uid+'/consoles/offer').once('value').then((consoles)=>{
+        firebase.database().ref('/users/'+this.dataService.uid+'/accessories/offer').once('value').then((accessories)=>{
+      
       let myGames = [];
+      let myAccessories = [];
+      let myConsoles = [];
+
+      consoles.forEach((item)=>{
+        myConsoles.push(item.val());
+      })
+      accessories.forEach((item)=>{
+        myAccessories.push(item.val());
+      })
       snap.forEach((game) =>{
         let obj = {
           game:game.val(),
@@ -173,13 +325,16 @@ export class PickGamePage {
                 let obj = {
                   game:this.games[i].game,
                   key:this.games[i].key,
-                  type:'offering'
+                  type:'offering',
+                  itemType:'game'
                 }
                 let count = 0;
                 for(let j = 0; j < this.pickedGames.length; j++){
-                  if(this.pickedGames[j].game.title === obj.game.title){
-                    count++;
-                  }      
+                  if(this.pickedGames[j].game !== undefined){
+                    if(this.pickedGames[j].game.title === obj.game.title){
+                      count++;
+                    }      
+                  }
                 }
                 if(count > 0){
                 }
@@ -192,13 +347,16 @@ export class PickGamePage {
               let obj = {
                 game:this.games[i].game,
                 key:this.games[i].key,
-                type:'interested'
+                type:'interested',
+                itemType:'game'
               }
               let count = 0;
               for(let j = 0; j < this.pickedGames.length; j++){
-                if(this.pickedGames[j].game.title === obj.game.title){
-                  count++;
-                }      
+                if(this.pickedGames[j].game !== undefined){
+                  if(this.pickedGames[j].game.title === obj.game.title){
+                    count++;
+                  }      
+                }     
               }
               if(count > 0){
               }
@@ -207,29 +365,137 @@ export class PickGamePage {
               }
             }
           }
-        
       }
-      this.navCtrl.push(PickGamePage,{games:myGames,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username,chatKey:this.chatKey,isDirect:this.isDirect})
 
+      for(let i = 0; i < this.consoles.length; i++){
+        if(this.consoles[i].selected === true){
+          if(this.isUser){
+
+
+              let obj = {
+                console:this.consoles[i],
+                key:this.consoles[i].platformId,
+                type:'offering',
+                itemType:'console'
+              }
+              let count = 0;
+              for(let j = 0; j < this.pickedGames.length; j++){
+                if(this.pickedGames[j].console !== undefined){
+                  if(this.pickedGames[j].console.name === obj.console.name){
+                    count++;
+                  }      
+                }
+              }
+              if(count > 0){
+              }
+              else{
+                this.pickedGames.push(obj);
+              }
+          }
+          
+          else{
+            let obj = {
+              console:this.consoles[i],
+              key:this.consoles[i].platformId,
+              type:'interested',
+              itemType:'console'
+            }
+            let count = 0;
+            for(let j = 0; j < this.pickedGames.length; j++){
+              if(this.pickedGames[j].console !== undefined){
+                if(this.pickedGames[j].console.name === obj.console.name){
+                  count++;
+                }      
+              }
+            }
+            if(count > 0){
+            }
+            else{
+              this.pickedGames.push(obj);
+            }
+          }
+        }
+    }
+
+    for(let i = 0; i < this.accessories.length; i++){
+      if(this.accessories[i].selected === true){
+        if(this.isUser){
+
+
+            let obj = {
+              accessorie:this.accessories[i],
+              key:this.accessories[i].itemId,
+              type:'offering',
+              itemType:'accessorie'
+            }
+            let count = 0;
+            for(let j = 0; j < this.pickedGames.length; j++){
+              if(this.pickedGames[j].accessorie !== undefined){
+                if(this.pickedGames[j].accessorie.name === obj.accessorie.name){
+                  count++;
+                }      
+              }
+            }
+            if(count > 0){
+            }
+            else{
+              this.pickedGames.push(obj);
+            }
+        }
+        
+        else{
+          let obj = {
+            accessorie:this.accessories[i],
+            key:this.accessories[i].itemId,
+            type:'interested',
+            itemType:'accessorie'
+          }
+          let count = 0;
+          for(let j = 0; j < this.pickedGames.length; j++){
+            if(this.pickedGames[j].accessorie !== undefined){
+              if(this.pickedGames[j].accessorie.name === obj.accessorie.name){
+                count++;
+              }      
+            }      
+          }
+          if(count > 0){
+          }
+          else{
+            this.pickedGames.push(obj);
+          }
+        }
+      }
+  }
+
+
+
+
+
+      this.navCtrl.push(PickGamePage,{games:myGames,consoles:myConsoles,accessories:myAccessories,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username,chatKey:this.chatKey,isDirect:this.isDirect})
+    })
+    })
     })
   }
 
   createTrade(){
     for(let i = 0; i < this.games.length; i++){
-        if(this.games[i].game["selected"] == true){
+        if(this.games[i].game["selected"] === true){
           if(this.isUser){
 
 
               let obj = {
                 game:this.games[i].game,
                 key:this.games[i].key,
-                type:'offering'
+                type:'offering',
+                itemType:'game'
               }
               let count = 0;
               for(let j = 0; j < this.pickedGames.length; j++){
-                if(this.pickedGames[j].game.title === obj.game.title){
-                  count++;
-                }      
+                if(this.pickedGames[j].game !== undefined){
+                  if(this.pickedGames[j].game.title === obj.game.title){
+                    count++;
+                  }      
+                }
               }
               if(count > 0){
               }
@@ -243,14 +509,17 @@ export class PickGamePage {
             let obj = {
               game:this.games[i].game,
               key:this.games[i].key,
-              type:'interested'
+              type:'interested',
+              itemType:'game'
             }
 
             let count = 0;
               for(let j = 0; j < this.pickedGames.length; j++){
-                if(this.pickedGames[j].game.title === obj.game.title){
-                  count++;
-                }      
+                if(this.pickedGames[j].game !== undefined){
+                  if(this.pickedGames[j].game.title === obj.game.title){
+                    count++;
+                  }      
+                }    
               }
               if(count > 0){
               }
@@ -259,6 +528,106 @@ export class PickGamePage {
               }
           }
         }
+    }
+
+    for(let i = 0; i < this.consoles.length; i++){
+      if(this.consoles[i].selected === true){
+        if(this.isUser){
+
+
+            let obj = {
+              console:this.consoles[i],
+              key:this.consoles[i].platformId,
+              type:'offering',
+              itemType:'console'
+            }
+            let count = 0;
+            for(let j = 0; j < this.pickedGames.length; j++){
+              if(this.pickedGames[j].console !== undefined){
+                if(this.pickedGames[j].console.name === obj.console.name && this.pickedGames[j].itemType !== obj.itemType){
+                  count++;
+                }      
+              }
+            }
+            if(count > 0){
+            }
+            else{
+              this.pickedGames.push(obj);
+            }
+        }
+        
+        else{
+          let obj = {
+            console:this.consoles[i],
+            key:this.consoles[i].platformId,
+            type:'interested',
+            itemType:'console'
+          }
+          let count = 0;
+          for(let j = 0; j < this.pickedGames.length; j++){
+            if(this.pickedGames[j].console !== undefined){
+              if(this.pickedGames[j].console.name === obj.console.name && this.pickedGames[j].itemType !== obj.itemType){
+                count++;
+              }      
+            }     
+          }
+          if(count > 0){
+          }
+          else{
+            this.pickedGames.push(obj);
+          }
+        }
+      }
+  }
+
+  for(let i = 0; i < this.accessories.length; i++){
+    if(this.accessories[i].selected === true){
+      if(this.isUser){
+
+
+          let obj = {
+            accessorie:this.accessories[i],
+            key:this.accessories[i].itemId,
+            type:'offering',
+            itemType:'accessorie'
+          }
+          let count = 0;
+          for(let j = 0; j < this.pickedGames.length; j++){
+            if(this.pickedGames[j].accessorie !== undefined){
+              if(this.pickedGames[j].accessorie.name === obj.accessorie.name && this.pickedGames[j].itemType !== obj.itemType){
+                count++;
+              }      
+            } 
+          }
+          if(count > 0){
+          }
+          else{
+            this.pickedGames.push(obj);
+          }
+      }
+      
+      else{
+        let obj = {
+          accessorie:this.accessories[i],
+          key:this.accessories[i].itemId,
+          type:'interested',
+          itemType:'accessorie'
+        }
+        let count = 0;
+        for(let j = 0; j < this.pickedGames.length; j++){
+          if(this.pickedGames[j].accessorie !== undefined){
+            if(this.pickedGames[j].accessorie.name === obj.accessorie.name && this.pickedGames[j].itemType !== obj.itemType){
+              count++;
+            }      
+          }      
+        }
+        if(count > 0){
+        }
+        else{
+          this.pickedGames.push(obj);
+        }
+      }
+      } 
     }
 
     this.dataService.fetchUserKey(this.navParams.get('secondUsername')).then((snap)=>{

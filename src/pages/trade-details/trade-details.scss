@@ -15,6 +15,22 @@ page-trade-details {
           background:#48a7ff !important;
     }
 
+    ion-spinner{
+        width:68px;
+        height:68px;
+        margin-top:50%;
+        * {
+          stroke: #FFA400 !important;
+        }
+    
+        &.spinner-circles circle,
+        &.spinner-bubbles circle,
+        &.spinner-dots circle {
+          fill: #FFA400 !important;
+        }
+      }
+
+
     .item{
         background: #48a7ff;  /* fallback for old browsers */
         img{

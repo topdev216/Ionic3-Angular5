@@ -221,7 +221,11 @@ export class MessagingPage {
     if(this.isDirect){
       loader.present();
       this.dataService.fetchUserOfferGames(this.receiverKey).then((snap)=>{
+        firebase.database().ref('/users/'+this.receiverKey+'/consoles/offer').once('value').then((consoles)=>{
+          firebase.database().ref('/users/'+this.receiverKey+'/accessories/offer').once('value').then((accessories)=>{
         let gameArray = [];
+        let consoleArray = [];
+        let accessoriesArray = [];
         snap.forEach((game)=>{
           let obj = {
             key: game.key,
@@ -230,13 +234,21 @@ export class MessagingPage {
           gameArray.push(obj);
         })
 
+        consoles.forEach((item)=>{
+          consoleArray.push(item.val());
+        })
+
+        accessories.forEach((item)=>{
+          accessoriesArray.push(item.val());
+        })
         
-          this.navCtrl.push(PickGamePage,{games:gameArray,username:this.chatTitle,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect})
+          this.navCtrl.push(PickGamePage,{games:gameArray,consoles:consoleArray,accessories:accessoriesArray,username:this.chatTitle,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect})
           .then(()=>{
             loader.dismiss();
           })
-        
+        })
       })
+    })
     }
     else{
     loader.present();
@@ -255,7 +267,11 @@ export class MessagingPage {
           handler:data =>{
             console.log(data);
             this.dataService.fetchUserOfferGames(data.key).then((snap)=>{
+              firebase.database().ref('/users/'+data.key+'/consoles/offer').once('value').then((consoles)=>{
+                firebase.database().ref('/users/'+data.key+'/accessories/offer').once('value').then((accessories)=>{
               let gameArray = [];
+              let consoleArray = [];
+              let accessoriesArray = [];
               snap.forEach((game)=>{
                 let obj = {
                   key: game.key,
@@ -263,10 +279,20 @@ export class MessagingPage {
                 }
                 gameArray.push(obj);
               })
+      
+              consoles.forEach((item)=>{
+                consoleArray.push(item.val());
+              })
+      
+              accessories.forEach((item)=>{
+                accessoriesArray.push(item.val());
+              })
+             
 
               
-                this.navCtrl.push(PickGamePage,{games:gameArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect});
-              
+                this.navCtrl.push(PickGamePage,{games:gameArray,consoles:consoleArray,accessories:accessoriesArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect});
+                })
+              })
             })
           }
         }

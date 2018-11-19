@@ -1828,10 +1828,18 @@ export const getTrades = functions.https.onRequest((req,res) => {
           console.log(trades);  
           
           for(let i = 0 ; i < trades.length ; i ++){
-              for(let j = 0 ; j < trades[i].trade.items.length ; j++){
-                  trades[i].trade.items[j].game.platform = trades[i].trade.items[j].game.platform.toLowerCase();
-                  trades[i].trade.items[j].game.title = trades[i].trade.items[j].game.title.toLowerCase();
-              }
+                    for(let j = 0 ; j < trades[i].trade.items.length ; j++){
+                        if(trades[i].trade.items[j].game !== undefined){
+                        trades[i].trade.items[j].game.platform = trades[i].trade.items[j].game.platform.toLowerCase();
+                        trades[i].trade.items[j].game.title = trades[i].trade.items[j].game.title.toLowerCase();
+                        }
+                        else if(trades[i].trade.items[j].console !== undefined){
+                            trades[i].trade.items[j].console.name = trades[i].trade.items[j].console.name.toLowerCase();
+                        }
+                        else{
+                            trades[i].trade.items[j].accessorie.name = trades[i].trade.items[j].accessorie.name.toLowerCase();
+                        }
+                    }
           }
 
           trades.reverse();
@@ -1859,11 +1867,20 @@ export const getTrades = functions.https.onRequest((req,res) => {
           console.log(trades);
 
           for(let i = 0 ; i < trades.length ; i ++){
-              for(let j = 0 ; j < trades[i].trade.items.length ; j++){
-                  trades[i].trade.items[j].game.platform = trades[i].trade.items[j].game.platform.toLowerCase();
-                  trades[i].trade.items[j].game.title = trades[i].trade.items[j].game.title.toLowerCase();
-              }
-          }
+            for(let j = 0 ; j < trades[i].trade.items.length ; j++){
+                if(trades[i].trade.items[j].game !== undefined){
+                trades[i].trade.items[j].game.platform = trades[i].trade.items[j].game.platform.toLowerCase();
+                trades[i].trade.items[j].game.title = trades[i].trade.items[j].game.title.toLowerCase();
+                }
+                else if(trades[i].trade.items[j].console !== undefined){
+                    trades[i].trade.items[j].console.name = trades[i].trade.items[j].console.name.toLowerCase();
+                }
+                else{
+                    trades[i].trade.items[j].accessorie.name = trades[i].trade.items[j].accessorie.name.toLowerCase();
+                }
+            }
+            }
+
 
 
           trades.reverse();

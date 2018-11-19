@@ -2,15 +2,13 @@ import { Component, NgZone, Input, OnInit } from '@angular/core';
 import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController, LoadingController, Keyboard} from 'ionic-angular';
 import { LoginPage } from '../../pages/login/login';
 import { DataService } from '../../providers/services/dataService';
-import * as firebase from 'firebase/app';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
-import { NotificationPage } from '../notification/notification';
 import { HomeFiltersPage } from '../home-filters/home-filters';
-import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import * as moment from 'moment';
 import { GameDetailPage } from '../game-detail/game-detail';
 import { GameInformationPage } from '../game-information/game-information';
+import { TradeDetailsPage } from '../trade-details/trade-details';
 
 export interface CountdownTimer {
   seconds: number;
@@ -49,8 +47,9 @@ export class HomePage implements OnInit {
   private games:any [] = [];
   private tabBar:any;
   private temporalTrades:any[] = [];
-  private showingTrades:any[] = [];
-  private renderLoad:boolean = false;
+  private interestedGames:any[] = [];
+  private interestedConsoles:any[] = [];
+  private interestedAccessories:any [] = [];
   constructor(public navCtrl: NavController
   , public dataService: DataService
   , public events: Events
@@ -111,6 +110,7 @@ export class HomePage implements OnInit {
             console.log('pushing new value:',value)
             console.log('pushing new trade:',value[value.length-1]);
               this.zone.run(()=>{
+                this.checkForBetterOffer();
                 this.trades.unshift(value[value.length-1]);
                 let timer = <CountdownTimer>{
                   seconds: 180,
@@ -202,6 +202,65 @@ export class HomePage implements OnInit {
         this.username = data.username;
         console.log('returned user!',data.username);
 
+        this.dataService.fetchUserInterestedGames(this.dataService.uid).then((snap)=>{
+          snap.forEach((game)=>{
+            this.interestedGames.push(game.val())
+          });
+          console.log('interested games:',this.interestedGames);
+          this.trades.forEach((trade,index)=>{
+            trade.trade.items.forEach((item)=>{
+              if(item.hasOwnProperty('game')){
+                console.log('interested item:',item);
+                this.interestedGames.forEach((game)=>{
+                  if( (game.title).toLowerCase() === item.game.title && game.platformId === item.game.platformId) {
+                    this.trades[index].showOfferButton = true;
+                  }
+                })
+              }
+            })
+          })
+        })
+
+        this.dataService.getInterestedConsoles(this.dataService.uid).then((snap)=>{
+          snap.forEach((game)=>{
+            this.interestedConsoles.push(game.val())
+          });
+          console.log('interested consoles:',this.interestedConsoles);
+          this.trades.forEach((trade,index)=>{
+            trade.trade.items.forEach((item)=>{
+              if(item.hasOwnProperty('console')){
+                console.log('interested item:',item);
+                this.interestedConsoles.forEach((myConsole)=>{
+                  if( myConsole.platformId === item.console.platformId) {
+                    this.trades[index].showOfferButton = true;
+                  }
+                })
+              }
+            })
+          })
+        })
+
+        this.dataService.getInterestedAccessories(this.dataService.uid).then((snap)=>{
+          snap.forEach((game)=>{
+            this.interestedAccessories.push(game.val())
+          });
+          console.log('interested accessories:',this.interestedAccessories);
+          this.trades.forEach((trade,index)=>{
+            trade.trade.items.forEach((item)=>{
+              if(item.hasOwnProperty('accessorie')){
+                console.log('interested item:',item);
+                this.interestedAccessories.forEach((myAccessorie)=>{
+                  if( myAccessorie.itemId === item.key) {
+                    this.trades[index].showOfferButton = true;
+                  }
+                })
+              }
+            })
+          })
+        })
+
+        
+
 
         this.dataService.getNotifications().on('value',(snap)=>{
 
@@ -231,11 +290,17 @@ export class HomePage implements OnInit {
        
       }
       else{
-        this.zone.run( () => {
-          this.authState = false;
-          this.loading = false;
+        this.dataService.fetchUserInterestedGames(this.dataService.uid).then((snap)=>{
+          snap.forEach((game)=>{
+            this.interestedGames.push(game.val())
+          });
+
+          this.zone.run( () => {
+            this.authState = false;
+            this.loading = false;
+          })
+          console.log('interested games:',this.interestedGames);
         })
-        
       }
     })
     
@@ -243,6 +308,41 @@ export class HomePage implements OnInit {
 
   ngOnInit(){
     this.loadTrades();
+  }
+
+  offerBetterTrade(trade: any){
+    console.log('trade key:',trade.key);
+    this.navCtrl.push(TradeDetailsPage,{tradeKey:trade.key})
+  }
+
+  checkForBetterOffer(){
+    this.trades.forEach((trade,index)=>{
+        trade.trade.items.forEach((item)=>{
+          if(item.hasOwnProperty('game')){
+            console.log('interested item:',item);
+            this.interestedGames.forEach((game)=>{
+              if( (game.title).toLowerCase() === item.game.title && game.platformId === item.game.platformId) {
+                this.trades[index].showOfferButton = true;
+              }
+            })
+          }
+          else if(item.hasOwnProperty('console')){
+            console.log('interested item:',item);
+            this.interestedConsoles.forEach((myConsole)=>{
+              if( myConsole.platformId === item.console.platformId) {
+                this.trades[index].showOfferButton = true;
+              }
+            })
+          }
+          else{
+            this.interestedAccessories.forEach((myAccessorie)=>{
+              if( myAccessorie.itemId === item.key) {
+                this.trades[index].showOfferButton = true;
+              }
+            })
+          }
+        })
+    })
   }
 
   goToFilters(){
@@ -409,10 +509,12 @@ export class HomePage implements OnInit {
         for(let i = 0 ; i < temporal.length ; i++){
           
           for(let j = 0 ; j < temporal[i].trade.items.length; j++){
+            if(temporal[i].trade.items[j].hasOwnProperty('game')){
               if(temporal[i].trade.items[j].game.title.indexOf(this.query.toLowerCase()) > -1){
                 parsedData.push(temporal[i]);
                 break;
               }
+            }
           }
         }
 
@@ -570,6 +672,7 @@ export class HomePage implements OnInit {
         this.lastKey = newTrades[newTrades.length-1].key;
       }
       
+      this.checkForBetterOffer();
 
       if(infiniteScroll){
         infiniteScroll.complete();
