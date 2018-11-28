@@ -1680,83 +1680,74 @@ export const getGames = functions.https.onRequest((req,res) => {
                             for(let index = 0 ; index < response.data.length ; index++){
                                 const game = response.data[index];
                                 if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
-                                    if(response.data[index].cover !== undefined){
-                                        response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
-                                    }
+                                    if(game.platforms.length > 0 && game.genres.length > 0){
+                                        if(response.data[index].cover !== undefined){
+                                            response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
+                                        }
 
-                                    for(let i = 0; i < game.platforms.length; i++){
-                                        for(const platform of platforms){
-                                            if(game.platforms[i] === platform.id){
-                                                response.data[index].platforms[i] = platform;
+                                        for(let i = 0; i < game.platforms.length; i++){
+                                            for(const platform of platforms){
+                                                if(game.platforms[i] === platform.id){
+                                                    response.data[index].platforms[i] = platform;
+                                                }
                                             }
                                         }
                                     }
-                                    // game.platforms.forEach((gamePlatform,index2)=>{
-                                    //     console.log('game platform:',gamePlatform);
-                                    //     platforms.forEach((platform,index3)=>{
-                                    //         console.log('array platform',platform.id);
-                                    //         if(gamePlatform === platform.id){
-                                    //             response.data[index].platforms[index2] = platforms[index3];
-                                                
-                                    //         }
-                                    //     })
-                                    // })  
-                                    
+                                    else{
+                                        response.data.splice(index,1);
+                                    }
                                 }
                                 else{
                                     response.data.splice(index,1);
                                 }
                             }
-                            // response.data.forEach((game,index)=>{
-                            //     if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
-                            //         if(response.data[index].cover !== undefined){
-                            //             response.data[index].cover.url = "//images.igdb.com/igdb/image/upload/t_cover_small_2x/"+response.data[index].cover.cloudinary_id+'.jpg';
-                            //         }
 
-                            //         for(let i = 0; i < game.platforms.length; i++){
-                            //             for(const platform of platforms){
-                            //                 if(game.platforms[i] === platform.id){
-                            //                     response.data[index].platforms[i] = platform;
-                            //                 }
-                            //             }
-                            //         }
-                            //         // game.platforms.forEach((gamePlatform,index2)=>{
-                            //         //     console.log('game platform:',gamePlatform);
-                            //         //     platforms.forEach((platform,index3)=>{
-                            //         //         console.log('array platform',platform.id);
-                            //         //         if(gamePlatform === platform.id){
-                            //         //             response.data[index].platforms[index2] = platforms[index3];
-                                                
-                            //         //         }
-                            //         //     })
-                            //         // })  
-                                    
-                            //     }
-                            //     else{
-                            //         response.data.splice(index,1);
-                            //     }
-                            // })
 
-                            response.data.forEach((game,index)=>{
-                                if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
-                                    if(game.platforms.length === 0 || game.platforms.length === undefined){
-                                        response.data.splice(index,1);
+                            for(let i = 0 ; i < response.data.length; i ++){
+                                if(response.data[i].hasOwnProperty('genres') && response.data[i].hasOwnProperty('platforms')){
+                                    if(response.data[i].platforms.length === 0 || response.data[i].platforms.length === undefined){
+                                        response.data.splice(i,1);
                                     }
                                     else{
-                                        game.platforms.forEach((platform,index2)=>{
-                                            if(platform.id === undefined){
-                                                response.data[index].platforms.splice(index2,1);
-                                                if(response.data[index].platforms.length === 0){
-                                                    response.data.splice(index,1);
-                                                }
+
+                                        for(let j = 0 ; j < response.data[i].platforms.length ; j++){
+                                            if(response.data[i].platforms[j].id === undefined || response.data[i].platforms[j].id === '' || typeof(response.data[i].platforms[j]) === 'number'){
+                                                response.data[i].platforms.splice(j,1);
                                             }
-                                        })
+                                        }
+
+                                        if(response.data[i].platforms.length === 0 || response.data[i].platforms.length === undefined){
+                                            response.data.splice(i,1);
+                                        }
+                                        
                                     }
                                 }
                                 else{
-                                    response.data.splice(index,1); 
+                                    response.data.splice(i,1); 
                                 }
-                            })
+                            }
+                            // response.data.forEach((game,index)=>{
+                            //     if(game.hasOwnProperty('genres') && game.hasOwnProperty('platforms')){
+                            //         if(game.platforms.length === 0 || game.platforms.length === undefined){
+                            //             response.data.splice(index,1);
+                            //         }
+                            //         else{
+                            //             game.platforms.forEach((platform,index2)=>{
+                            //                 if(platform.id === undefined || platform.id === '' || typeof(platform.id) === 'number'){
+                            //                     response.data[index].platforms.splice(index2,1);
+                            //                 }
+                            //             });
+
+                            //             if(game.platforms.length === 0 || game.platforms.length === undefined){
+                            //                 response.data.splice(index,1);
+                            //             }
+                                        
+                            //         }
+                            //     }
+                            //     else{
+                            //         response.data.splice(index,1); 
+                            //     }
+                            // })
 
                             const reads = [];
                             response.data.forEach((game,index)=>{

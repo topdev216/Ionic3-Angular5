@@ -8,6 +8,11 @@
 
   <ion-navbar>
     <ion-title>Report a Bug</ion-title>
+    <ion-buttons right>
+        <button detail-none icon-right ion-button (click)="showPopover($event)">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -15,28 +20,27 @@
 
 <ion-content padding>
 
-  <form [formGroup]="bugForm" (ngSubmit)="submit(bugForm)">
-    <ion-item>
-        <ion-label stacked>Bug Page</ion-label>
-        <ion-select [(ngModel)]="page" formControlName="page" placeholder="Select page" multiple="false" [selectOptions]="selectOptions">
-            <ion-option *ngFor="let page of pages">{{page}}</ion-option>
-        </ion-select>
-    </ion-item>
 
-    <ion-item>
-        <ion-label stacked>Previous Page (optional)</ion-label>
-        <ion-select [(ngModel)]="previousPage" formControlName="previousPage" placeholder="Select page" multiple="false" [selectOptions]="selectOptions">
-            <ion-option *ngFor="let page of pages">{{page}}</ion-option>
-        </ion-select>
-    </ion-item>
-   
+    <ion-row justify-content-center>
+        <img src="{{image}}" alt="screenshot">
+    </ion-row>
+    <br>
+    <br>
+    
+    <ion-row justify-content-center>
+        <button ion-button icon-right clear (click)="viewLogs()">view logs <ion-icon name="code"></ion-icon> </button>
+    </ion-row>
 
+  <form (ngSubmit)="submit(bugForm)" [formGroup]="bugForm">
     <ion-item>
       <ion-label stacked>Description</ion-label>
-      <ion-textarea [(ngModel)]="description" formControlName="description" placeholder="Enter a description">
+      <ion-textarea [(ngModel)]="description" formControlName="description" placeholder="Enter a description (required)">
       </ion-textarea>
     </ion-item>
 
-    <button ion-button block type="submit">submit</button>
+
+    <ion-fab right bottom>
+        <button ion-fab block type="submit" [disabled]="!bugForm.valid"><ion-icon name="send"></ion-icon></button>
+    </ion-fab>
   </form>
 </ion-content>

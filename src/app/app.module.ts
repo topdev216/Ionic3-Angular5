@@ -57,13 +57,14 @@ import { BackButtonProvider } from '../providers/backbutton/backbutton';
 import { JoinPipe } from '../pipes/join/join';
 import { PartnerResultsPage } from '../pages/partner-results/partner-results';
 import { PartnerPopoverComponent } from '../components/partner-popover/partner-popover';
-import { GameDetailPage } from '../pages/game-detail/game-detail';
 import { GameInformationPage } from '../pages/game-information/game-information';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player';
-
-
-
+import { IonicStepperModule } from 'ionic-stepper';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { IonTextAvatar } from 'ionic-text-avatar';
+import { Screenshot } from '@ionic-native/screenshot';
+import { LogsPage } from '../pages/logs/logs';
 
 
 const firebaseConfig = {
@@ -118,8 +119,9 @@ const firebaseConfig = {
     JoinPipe,
     PartnerResultsPage,
     PartnerPopoverComponent,
-    GameDetailPage,
-    GameInformationPage
+    GameInformationPage,
+    IonTextAvatar,
+    LogsPage
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -127,6 +129,8 @@ const firebaseConfig = {
     HttpModule,
     HttpClientModule,
     AngularFireAuthModule,
+    BrowserAnimationsModule,
+    IonicStepperModule,
     SelectSearchableModule,
     IonicModule.forRoot(MyApp,{
       tabsPlacement: 'bottom',
@@ -172,8 +176,8 @@ const firebaseConfig = {
     BugReportPage,
     PartnerResultsPage,
     PartnerPopoverComponent,
-    GameDetailPage,
-    GameInformationPage
+    GameInformationPage,
+    LogsPage
     
   ],
   providers: [
@@ -190,7 +194,8 @@ const firebaseConfig = {
     BackButtonProvider,
     NativeKeyboard,
     PhotoViewer,
-    YoutubeVideoPlayer
+    YoutubeVideoPlayer,
+    Screenshot
   ]
 })
 export class AppModule {}

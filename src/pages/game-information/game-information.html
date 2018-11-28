@@ -11,10 +11,13 @@
 
     <ion-buttons right>
         <button ion-button (click)="findPartner()" icon-right>
-                Find Partner
-                <ion-icon name="search"></ion-icon>
+            Find Partner
+            <ion-icon name="search"></ion-icon>
         </button>
-</ion-buttons>
+        <button detail-none icon-right ion-button (click)="showPopover($event)">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
 
   </ion-navbar>
 
@@ -39,6 +42,9 @@
     <ion-col align-self-center col-4>
         <img src="https://{{game.cover.url}}" alt="cover">
     </ion-col>
+  </ion-row>
+  <ion-row justify-content-center>
+      <button ion-button class="add-game-btn" (click)="addGame()">add game<ion-icon name="add"></ion-icon></button>
   </ion-row>
 </div>
 

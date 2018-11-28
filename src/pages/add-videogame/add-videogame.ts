@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import * as firebase from 'firebase';
 import { GamelistPage } from '../gamelist/gamelist';
 import { PlatformSelectionPage } from '../platform-selection/platform-selection';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the AddVideogamePage page.
@@ -86,13 +87,19 @@ export class AddVideogamePage {
           this.consoles.push(platform.val());
         }
       })
-    });
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
 
     firebase.database().ref('accessoriesTable').once('value').then((snap)=>{
       snap.forEach((item)=>{
         this.accessories.push(item.val());
       });
-    });
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
 
   
     this.platforms = [
@@ -294,6 +301,9 @@ export class AddVideogamePage {
               loader.dismiss();
               toast.present();
             })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
           }
         }
       ]
@@ -329,6 +339,9 @@ export class AddVideogamePage {
               });
               loader.dismiss();
               toast.present();
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
             })
           }
         }
@@ -408,6 +421,9 @@ export class AddVideogamePage {
           toast.present();
           
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
       }
       else{
 
@@ -444,9 +460,16 @@ export class AddVideogamePage {
         alert.present();
       }
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
 
   }
     
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   private goToList():void{
@@ -563,20 +586,31 @@ export class AddVideogamePage {
     else{
     this.dataService.searchGamesAPI(title.value,this.platformID).subscribe((data:any) =>{
       console.log('games data:',data);
-      this.gameList = data;
-      this.searching = false;
-      for(let i = 0; i < data.length ; i++){
-        let date = moment(this.gameList[i].first_release_date).format("MMM Do YYYY");
-        this.gameList[i].first_release_date = date;
-        if(data[i].genres !== undefined){
-          this.genres[i] = {
-            genreId:data[i].genres[0],
+        for(let i = 0; i < data.length ; i++){
+          let date = moment(data[i].first_release_date).format("MMM Do YYYY");
+          data[i].first_release_date = date;
+          if(data[i].genres !== undefined){
+            this.genres[i] = {
+              genreId:data[i].genres[0].id,
+            }
+
+            for(let j = 0 ; j < data[i].platforms.length ; j++){
+              if(typeof data[i].platforms[j] === 'number'){
+                data[i].platforms.splice(j,1);
+              }
+            }
           }
-          
+          console.log(this.genres[i]);
         }
-        console.log(this.genres[i]);
-      }
-      console.log(data);
+
+        for(let i = 0 ; i < data.length ; i++){
+          if(data[i].platforms.length < 1){
+            data.splice(i,1);
+          }
+        }
+        this.searching = false;
+        this.gameList = data;
+        console.log(data);
     },(err)=>{
       this.searching = false;
       let toast = this.toastCtrl.create({
@@ -607,19 +641,46 @@ private doSearch(){
     if(this.filter === 'game'){
       this.dataService.searchGamesAPI(input,this.platformID).subscribe((data:any) =>{
         console.log('games data:',data);
-        this.gameList = data;
-        this.searching = false;
         for(let i = 0; i < data.length ; i++){
-          let date = moment(this.gameList[i].first_release_date).format("MMM Do YYYY");
-          this.gameList[i].first_release_date = date;
+          let date = moment(data[i].first_release_date).format("MMM Do YYYY");
+          data[i].first_release_date = date;
           if(data[i].genres !== undefined){
             this.genres[i] = {
               genreId:data[i].genres[0].id,
             }
-            
           }
+
+          if(data[i].platforms !== undefined){
+            for(let j = 0 ; j < data[i].platforms.length ; j++){
+              if(typeof data[i].platforms[j] === 'number'){
+                data[i].platforms.splice(j,1);
+              }
+            }
+          }
+          
           console.log(this.genres[i]);
         }
+
+
+        
+          for(let i = 0 ; i < data.length ; i++){
+            if(data[i].platforms !== undefined){
+              console.log(data[i].platforms.length);
+    
+              for(let j = 0 ; j < data[i].platforms.length ; j++){
+                if(typeof data[i].platforms[j] === 'number'){
+                  data[i].platforms.splice(j,1);
+                }
+              }
+
+              if(data[i].platforms.length === 0){
+                console.log('remove this game!');
+                data.splice(i,1);
+              }
+            } 
+          }
+        this.gameList = data;
+        this.searching = false;
         console.log(data);
       },(err) =>{
         this.searching = false;

@@ -6,6 +6,7 @@ import { PickGamePage } from '../pick-game/pick-game';
 import { ProfilePage } from '../profile/profile';
 import { MessagingPage } from '../messaging/messaging';
 import { FormControl } from '@angular/forms';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the FriendListPage page.
@@ -51,6 +52,10 @@ export class FriendListPage {
 
 
   }
+
+  private showPopoverHeader(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
   
   ngOnInit(){
     this.searchControl = new FormControl();
@@ -83,8 +88,17 @@ export class FriendListPage {
               loader.dismiss();
               this.navCtrl.push(PickGamePage,{games:games,username:res.val().username,isUser:false,pickedGames:[],chatKey:chatKey.key,isDirect:true});
             })
-          });
-        });
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
+          })
+          .catch((err) => {
+            this.dataService.logError(err);
+          })
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
       }
       else{
         let toast = this.toastCtrl.create({
@@ -95,7 +109,10 @@ export class FriendListPage {
         toast.present();
       }
 
-      });
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
     });
 
     this.events.subscribe('search input', (data)=>{
@@ -133,6 +150,9 @@ export class FriendListPage {
         this.navCtrl.push(MessagingPage,{title:data.user.username,key:chatKey.key,username:this.dataService.username,condition:true,receiverKey:data.friendUid});
         }
       })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
     });
   }
 
@@ -159,7 +179,7 @@ export class FriendListPage {
           return obj
           // this.friends.push(obj);
         },err=>{
-          return err;
+          this.dataService.logError(err);
         });
         reads.push(promise);
       });
@@ -171,7 +191,13 @@ export class FriendListPage {
         })
         this.friends = this.filterItems(this.searchTerm);
       })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
 
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
 
   }

@@ -21,6 +21,16 @@ page-friend-list {
       }
 
       .item {
+
+        ion-text-avatar{
+            $photoSize: 60px;
+            font-size:25px;
+            width: $photoSize;
+            height: $photoSize;
+            border-radius: 50%;
+            border: solid 2px color($colors,primary);
+            margin: 0 auto;
+        }
         
         h3{
             font-weight:bold;

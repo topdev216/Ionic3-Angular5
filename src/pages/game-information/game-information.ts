@@ -1,10 +1,13 @@
 import { Component, Sanitizer, SecurityContext, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController, ToastController } from 'ionic-angular';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { DomSanitizer } from '@angular/platform-browser';
+import * as moment from 'moment';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player';
 import { DataService } from '../../providers/services/dataService';
 import { PartnerResultsPage } from '../partner-results/partner-results';
+import { VideogameInterface } from '../../providers/interfaces/videogameInterface';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the GameInformationPage page.
@@ -48,7 +51,8 @@ export class GameInformationPage {
     , public zone: NgZone
     , public loadingCtrl: LoadingController
     , public dataService: DataService
-    , public alertCtrl: AlertController) {
+    , public alertCtrl: AlertController
+    , public toastCtrl: ToastController) {
 
       this.game = this.navParams.get('data');
       this.genre = this.game.genres[0].name;
@@ -101,6 +105,9 @@ export class GameInformationPage {
         this.isMobile = true;
       }
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
     
   }
 
@@ -118,6 +125,187 @@ export class GameInformationPage {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
+  addGame(){
+    console.log(this.game);
+
+    let optionsList = {
+      title:'Type',
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler:()=>{
+            console.log('cancel clicked');
+          }
+        },
+        {
+          text:'Accept',
+          handler:data =>{
+            console.log(data);
+            this.game.type = data.name;
+
+            let game = {} as VideogameInterface;
+            game.title = this.game.name;
+            game.genre = this.game.genres[0].name;
+            let date = moment(this.game.first_release_date).format("MMM Do YYYY");
+            game.releaseDate = date;
+            game.coverPhoto = this.game.cover.url;
+            this.esrbTable.forEach((data)=>{
+              if(this.game.esrb.rating === data.value){
+                game.esrbRating = data.rating;
+              }
+            });
+            game.platform = this.game.selectedPlatformName;
+            game.type = data.name;
+            game.platformId = this.game.selectedPlatformId;
+
+            let loader = this.loadingCtrl.create({
+              content:'Please wait...',
+              spinner:'crescent'
+            });
+            loader.present();
+            this.dataService.checkExistingVideogame(this.game.id,game.type).then((snap)=>{
+              if(snap.val() == null){
+                this.dataService.addVideogame(game,this.game.id,game.platformId).then((result)=>{
+                  console.log('game added:',result);
+                  if(game.type === "offer"){
+                    this.dataService.notifyUsers(this.game.id,game.title).subscribe(((data) =>{
+                      console.log('users notified!',data);
+                    }))
+                  }
+                  else{
+                    this.dataService.subscribeToGame(this.game.id).subscribe((data)=>{
+                      console.log('user subscribed:',data);
+                    });
+                  }
+                  loader.dismiss();
+                  if(result.title === game.title){
+                    let toast = this.toastCtrl.create({
+                      message:'You are already subscribed to this game!',
+                      duration:2000
+                    });
+                    toast.present();
+                  }
+                  else{
+                  let toast = this.toastCtrl.create({
+                    message:'Game added successfully!',
+                    duration:2000
+                  });
+                  toast.present();
+                  }
+                })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
+              }
+              else{
+                loader.dismiss();
+                
+                let alert = this.alertCtrl.create({
+                  title:'Error',
+                  message:"You can't have the same game on both lists!",
+                  buttons:[
+                    {
+                      text:'Accept',
+                      handler:data =>{
+
+                      }
+                    }
+                  ]
+                })
+                alert.present();
+                
+              }
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
+
+          }
+        }
+      ],
+      inputs:[]
+    }
+
+    optionsList.inputs.push({
+      name:'options',
+            value:{
+              name:'offer'
+            },
+            label: 'Offering',
+            type:'radio',
+            checked:true
+    });
+
+    optionsList.inputs.push({
+      name:'options',
+            value:{
+              name:'interested'
+            },
+            label: 'Interested',
+            type:'radio',
+    });
+ 
+    let optionsPlatform = {
+      title:'Platforms',
+      buttons:[
+        {
+          text:'Cancel',
+          role:'cancel',
+          handler:()=>{
+            console.log('cancel clicked');
+          }
+        },
+        {
+          text:'Accept',
+          handler:data =>{
+            let alert = this.alertCtrl.create(optionsList);
+            console.log(data);
+            this.game.selectedPlatformId = data.key;
+            this.game.selectedPlatformName = data.name;
+            alert.present();
+          }
+        }
+      ],
+      inputs:[]
+    }
+
+    let flag = false;
+    this.game.platforms.forEach((platform)=>{
+      if(platform !== null && typeof platform === 'object'){
+        if(!flag){
+          flag = true;
+          optionsPlatform.inputs.push({
+            name:'options',
+            value:{
+              name:platform.name,
+              key:platform.id
+            },
+            label: platform.name,
+            type:'radio',
+            checked:true
+          });
+        }
+        else{
+          optionsPlatform.inputs.push({
+            name:'options',
+            value:{
+              name:platform.name,
+              key:platform.id
+            },
+            label: platform.name,
+            type:'radio',
+            checked:false
+          });
+        }
+    }
+    })
+   
+
+    let alert = this.alertCtrl.create(optionsPlatform);
+    alert.present();
+  }
+
   styleObject(){
     if(this.game.screenshots !== undefined){
       return { 'background-image':'url('+'https://'+this.game.screenshots[this.imageIndex].url+')','background-size': 'cover' }
@@ -125,6 +313,10 @@ export class GameInformationPage {
 }
   expandText(){
     this.expanded = true;
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   reduceText(){
@@ -165,7 +357,13 @@ export class GameInformationPage {
                 this.navCtrl.push(PartnerResultsPage,{results:results,type:data}).then(()=>{
                   loader.dismiss();
                 })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
                 console.log('results:',results);
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
               })
             }
             else{
@@ -175,7 +373,13 @@ export class GameInformationPage {
                 this.navCtrl.push(PartnerResultsPage,{results:results,type:data}).then(()=>{
                   loader.dismiss();
                 })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
                 console.log('results:',results);
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
               })
             }
             

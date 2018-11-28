@@ -5,6 +5,7 @@ import { PopoverComponent } from '../../components/popover/popover';
 import { DataService } from '../../providers/services/dataService';
 import { PickGamePage } from '../pick-game/pick-game';
 import { NativeKeyboard, NativeKeyboardOptions } from '@ionic-native/native-keyboard';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 /**
  * Generated class for the MessagingPage page.
  *
@@ -180,6 +181,9 @@ export class MessagingPage {
             })
           }
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
 
        
       }
@@ -246,8 +250,20 @@ export class MessagingPage {
           .then(()=>{
             loader.dismiss();
           })
+          .catch((err) => {
+            this.dataService.logError(err);
+          })
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
       })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
     }
     else{
@@ -292,7 +308,16 @@ export class MessagingPage {
               
                 this.navCtrl.push(PickGamePage,{games:gameArray,consoles:consoleArray,accessories:accessoriesArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.roomkey,isDirect:this.isDirect});
                 })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
               })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
             })
           }
         }
@@ -319,6 +344,7 @@ export class MessagingPage {
             return null;
           }
         },err =>{
+          this.dataService.logError(err);
           console.log('promise rejected');
           return err;
         });
@@ -335,9 +361,15 @@ export class MessagingPage {
         let alert = this.alertCtrl.create(options);
         loader.dismiss();
         alert.present();
-      });
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
     
-    });
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
 
   inviteChatroom(){
@@ -359,6 +391,9 @@ export class MessagingPage {
               this.dataService.inviteChatroom(data,key,this.chatTitle,this.roomkey).subscribe( (data) => {
                 console.log(data);
               })
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
             })
             let toast = this.toastCtrl.create({
               message:'Invitation has been sent successfully',
@@ -402,6 +437,10 @@ export class MessagingPage {
       this.dataService.markReadDirectMessages(this.roomkey);
     }
     // this.offStatus = false;
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   ionViewWillLeave(){

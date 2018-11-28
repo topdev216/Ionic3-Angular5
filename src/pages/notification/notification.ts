@@ -5,6 +5,7 @@ import { ProfilePage } from '../profile/profile';
 import { NotificationPopoverComponent } from '../../components/notification-popover/notification-popover';
 import { TradeDetailsPage } from '../trade-details/trade-details';
 import { MessagingPage } from '../messaging/messaging';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the NotificationPage page.
@@ -308,6 +309,9 @@ export class NotificationPage {
           }
           
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
       }
         
       }
@@ -380,6 +384,9 @@ export class NotificationPage {
       },3000);
     }
   })
+  .catch((err) => {
+    this.dataService.logError(err);
+  })
   }
 
   
@@ -388,6 +395,10 @@ export class NotificationPage {
   ngOnInit(){
     this.loadNotifications();
     this.readNotifications(this.type);
+  }
+
+  private showPopoverHeader(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   ionViewDidLoad() {
@@ -407,6 +418,9 @@ export class NotificationPage {
       let user = JSON.parse(data.user);
       this.dataService.createDirectChat(user.username,data.uid).then((chatKey)=>{
         this.navCtrl.push(MessagingPage,{title:user.username,key:chatKey.key,username:this.dataService.username,condition:true});
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
     })
 
@@ -507,6 +521,9 @@ export class NotificationPage {
     this.dataService.deleteNotification(notification.notificationKey).then(() =>{
       console.log('notification deleted!');
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
 
   viewProfile(notification:any){
@@ -538,6 +555,9 @@ export class NotificationPage {
       })
       
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
 
   declineTrade(notification:any){
@@ -551,6 +571,12 @@ export class NotificationPage {
           console.log('trade declined and removed');
           this.delete(notification);
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
+  })
+  .catch((err) => {
+    this.dataService.logError(err);
   })
  
 })

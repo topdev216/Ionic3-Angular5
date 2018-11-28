@@ -4,7 +4,7 @@ import { TradeHistoryPage } from './trade-history';
 
 @NgModule({
   declarations: [
-    TradeHistoryPage,
+    TradeHistoryPage
   ],
   imports: [
     IonicPageModule.forChild(TradeHistoryPage),

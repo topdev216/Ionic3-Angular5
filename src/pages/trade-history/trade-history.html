@@ -5,83 +5,343 @@
   Ionic pages and navigation.
 -->
 
+<ion-header>
+
+                <ion-navbar hideBackButton="false">
+                  <ion-title></ion-title>
+                  <ion-buttons right>
+                      <button detail-none icon-right ion-button (click)="showPopover($event)">
+                          <ion-icon name="more"></ion-icon>
+                      </button>
+                  </ion-buttons>
+                </ion-navbar>
+              
+</ion-header>
+
 <ion-content no-padding>
 
+
+
     
 
+<div>
 
     <ion-segment [(ngModel)]="type">
-
-        <ion-segment-button value="interested">
-         Interested
+        <ion-segment-button value="proposed">
+          Proposed
         </ion-segment-button>
+        <ion-segment-button value="received">
+          Received
+    </ion-segment-button>
+  </ion-segment>
 
-        <ion-segment-button value="offering">
-            Offering
-          </ion-segment-button>
-       
-   </ion-segment>
+  <div [ngSwitch]="type">
 
-   <ion-row justify-content-center>
-    <h1>Your List</h1>
-   </ion-row>
 
-   <div [ngSwitch]="type">
-
-      <ion-list *ngSwitchCase="'interested'" no-lines>
-        <ion-item *ngFor="let game of interestedGames" no-lines>
-            <ion-row no-padding align-items-center>
-    
-                <ion-col col-4 padding-right>
-                  <img src="https://{{game.game.coverPhoto}}" alt="cover">
-                  <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
-                </ion-col>
-    
-                <ion-col col-4 no-padding>
-                    <div text-wrap> {{game.game.title}} </div>
-                    <p text-wrap>{{game.game.platform}}</p>
-                    <p text-wrap>{{game.game.genre}}</p>
-                    <p text-wrap>{{game.game.releaseDate}}</p>
-                  </ion-col>
-
-                  <ion-col col-4>
-                    <button ion-button (click)="findPartner(game)" icon-right text-wrap clear>find partner<ion-icon name="search"></ion-icon></button>
-                  </ion-col>
-
-            </ion-row> 
-        </ion-item>
-      </ion-list>
-
-      <ion-list *ngSwitchCase="'offering'" no-lines>
-
-          <ion-item *ngFor="let game of offeringGames" no-lines>
-              <ion-row no-padding align-items-center>
-      
-                  <ion-col col-4 padding-right>
-                    <img src="https://{{game.game.coverPhoto}}" alt="cover">
-                    <!-- <ion-input [(ngModel)]="coverPhoto" formControlName="coverPhoto" id="imageInput"></ion-input> -->
-                  </ion-col>
-      
-                  <ion-col col-4 no-padding>
-                      <div text-wrap> {{game.game.title}} </div>
-                      <p text-wrap>{{game.game.platform}}</p>
-                      <p text-wrap>{{game.game.genre}}</p>
-                      <p text-wrap>{{game.game.releaseDate}}</p>
-                      <p style="font-weight:bold;">Available units: <span>{{game.game.quantity}}</span></p>
-                    </ion-col>
-
-                    <ion-col col-4>
-                        <button ion-button (click)="findPartner(game)" icon-right text-wrap clear>find partner<ion-icon name="search"></ion-icon></button>
+    <ion-list *ngSwitchCase="'proposed'">
+        <ion-row *ngIf="proposedTrades.length === 0" justify-content-center>
+                <h5 text-wrap>No trades have been proposed yet.</h5>
+        </ion-row>
+      <ion-item *ngFor="let trade of proposedTrades">
+              <ion-row justify-content-center>
+                      <ion-col col-5>
+                                <ion-stepper mode="vertical">
+                                                <ion-step 
+                                                      label="Timer"
+                                                      icon="timer"
+                                                      description="Waiting response from user">
+                                                </ion-step>
+                                                <ion-step 
+                                                      label="Response"
+                                                      icon="checkmark"
+                                                      description="User accepted the trade">
+                                                </ion-step>
+                                                <ion-step 
+                                                      label="Approval"
+                                                      icon="people"
+                                                      description="Waiting for TUG admins approval">
+                                                </ion-step>
+                                                <ion-step 
+                                                      label="Shipped"
+                                                      icon="paper-plane"
+                                                      description="Package has been shipped">
+                                                </ion-step>
+                                                <ion-step 
+                                                      label="Delivered"
+                                                      icon="happy"
+                                                      description="User received the package"    
+                                                >
+                                                </ion-step>
+                                              </ion-stepper>
+                                      
                       </ion-col>
-  
-              </ion-row> 
-          </ion-item>
+                      <ion-col col-7 align-self-center>
+                                <ion-row justify-content-end>
+                                        <h2 class="price" text-wrap *ngIf="!trade.timer?.hasFinished">{{trade?.timer?.displayTime}}</h2>
+                                </ion-row>
+                                <ion-row justify-content-center>
+                                                <ion-col col-5>
+                                                <ion-slides pager>                                        
+                                  
+                                                        <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'interested'}">
+                                                        <div *ngIf="game.itemType === 'game'">
+                                                                <ion-row justify-content-center>
+                                                                                <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                                <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                                </ion-row>
+                                                                <ion-row justify-content-center>
+                                                                        <p class="game-title" text-wrap>{{game.game?.title | titlecase}}</p>
+                                                                </ion-row>
+                                                                <ion-row justify-content-center>
+                                                                        <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                                </ion-row>
+                                                        </div>
+                                  
+                                  
+                                                        <div *ngIf="game.itemType === 'console'">
+                                                                        <ion-row justify-content-center>
+                                                                                        <img  class="game-photo" src="{{game.console?.coverImage}}" alt="">
+                                                                                        <ion-badge>{{game.console?.pickedConsoles}}</ion-badge>
+                                                                        </ion-row>
+                                                                        <ion-row justify-content-center>
+                                                                                <p class="game-title" text-wrap>{{game.console?.name | titlecase}}</p>
+                                                                        </ion-row>
+                                                                      
+                                                        </div>
+                                  
+                                                        <div *ngIf="game.itemType === 'accessorie'">
+                                                                        <ion-row justify-content-center>
+                                                                                        <img  class="game-photo" src="{{game.accessorie?.coverImage}}" alt="">
+                                                                                        <ion-badge>{{game.accessorie?.pickedAccessories}}</ion-badge>
+                                                                        </ion-row>
+                                                                        <ion-row justify-content-center>
+                                                                                <p class="game-title" text-wrap>{{game.accessorie?.name | titlecase}}</p>
+                                                                        </ion-row>
+                                                        </div>
+                                  
+                                                        </ion-slide>
+                                                </ion-slides>
+                                                </ion-col>
+                                                <ion-col col-2 align-self-center>
+                                                  <ion-row justify-content-end>
+                                                      <ion-icon class="swap-icon" name="swap"></ion-icon>
+                                                  </ion-row>
+                                                </ion-col>
+                                                <ion-col col-5>
+                                                <ion-slides pager>
+                                                                <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'offering'}">
+                                                                                <div *ngIf="game.itemType === 'game'">
+                                                                                                <ion-row justify-content-center>
+                                                                                                                <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                                                                <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                                                                </ion-row>
+                                                                                                <ion-row justify-content-center>
+                                                                                                        <p class="game-title" text-wrap>{{game.game?.title | titlecase}}</p>
+                                                                                                </ion-row>
+                                                                                                <ion-row justify-content-center>
+                                                                                                        <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                                                                </ion-row>
+                                                                                        </div>
+                                  
+                                  
+                                                                                        <div *ngIf="game.itemType === 'console'">
+                                                                                                        <ion-row justify-content-center>
+                                                                                                                        <img  class="game-photo" src="{{game.console?.coverImage}}" alt="">
+                                                                                                                        <ion-badge>{{game.console?.pickedConsoles}}</ion-badge>
+                                                                                                        </ion-row>
+                                                                                                        <ion-row justify-content-center>
+                                                                                                                <p class="game-title" text-wrap>{{game.console?.name | titlecase}}</p>
+                                                                                                        </ion-row>
+                                                                                                      
+                                                                                        </div>
+                                  
+                                                                                        <div *ngIf="game.itemType === 'accessorie'">
+                                                                                                        <ion-row justify-content-center>
+                                                                                                                        <img  class="game-photo" src="{{game.accessorie?.coverImage}}" alt="">
+                                                                                                                        <ion-badge>{{game.accessorie?.pickedAccessories}}</ion-badge>
+                                                                                                        </ion-row>
+                                                                                                        <ion-row justify-content-center>
+                                                                                                                <p class="game-title" text-wrap>{{game.accessorie?.name | titlecase}}</p>
+                                                                                                        </ion-row>
+                                                                                        </div>
+                                  
+                                                                </ion-slide>
+                                                </ion-slides>
+                                                </ion-col>
+                                          </ion-row>
+                                          <ion-row justify-content-center *ngIf="!trade?.timer?.hasFinished">
+                                                        <button class="trade-btn" (click)="declineTrade(trade,true)" ion-button icon-start color="danger">
+                                                                        <ion-icon name="close"></ion-icon>
+                                                        Cancel</button>
+                                          </ion-row>
+                      </ion-col>
+              </ion-row>
+          <!-- <ion-row justify-content-end>
+              <div class="timer-text">
+              </div>
+          </ion-row> -->
 
-        </ion-list>
+              
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'received'">
+        <ion-row *ngIf="receivedTrades.length === 0" justify-content-center>
+            <h5 text-wrap>No trades have been received yet.</h5>
+        </ion-row>
+        <ion-item *ngFor="let trade of receivedTrades">
+                        <ion-row justify-content-center>
+                                <ion-col col-5>
+                                          <ion-stepper mode="vertical">
+                                                          <ion-step 
+                                                                label="Timer"
+                                                                icon="timer"
+                                                                description="Waiting response from user">
+                                                          </ion-step>
+                                                          <ion-step 
+                                                                label="Response"
+                                                                icon="checkmark"
+                                                                description="User accepted the trade">
+                                                          </ion-step>
+                                                          <ion-step 
+                                                                label="Approval"
+                                                                icon="people"
+                                                                description="Waiting for TUG admins approval">
+                                                          </ion-step>
+                                                          <ion-step 
+                                                                label="Shipped"
+                                                                icon="paper-plane"
+                                                                description="Package has been shipped">
+                                                          </ion-step>
+                                                          <ion-step 
+                                                                label="Delivered"
+                                                                icon="happy"
+                                                                description="User received the package"    
+                                                          >
+                                                          </ion-step>
+                                                        </ion-stepper>
+                                                
+                                </ion-col>
+                                <ion-col col-7 align-self-center>
+                                        <ion-row justify-content-end>
+                                                <h2 class="price" text-wrap *ngIf="!trade.timer?.hasFinished">{{trade?.timer?.displayTime}}</h2>
+                                        </ion-row>
+                                        <ion-row justify-content-center>
+                                                          <ion-col col-5>
+                                                          <ion-slides pager>                                        
+                                            
+                                                                  <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'interested'}">
+                                                                  <div *ngIf="game.itemType === 'game'">
+                                                                          <ion-row justify-content-center>
+                                                                                          <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                                          <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                                          </ion-row>
+                                                                          <ion-row justify-content-center>
+                                                                                  <p class="game-title" text-wrap>{{game.game?.title | titlecase}}</p>
+                                                                          </ion-row>
+                                                                          <ion-row justify-content-center>
+                                                                                  <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                                          </ion-row>
+                                                                  </div>
+                                            
+                                            
+                                                                  <div *ngIf="game.itemType === 'console'">
+                                                                                  <ion-row justify-content-center>
+                                                                                                  <img  class="game-photo" src="{{game.console?.coverImage}}" alt="">
+                                                                                                  <ion-badge>{{game.console?.pickedConsoles}}</ion-badge>
+                                                                                  </ion-row>
+                                                                                  <ion-row justify-content-center>
+                                                                                          <p class="game-title" text-wrap>{{game.console?.name | titlecase}}</p>
+                                                                                  </ion-row>
+                                                                                
+                                                                  </div>
+                                            
+                                                                  <div *ngIf="game.itemType === 'accessorie'">
+                                                                                  <ion-row justify-content-center>
+                                                                                                  <img  class="game-photo" src="{{game.accessorie?.coverImage}}" alt="">
+                                                                                                  <ion-badge>{{game.accessorie?.pickedAccessories}}</ion-badge>
+                                                                                  </ion-row>
+                                                                                  <ion-row justify-content-center>
+                                                                                          <p class="game-title" text-wrap>{{game.accessorie?.name | titlecase}}</p>
+                                                                                  </ion-row>
+                                                                  </div>
+                                            
+                                                                  </ion-slide>
+                                                          </ion-slides>
+                                                          </ion-col>
+                                                          <ion-col col-2 align-self-center>
+                                                            <ion-row justify-content-end>
+                                                                <ion-icon class="swap-icon" name="swap"></ion-icon>
+                                                            </ion-row>
+                                                          </ion-col>
+                                                          <ion-col col-5>
+                                                          <ion-slides pager>
+                                                                          <ion-slide *ngFor="let game of trade?.trade?.items | gameType:{type:'offering'}">
+                                                                                          <div *ngIf="game.itemType === 'game'">
+                                                                                                          <ion-row justify-content-center>
+                                                                                                                          <img (click)="viewGame(game.key)" class="game-photo" src="https://{{game.game?.coverPhoto}}" alt="">
+                                                                                                                          <ion-badge>{{game.game?.pickedGames}}</ion-badge>
+                                                                                                          </ion-row>
+                                                                                                          <ion-row justify-content-center>
+                                                                                                                  <p class="game-title" text-wrap>{{game.game?.title | titlecase}}</p>
+                                                                                                          </ion-row>
+                                                                                                          <ion-row justify-content-center>
+                                                                                                                  <p text-wrap class="game-platform">{{game.game?.platform | titlecase}}</p>
+                                                                                                          </ion-row>
+                                                                                                  </div>
+                                            
+                                            
+                                                                                                  <div *ngIf="game.itemType === 'console'">
+                                                                                                                  <ion-row justify-content-center>
+                                                                                                                                  <img  class="game-photo" src="{{game.console?.coverImage}}" alt="">
+                                                                                                                                  <ion-badge>{{game.console?.pickedConsoles}}</ion-badge>
+                                                                                                                  </ion-row>
+                                                                                                                  <ion-row justify-content-center>
+                                                                                                                          <p class="game-title" text-wrap>{{game.console?.name | titlecase}}</p>
+                                                                                                                  </ion-row>
+                                                                                                                
+                                                                                                  </div>
+                                            
+                                                                                                  <div *ngIf="game.itemType === 'accessorie'">
+                                                                                                                  <ion-row justify-content-center>
+                                                                                                                                  <img  class="game-photo" src="{{game.accessorie?.coverImage}}" alt="">
+                                                                                                                                  <ion-badge>{{game.accessorie?.pickedAccessories}}</ion-badge>
+                                                                                                                  </ion-row>
+                                                                                                                  <ion-row justify-content-center>
+                                                                                                                          <p class="game-title" text-wrap>{{game.accessorie?.name | titlecase}}</p>
+                                                                                                                  </ion-row>
+                                                                                                  </div>
+                                            
+                                                                          </ion-slide>
+                                                          </ion-slides>
+                                                          </ion-col>
+                                                    </ion-row>
+                                                    <ion-row justify-content-center *ngIf="!trade?.timer?.hasFinished">
+                                                        <button class="trade-btn" (click)="acceptTrade(trade)" ion-button icon-start color="secondary">
+                                                                <ion-icon name="checkmark"></ion-icon>
+                                                                Accept</button>
+                                                        <button class="trade-btn" (click)="declineTrade(trade,false)" ion-button icon-start color="danger">
+                                                                <ion-icon name="close"></ion-icon>
+                                                                Decline</button>
+                                                    </ion-row>
+                                </ion-col>
+                        </ion-row>
+                    <!-- <ion-row justify-content-end>
+                        <div class="timer-text">
+                        </div>
+                    </ion-row> -->
+          
+                        
+                </ion-item>
+    </ion-list>
+
+  </div>
 
 
 
-   </div>
+
+</div>
+   
 
 
 </ion-content>

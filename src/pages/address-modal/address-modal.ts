@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from '../../providers/services/dataService';
 import { AddressInterface } from '../../providers/interfaces/addressInterface';
 import * as firebase from 'firebase/database';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the AddressModalPage page.
@@ -60,6 +61,10 @@ export class AddressModalPage {
 
     this.dataService.saveAddress(address);
     this.navCtrl.pop();
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   ionViewDidLoad() {

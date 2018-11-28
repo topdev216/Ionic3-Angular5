@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, ViewController, LoadingController, ToastController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { MessagingPage } from '../messaging/messaging';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the ConfirmTradePage page.
@@ -51,6 +52,10 @@ export class ConfirmTradePage {
     }
   }
 
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
+
   confirmTrade(){
     let alert = this.alertCtrl.create({
       title: 'Confirm trade',
@@ -86,10 +91,16 @@ export class ConfirmTradePage {
 
                           console.log(res);
                           loading.dismiss();
-                          this.dataService.showTradeCard(chatKey,this.navParams.get('username'),this.isDirect).then(()=>{console.log('message sent')});
+                          this.dataService.showTradeCard(chatKey,this.navParams.get('username'),this.isDirect).then(()=>{console.log('message sent')})
+                          .catch((err) => {
+                            this.dataService.logError(err);
+                          })
                         },err =>{
                           loading.dismiss();
                         })
+                      })
+                      .catch((err) => {
+                        this.dataService.logError(err);
                       })
                 }
               });   
@@ -105,12 +116,21 @@ export class ConfirmTradePage {
 
                           console.log(res);
                           loading.dismiss();
-                          this.dataService.showTradeCard(chatKey,this.navParams.get('username'),true).then(()=>{console.log('message sent')});
+                          this.dataService.showTradeCard(chatKey,this.navParams.get('username'),true).then(()=>{console.log('message sent')})
+                          .catch((err) => {
+                            this.dataService.logError(err);
+                          })
                         },err =>{
                           loading.dismiss();
                         })
                 })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
               }
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
               })
               
 

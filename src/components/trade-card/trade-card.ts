@@ -153,8 +153,14 @@ export class TradeCardComponent implements OnInit {
             else{
               this.dataService.declineTradeOffer(this.tradeKey).then(()=>{
                 this.dataService.removeTradeMessage(this.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
-                });
-              });
+                })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
             }
 
 
@@ -182,8 +188,14 @@ export class TradeCardComponent implements OnInit {
               if(this.message.tradeKey !== null || this.message.tradeKey !== undefined){
                 this.dataService.declineTradeOffer(this.message.tradeKey).then(()=>{
                   this.dataService.removeTradeMessage(this.message.tradeKey,this.isDirect,this.chatKey,this.messageKey).then(()=>{
-                  });
-                });
+                  })
+                  .catch((err) => {
+                    this.dataService.logError(err);
+                  })
+                })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
               }
             }
           }
@@ -193,11 +205,17 @@ export class TradeCardComponent implements OnInit {
 
     this.dataService.fetchUserFromDatabase(this.fromUid).then((snap)=>{
       this.proposerUsername = snap.val().username
-    });
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
 
     this.dataService.fetchUserFromDatabase(this.receiverUid).then((snap)=>{
       this.receiverUsername = snap.val().username
-    });
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
 
     
 
@@ -306,6 +324,9 @@ export class TradeCardComponent implements OnInit {
               this.dataService.updateTradeStatus(this.tradeKey,'expired').then(()=>{
                 console.log('trade expired!');
               })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
             }
 
           }
@@ -313,6 +334,9 @@ export class TradeCardComponent implements OnInit {
 
         
       }
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
     console.log('Passed down',this.message);
   }
@@ -371,6 +395,10 @@ export class TradeCardComponent implements OnInit {
       this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
         loader.dismiss();
       })
+      .catch((err) => {
+        loader.dismiss();
+        this.dataService.logError(err);
+      })
     },(err)=>{
       console.log('server error:',err);
       loader.dismiss();
@@ -396,9 +424,15 @@ export class TradeCardComponent implements OnInit {
                   this.expired = true;
                   this.waitingMessage = "Trade expired";  
                   this.showButtons = false;
-                });     
+                })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
               }
             }
+          })
+          .catch((err) => {
+            this.dataService.logError(err);
           })
                                                                                                                                                                                                                                                                                             
         })
@@ -443,6 +477,12 @@ export class TradeCardComponent implements OnInit {
           toast.present();
         })
       })  
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
 
   }
@@ -469,9 +509,17 @@ export class TradeCardComponent implements OnInit {
                 toast.present();
                 console.log('trade card message removed');
             })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
        
       },(err) =>{
+        console.log(err);
+        this.dataService.logError(err);
         let toast = this.toastCtrl.create({
           message:'An error has occurred, while notifying the user.',
           duration:2000

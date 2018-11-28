@@ -13,6 +13,12 @@
                 <ion-title>
                   Chat
                 </ion-title>
+
+                <ion-buttons right>
+                                <button detail-none icon-right ion-button (click)="showPopoverHeader($event)">
+                                    <ion-icon name="more"></ion-icon>
+                                </button>
+                </ion-buttons>
                 
         </ion-toolbar>
 </ion-header>
@@ -36,7 +42,7 @@
                                           Chatrooms
                                         </ion-segment-button>
                                         <ion-segment-button value="direct">
-                                          Direct
+                                          Friends
                                         </ion-segment-button>
                                         
                         </ion-segment>
@@ -84,7 +90,45 @@
                                                         </ion-list>
                                                     </ion-card>
 
-                                                    <ion-card *ngSwitchCase="'direct'">
+                                                    <ion-list *ngSwitchCase="'direct'" no-lines>
+                                                                <ion-item id="friendList" *ngFor="let friend of friends">
+                                                          
+                                                          
+                                                                  <ion-row>
+                                                                    <ion-col col-3>
+                                                                    <div class="avatar-container">
+                                                                      <ion-avatar item-start>
+                                                                        <img *ngIf="friend.friend.coverPhoto !== ''" src="{{friend.friend.coverPhoto}}" alt="photo">
+                                                                        <ion-text-avatar *ngIf="friend.friend.coverPhoto == ''">{{friend.initialLetter}}</ion-text-avatar>
+                                                                        <span *ngIf="friend.online" class="dot"></span>
+                                                                        <span *ngIf="!friend.online" class="offDot"></span>
+                                                                      </ion-avatar>
+                                                                    </div>
+                                                                  </ion-col>
+                                                          
+                                                          
+                                                                    <ion-col col-5>
+                                                                            <h2>{{friend.friend.name}}</h2>
+                                                                            <p>{{friend.friend.username}}</p>
+                                                                            <h3>{{friend.friend.planName}}</h3>
+                                                                    </ion-col>
+                                                          
+                                                                    <ion-col col-4 align-self-center>
+                                                                        <ion-row *ngIf="friend.unread > 0" justify-content-center>
+                                                                                <ion-badge text-wrap item-end>{{friend.unread}}</ion-badge>
+                                                                        </ion-row>
+                                                                      <ion-row justify-content-end>
+                                                                        <button ion-button (click)="showPopover($event,friend.key,friend.friend)" id="moreButton" icon-only outline>
+                                                                          <ion-icon name="more"></ion-icon>
+                                                                        </button>
+                                                                      </ion-row>
+                                                                    </ion-col>
+                                                                  </ion-row>
+
+                                                                </ion-item>
+                                                              </ion-list>
+
+                                                    <!-- <ion-card *ngSwitchCase="'direct'">
                                                                 <ion-list>
                                                 
                                                                         <ion-list-header>
@@ -119,7 +163,7 @@
                                                                         
                                                                 
                                                                 </ion-list>
-                                                            </ion-card>
+                                                            </ion-card> -->
 
                         </div>
            

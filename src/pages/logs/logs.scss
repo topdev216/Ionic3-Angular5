@@ -1,0 +1,24 @@
+page-logs {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
+
+      .content{
+        background-color:#002147;
+        .item{
+            background-color:black;
+            .description{
+                color:rgb(137, 202, 39);
+                font-weight:bold;
+            }
+            .timestamp{
+                font-weight:bold;
+                color:rgb(137, 202, 39);
+            }
+            .stackframe{
+                color:rgb(137, 202, 39);
+            }
+
+        }
+    }
+}

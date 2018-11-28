@@ -112,8 +112,8 @@ export class AddUsernamePage {
         loader.dismiss();
         this.navCtrl.popToRoot();
       })
-      .catch((err)=>{
-        console.log('Something happened');
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     }
 

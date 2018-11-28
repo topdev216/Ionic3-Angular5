@@ -110,10 +110,32 @@
                   <ion-card class="animated fadeInLeft" *ngFor="let trade of trades; let i = index">
              
                         <div *ngIf="trade?.trade?.items?.length === 2; else elseBlock">
+                                                <ion-stepper class="stepper" mode="horizontal">
+                                                                <ion-step 
+                                                                      icon="timer"
+                                                                >
+                                                                </ion-step>
+                                                                <ion-step 
+                                                                      icon="checkmark"
+                                                                      >
+                                                                </ion-step>
+                                                                <ion-step 
+                                                                      
+                                                                      icon="people"
+                                                                      >
+                                                                </ion-step>
+                                                                <ion-step 
+                                                                      icon="paper-plane"
+                                                                      >
+                                                                </ion-step>
+                                                                <ion-step 
+                                                                      icon="happy"    
+                                                                >
+                                                                </ion-step>
+                                                              </ion-stepper> 
                                 <ion-row justify-content-end>
                                         <div class="timer-text">
                                                 <h1 *ngIf="!timerArray[i]?.hasFinished">{{timerArray[i]?.displayTime}}</h1> 
-                                                <h1 *ngIf="timerArray[i]?.hasFinished">{{timerArray[i]?.message}}</h1>      
                                                 <button class="offer-button" (click)="offerBetterTrade(trade)" *ngIf="trade?.showOfferButton && !timerArray[i]?.hasFinished" color="dark" ion-button outline clear>offer better trade</button> 
                                         </div>
                                 </ion-row>
@@ -205,10 +227,33 @@
                                         <ion-row justify-content-end>
                                                 <div class="timer-text">
                                                                 <h1 *ngIf="!timerArray[i]?.hasFinished">{{timerArray[i]?.displayTime}}</h1> 
-                                                                <h1 *ngIf="timerArray[i]?.hasFinished">{{timerArray[i]?.message}}</h1>
                                                                 <button class="offer-button" (click)="offerBetterTrade(trade)" *ngIf="trade?.showOfferButton && !timerArray[i]?.hasFinished" color="dark" ion-button outline clear>offer better trade</button>
                                                 </div>
                                         </ion-row>
+                                                                
+                                                                <ion-stepper class="stepper" mode="horizontal">
+                                                                        <ion-step 
+                                                                              icon="timer"
+                                                                        >
+                                                                        </ion-step>
+                                                                        <ion-step 
+                                                                              icon="checkmark"
+                                                                              >
+                                                                        </ion-step>
+                                                                        <ion-step 
+                                                                              
+                                                                              icon="people"
+                                                                              >
+                                                                        </ion-step>
+                                                                        <ion-step 
+                                                                              icon="paper-plane"
+                                                                              >
+                                                                        </ion-step>
+                                                                        <ion-step 
+                                                                              icon="happy"
+                                                                        >
+                                                                        </ion-step>
+                                                                      </ion-stepper> 
                                 <ion-row justify-content-center>
                                         <ion-col col-6>
                                         <ion-slides pager>                                        

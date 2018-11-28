@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { PickGamePage } from '../pick-game/pick-game';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the TradeDetailsPage page.
@@ -176,7 +177,16 @@ export class TradeDetailsPage {
       }
 
     })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
   
   }
@@ -202,6 +212,9 @@ export class TradeDetailsPage {
       })
       
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
 
   }
 
@@ -215,7 +228,16 @@ export class TradeDetailsPage {
               this.dataService.deleteNotification(this.notificationKey).then(() =>{
                 this.navCtrl.pop();
               })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
             })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
      
     })
@@ -286,6 +308,10 @@ export class TradeDetailsPage {
     let alert = this.alertCtrl.create(options);
     alert.present();
 
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
 }

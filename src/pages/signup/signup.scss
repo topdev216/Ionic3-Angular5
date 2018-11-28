@@ -1,7 +1,9 @@
 page-signup {
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
     .login-content {
-        /*background: #053155;*/
-        background: linear-gradient(to right,#005C97 ,#363795);
+        background: rgba(27, 27, 27, 0.952);
         background-size: no-repeat;
         height: 100%;
         .logo-row {

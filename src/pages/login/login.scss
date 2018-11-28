@@ -4,23 +4,27 @@ page-login {
         background-color:color($colors,primary);
       }
 
+      .scroll-content {
+        padding-bottom: 0 !important;
+     }
+
     .login-content {
+        
+        ion-col{
+            position:initial !important;
+        }
         background: rgba(27, 27, 27, 0.952);
         background-size: no-repeat;
         height: 100%;
         .logo-row {
-            padding-top: 50px;
-            padding-bottom: 20px;
+            // padding-top: 50px;
+            // padding-bottom: 20px;
+            img{
+                height:150px;
+                width:auto;
+            }
         }
-        .login-box {
-            background:transparent;
-            padding: 20px 20px 0px 20px;
-            margin-top:30px;
-        }
-        ion-row {
-            align-items: center;
-            text-align: center;
-        } 
+       
         .item-input {
             border-bottom: 1px solid color($colors,light);
         }
@@ -52,7 +56,6 @@ page-login {
             padding-left: 16px;
             margin-bottom:20px;
             border-radius: 0;
-            position: relative;
             font-size: 1.7rem;
             color: color($colors,light);
             background-color: transparent;
@@ -64,29 +67,10 @@ page-login {
             padding-right: 8px;
             border-bottom: 0;
         }
-        .signup-col {
-            margin: 0px 16px 0px 16px;
-            padding-bottom: 20px;
-        }
+
         .item-inner {
             border-bottom-color:color($colors,light) !important;
             box-shadow: none !important;
-        }
-
-        .button-md-facebook{
-            background:#3B5998;
-        }
-
-        .button-md-facebook:hover{
-            background:#3B5998;
-        }
-
-        .button-md-twitter{
-            background:#1DA1F2;
-        }
-
-        .button-md-twitter:hover{
-            background:#1DA1F2;
         }
 
         .button-md-google{
@@ -103,22 +87,6 @@ page-login {
             width: 360px;
             max-width: 100%;
         }
-    }
-
-    .pb-b{
-        padding:5px 5px 0px 5px;
-    }
-
-    .pb-t{
-        padding:0px 5px 5px 5px;
-    }
-
-    .mb-8{
-        margin-bottom:8rem;
-    }
-
-    .mb-4{
-        margin-bottom:4rem;
     }
 
     ion-grid {

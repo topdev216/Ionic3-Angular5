@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import { DataService } from '../../providers/services/dataService';
 
 /**
  * Generated class for the PlatformSelectionPage page.
@@ -18,7 +20,7 @@ export class PlatformSelectionPage {
   oldPlatforms: any[] = [];
   currentPlatforms: any[] = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService) {
 
     let platforms = this.navParams.get('platforms');
 
@@ -46,6 +48,10 @@ export class PlatformSelectionPage {
       this.navCtrl.pop()
     }
     
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
 }

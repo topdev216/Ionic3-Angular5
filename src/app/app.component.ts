@@ -22,6 +22,7 @@ import { HomePage } from '../pages/home/home';
 import { TabsPageModule } from '../pages/tabs/tabs.module';
 import { Keyboard } from '@ionic-native/keyboard';
 import { NativeKeyboard } from '@ionic-native/native-keyboard';
+import { DiscoverPage } from '../pages/discover/discover';
 
 @Component({
   templateUrl: 'app.html'
@@ -121,7 +122,7 @@ export class MyApp {
     
 
     this.events.subscribe('report bug' , (data)=>{
-      this.navCtrl.push(BugReportPage);
+      this.navCtrl.push(BugReportPage,{screenshot:data.uri, stacktrace: data.stackTrace});
     })
     
     this.events.subscribe('user text',(data)=>{
@@ -137,6 +138,10 @@ export class MyApp {
 
     this.events.subscribe('payment',(data)=>{
       this.navCtrl.push(PaymentModalPage);
+    })
+
+    this.events.subscribe('discover page' , () =>{
+      this.navCtrl.push(DiscoverPage);
     })
 
     this.events.subscribe('friends list',(data) =>{
@@ -160,9 +165,25 @@ export class MyApp {
     this.events.subscribe('invite friend', (data) => {
       
     })
+
+    this.events.subscribe('log out', () => {
+      console.log('nav views:',this.navCtrl.getViews());
+        if(this.navCtrl.getViews().length > 1){
+          this.navCtrl.popToRoot().then(()=>{
+            const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
+            tabsNav.select(0);
+          })
+        }
+        else{
+          const tabsNav = this.app.getNavByIdOrName('myTabs') as Tabs;
+          tabsNav.select(0);
+        }
+    })
     
 
     platform.ready().then(() => {
+
+      this.dataService.platform = platform;
 
       firebase.auth().onAuthStateChanged((user: firebase.User) => {
         let uid = null;
@@ -273,8 +294,6 @@ export class MyApp {
         }
         if (user && user.uid && !user.emailVerified) {
           uid = user.uid;
-          user.sendEmailVerification();
-          this.dataService.showToast("Verification email sent");
           this.events.publish('user logged',{
             condition:true
           })

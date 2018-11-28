@@ -27,7 +27,7 @@ export class TabsPage {
   tab1Root = HomePage;
   tab2Root = GamelistPage;
   tab3Root = ChatPage;
-  tab4Root = DiscoverPage;
+  tab4Root = TradeHistoryPage;
   tab5Root = ProfilePage;
   public enabled:boolean = false;
   

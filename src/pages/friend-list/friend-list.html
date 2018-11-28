@@ -8,6 +8,11 @@
 
   <ion-navbar>
     <ion-title>Friends</ion-title>
+    <ion-buttons right>
+        <button detail-none icon-right ion-button (click)="showPopoverHeader($event)">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -49,7 +54,8 @@
           <ion-col col-3>
           <div class="avatar-container">
             <ion-avatar item-start>
-              <img src="{{friend.friend.coverPhoto}}" alt="photo">
+              <img *ngIf="friend.friend.coverPhoto !== ''" src="{{friend.friend.coverPhoto}}" alt="photo">
+              <ion-text-avatar *ngIf="friend.friend.coverPhoto == ''">{{friend.initialLetter}}</ion-text-avatar>
               <span *ngIf="friend.online" class="dot"></span>
               <span *ngIf="!friend.online" class="offDot"></span>
             </ion-avatar>
@@ -85,7 +91,8 @@
               <ion-col col-3>
               <div class="avatar-container">
                 <ion-avatar item-start>
-                  <img src="{{friend.friend.coverPhoto}}" alt="photo">
+                  <img *ngIf="friend.friend.coverPhoto !== ''" src="{{friend.friend.coverPhoto}}" alt="photo">
+                  <ion-text-avatar *ngIf="friend.friend.coverPhoto == ''">{{friend.initialLetter}}</ion-text-avatar>
                   <span *ngIf="friend.online" class="dot"></span>
                   <span *ngIf="!friend.online" class="offDot"></span>
                 </ion-avatar>

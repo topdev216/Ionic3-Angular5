@@ -1,15 +1,14 @@
-import { Component,NgZone } from '@angular/core';
+import { Component,NgZone, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController,AlertController, ToastController, LoadingController } from 'ionic-angular';
 import { DataService} from '../../providers/services/dataService'; 
 import { AddVideogamePage } from '../../pages/add-videogame/add-videogame'; 
 import { AddressModalPage } from '../../pages/address-modal/address-modal';
-import { AddUsernamePage } from '../../pages/add-username/add-username';
 import * as firebase from 'firebase/app';
 import { GamelistPage } from '../gamelist/gamelist';
 import { MessagingPage } from '../messaging/messaging';
 import { PaymentModalPage } from '../payment-modal/payment-modal';
-import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the ProfilePage page.
@@ -44,6 +43,7 @@ export class ProfilePage {
   comingFromSearch:boolean = false;
   isChecked:boolean = false;
   paramKey:string;
+  initialLetter:string;
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams
@@ -53,7 +53,8 @@ export class ProfilePage {
   , public toastCtrl: ToastController
   , public zone: NgZone
   , public loadingCtrl: LoadingController
-  , public backbuttonService: BackButtonProvider) {
+  , public backbuttonService: BackButtonProvider
+  , public cd: ChangeDetectorRef) {
     this.tabBar = document.querySelector('.tabbar.show-tabbar');
 
     
@@ -66,6 +67,15 @@ export class ProfilePage {
       firebase.database().ref('users/'+this.dataService.uid).on('value',(snap)=>{
       console.log('PROFILE LISTENER:',snap.val());
         this.user = snap.val();
+        if(this.user.name !== undefined){
+          this.initialLetter = this.user.name.substring(0,1);
+        }
+        else if(this.user.firstName !== undefined){
+          this.initialLetter = this.user.firstName.substring(0,1);
+        }
+        else{
+          this.initialLetter = this.user.username.substring(0,1).toUpperCase();
+        }
         this.paramKey = this.dataService.uid;
         this.remainingDays = this.dataService.getRemainingDays(this.dataService.fireUser);
         this.zone.run(()=>{
@@ -85,10 +95,22 @@ export class ProfilePage {
             this.isFriend = true;
           }
         });
-      });
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
       firebase.database().ref('users/'+paramUser.userKey).on('value',(snap)=>{
         console.log('PROFILE LISTENER:',snap.val());
           this.user = snap.val();
+          if(this.user.name !== undefined){
+            this.initialLetter = this.user.name.substring(0,1);
+          }
+          else if(this.user.firstName !== undefined){
+            this.initialLetter = this.user.firstName.substring(0,1);
+          }
+          else{
+            this.initialLetter = this.user.username.substring(0,1).toUpperCase();
+          }
           this.paramKey = paramUser.userKey;
           this.zone.run(() =>{
             this.loading = false;
@@ -106,12 +128,43 @@ export class ProfilePage {
     console.log(this.dataService.activeTab);
   }
 
+  fileChange(event:any){
+    let reader = new FileReader();
+
+    if (event.target.files && event.target.files.length) {
+      const [file] = event.target.files;
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log(reader.result);
+        let url = reader.result as string;
+        console.log('profile pic:',url);
+        this.dataService.updateProfilePicture(url).then(()=>{
+          this.user.coverPhoto = url;
+          let toast = this.toastCtrl.create({
+            message:'Profile picture changed',
+            duration:2000
+          });
+          toast.present();
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
+        // need to run CD since file load runs outside of zone
+        this.cd.markForCheck();
+      };
+    }
+  }
+
   
 
   openGameList(){
 
       this.navCtrl.push(GamelistPage,{userKey:this.paramKey,condition:false});
 
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   editAddress(){
@@ -197,6 +250,9 @@ export class ProfilePage {
       this.navCtrl.push(MessagingPage,{title:this.user.username,key:chatKey.key,username:this.dataService.username,condition:true});
       }
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
 
   goToPlans(){
@@ -220,6 +276,7 @@ export class ProfilePage {
           });
           loader.dismiss();
           toast.present();
+          console.log(data.error);
         }
         else{
           this.dataService.addFriend(friend).then(()=>{
@@ -232,6 +289,9 @@ export class ProfilePage {
           })
           loader.dismiss();
           toast.present();
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
       }
     },(err)=>{
@@ -295,6 +355,10 @@ export class ProfilePage {
         toast.present();
       
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
+    
   }
 
   ionViewWillLeave(){

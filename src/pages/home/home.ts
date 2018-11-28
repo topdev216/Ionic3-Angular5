@@ -1,4 +1,4 @@
-import { Component, NgZone, Input, OnInit } from '@angular/core';
+import { Component, NgZone, Input, OnInit, QueryList, ViewChildren, ChangeDetectorRef } from '@angular/core';
 import { NavController, Events, PopoverController, Card, NavParams, InfiniteScroll, ToastController, ModalController, LoadingController, Keyboard} from 'ionic-angular';
 import { LoginPage } from '../../pages/login/login';
 import { DataService } from '../../providers/services/dataService';
@@ -6,9 +6,9 @@ import { PopoverHeaderComponent } from '../../components/popover-header/popover-
 import { HomeFiltersPage } from '../home-filters/home-filters';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import * as moment from 'moment';
-import { GameDetailPage } from '../game-detail/game-detail';
 import { GameInformationPage } from '../game-information/game-information';
 import { TradeDetailsPage } from '../trade-details/trade-details';
+import { IonicStepperComponent } from 'ionic-stepper';
 
 export interface CountdownTimer {
   seconds: number;
@@ -29,6 +29,7 @@ export class HomePage implements OnInit {
 
   @Input('card') card:Card
   @Input('infiniteScroll') infiniteScroll: InfiniteScroll;
+  @ViewChildren(IonicStepperComponent) steppers: QueryList<IonicStepperComponent>;
   public authState:boolean = null;
   private username :string = "adasdasda";
   private loading:boolean;
@@ -59,12 +60,12 @@ export class HomePage implements OnInit {
   , public backbuttonService: BackButtonProvider
   , public toastCtrl: ToastController
   , public modalCtrl: ModalController
-  , public loadingCtrl: LoadingController) {
+  , public loadingCtrl: LoadingController
+  , public cdref: ChangeDetectorRef) {
 
     document.addEventListener("keydown", (event:any)=>{
       let key = event.key;
       if(key === 'Backspace'){
-        console.log('key event:',event.target.value);
         if(event.target.value.trim().length === 1){
           this.games = [];
           if(this.trades.length === 0){
@@ -210,7 +211,6 @@ export class HomePage implements OnInit {
           this.trades.forEach((trade,index)=>{
             trade.trade.items.forEach((item)=>{
               if(item.hasOwnProperty('game')){
-                console.log('interested item:',item);
                 this.interestedGames.forEach((game)=>{
                   if( (game.title).toLowerCase() === item.game.title && game.platformId === item.game.platformId) {
                     this.trades[index].showOfferButton = true;
@@ -219,6 +219,9 @@ export class HomePage implements OnInit {
               }
             })
           })
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
 
         this.dataService.getInterestedConsoles(this.dataService.uid).then((snap)=>{
@@ -229,7 +232,6 @@ export class HomePage implements OnInit {
           this.trades.forEach((trade,index)=>{
             trade.trade.items.forEach((item)=>{
               if(item.hasOwnProperty('console')){
-                console.log('interested item:',item);
                 this.interestedConsoles.forEach((myConsole)=>{
                   if( myConsole.platformId === item.console.platformId) {
                     this.trades[index].showOfferButton = true;
@@ -238,6 +240,9 @@ export class HomePage implements OnInit {
               }
             })
           })
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
 
         this.dataService.getInterestedAccessories(this.dataService.uid).then((snap)=>{
@@ -248,7 +253,6 @@ export class HomePage implements OnInit {
           this.trades.forEach((trade,index)=>{
             trade.trade.items.forEach((item)=>{
               if(item.hasOwnProperty('accessorie')){
-                console.log('interested item:',item);
                 this.interestedAccessories.forEach((myAccessorie)=>{
                   if( myAccessorie.itemId === item.key) {
                     this.trades[index].showOfferButton = true;
@@ -257,6 +261,9 @@ export class HomePage implements OnInit {
               }
             })
           })
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
 
         
@@ -271,7 +278,6 @@ export class HomePage implements OnInit {
           let count = 0;
     
           snap.forEach((child) =>{      
-            console.log('each child',child.val());
             if(!child.val().data.read || child.val().data.read === 'false'){
               count++;
             }
@@ -301,6 +307,9 @@ export class HomePage implements OnInit {
           })
           console.log('interested games:',this.interestedGames);
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
       }
     })
     
@@ -319,7 +328,6 @@ export class HomePage implements OnInit {
     this.trades.forEach((trade,index)=>{
         trade.trade.items.forEach((item)=>{
           if(item.hasOwnProperty('game')){
-            console.log('interested item:',item);
             this.interestedGames.forEach((game)=>{
               if( (game.title).toLowerCase() === item.game.title && game.platformId === item.game.platformId) {
                 this.trades[index].showOfferButton = true;
@@ -327,7 +335,6 @@ export class HomePage implements OnInit {
             })
           }
           else if(item.hasOwnProperty('console')){
-            console.log('interested item:',item);
             this.interestedConsoles.forEach((myConsole)=>{
               if( myConsole.platformId === item.console.platformId) {
                 this.trades[index].showOfferButton = true;
@@ -393,9 +400,15 @@ export class HomePage implements OnInit {
                     this.timerArray.splice(timerIndex,1);
                     this.trades.splice(timerIndex,1);
                   });
-                });     
+                })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
               }
             }
+          })
+          .catch((err) => {
+            this.dataService.logError(err);
           })
                                                                                                                                                                                                                                                                                             
         
@@ -415,34 +428,6 @@ export class HomePage implements OnInit {
     minutesString = (minutes < 10) ? '0' + minutes : minutes.toString();
     secondsString = (seconds < 10) ? '0' + seconds : seconds.toString();
     return hoursString + ':' + minutesString + ':' + secondsString;
-  }
-
-  openGame(game:any){
-    let reads = [];
-    console.log(game);
-    for(let i = 0 ; i < game.platforms.length ; i++){
-      let promise = this.dataService.getOfferingCount(game.id,game.platforms[i].id).then((snap)=>{
-        console.log('returned snap:',snap.val());
-        let count = snap.val();
-        let platformName = game.platforms[i].name;
-        if(snap.val() === null){
-          count = 0;
-        }
-        let obj = {
-          name: platformName,
-          offering_count:count
-        }
-        return obj;
-      },err=>{
-        console.log(err)
-        return null;
-      })
-      reads.push(promise);
-    }
-    Promise.all(reads).then((values)=>{
-      this.navCtrl.push(GameDetailPage,{data:values,game:game})
-      console.log(values);
-    })
   }
 
   searchGame(event:any){
@@ -532,6 +517,9 @@ export class HomePage implements OnInit {
           let promise = this.dataService.fetchUserFromDatabase(proposer).then((snap)=>{
             return snap.val().username.toLowerCase();
           })
+          .catch((err) => {
+            this.dataService.logError(err);
+          })
           readsProposer.push(promise);
         }
 
@@ -539,6 +527,9 @@ export class HomePage implements OnInit {
           let receiver = temporal[j].trade.receiver;
           let promise = this.dataService.fetchUserFromDatabase(receiver).then((snap)=>{
             return snap.val().username.toLowerCase();
+          })
+          .catch((err) => {
+            this.dataService.logError(err);
           })
           readsReceiver.push(promise);
         }
@@ -565,8 +556,14 @@ export class HomePage implements OnInit {
 
             console.log('parsed data',parsedData);
           })
+          .catch((err) => {
+            this.dataService.logError(err);
+          })
   
           console.log('promise values',values);
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
 
         console.log('temporal trades',temporal);
@@ -589,6 +586,9 @@ export class HomePage implements OnInit {
       console.log('server data:',data);
       this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
         loader.dismiss();
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     },(err)=>{
       console.log('server error:',err);
@@ -718,6 +718,42 @@ export class HomePage implements OnInit {
 
   ionViewDidLoad(){
     this.username = this.dataService.username;
+    this.stepperService();
+  }
+
+  ngAfterContentChecked(){
+    this.cdref.detectChanges();
+  }
+
+  checkStepStates(){
+    this.steppers.toArray().forEach((item,index)=>{
+      console.log('step status:',this.trades[index].trade.status);
+      if(this.trades[index].trade.status === 'accepted'){
+        item.setStep(1);
+      }
+      else if(this.trades[index].trade.status === 'pending'){
+        item.setStep(0);
+      }
+      else if(this.trades[index].trade.status === 'admin-accepted'){
+        item.setStep(2);
+      }
+      else if(this.trades[index].trade.status === 'admin-shipped'){
+        item.setStep(3);
+      }
+      else if(this.trades[index].trade.status === 'admin-completed'){
+        item.setStep(4);
+      }
+      else{
+        this.trades.splice(index,1);
+      }
+    });
+  }
+
+  stepperService(){
+    this.steppers.changes.subscribe((list)=>{
+     console.log('stepper:',list);
+     this.checkStepStates();
+    });
   }
   
 
@@ -726,10 +762,11 @@ export class HomePage implements OnInit {
   }
 
   showPopover(myEvent):void{
-    let popover = this.popoverCtrl.create(PopoverHeaderComponent);
-    popover.present({
-      ev:myEvent
-    });
+    // let popover = this.popoverCtrl.create(PopoverHeaderComponent);
+    // popover.present({
+    //   ev:myEvent
+    // });
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent)
   }
 
   private goToProfile() :void{
@@ -738,8 +775,11 @@ export class HomePage implements OnInit {
 
   private logout(): void{
     this.dataService.signOut().then(()=>{
-      
-    });
+  
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
 
   private goToNotifications() :void{

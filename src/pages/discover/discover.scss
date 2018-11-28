@@ -1,10 +1,24 @@
 page-discover {
+
+    .toolbar-background {
+        background-color:color($colors,primary);
+      }
     .content{
         background:rgb(0, 29, 74);
     }
 
     ion-segment{
         padding:10px;
+    }
+
+    ion-text-avatar{
+        $photoSize: 80px;
+        font-size:28px;
+        width: $photoSize;
+        height: $photoSize;
+        border-radius: 50%;
+        border: solid 2px color($colors,primary);
+        margin: 0 auto;
     }
 
     .item{

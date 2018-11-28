@@ -65,48 +65,15 @@ export class MenuComponent {
     this.events.publish('report bug');
   }
 
+  private goToDiscover(){
+    this.events.publish('discover page');
+  }
+
   private presentPopover(myEvent:any,chatKey:string,username:string): void {
     this.popover = this.popoverCtrl.create(PopoverComponent, {userId: chatKey,username:username});
     this.popover.present({
       ev: myEvent
     });
-  }
-
-
-  private createPublic() :void{
-    let alert = this.alertCtrl.create({
-      title: 'Public Chatroom',
-      inputs: [
-        {
-          name: 'name',
-          placeholder: 'Name'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: data => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Add',
-          handler: data => {
-            this.dataService.createPublicChatroom(data.name).then(()=>{
-                // this.navParams.data('title',data.name)
-              })
-            }
-          }
-      ]
-    })
-
-    alert.present();
-
-    alert.onDidDismiss(()=>{
-      // this.navCtrl.push(MessagingPage);
-    })
-    
   }
 
   private showPayment():void{
@@ -124,66 +91,4 @@ export class MenuComponent {
   private goToFriends():void{
     this.events.publish('friends list');
   }
-
-  private createPrivate() :void{
-    let alert = this.alertCtrl.create({
-      title: 'Private Chatroom',
-      inputs: [
-        {
-          name: 'name',
-          placeholder: 'Name'
-        },
-        {
-          name: 'password',
-          placeholder: 'Password',
-          type:'password'
-        },
-        {
-          name:'repeat',
-          placeholder:'Repeat Password',
-          type:'password'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: data => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Add',
-          handler: data => {
-            if(data.password == data.repeat){
-            this.dataService.createPrivateChatroom(data.name,data.password).then(()=>{
-                // this.navParams.data('title',data.name)
-              })
-            }
-            else{
-              let toast = this.toastCtrl.create({
-                message: "Password don't match!",
-                duration: 3000,
-                position: 'top'
-              });
-          
-              toast.onDidDismiss(() => {
-                console.log('Dismissed toast');
-              });
-          
-              toast.present();
-            }
-          }
-        }
-      ]
-    })
-
-    alert.present();
-
-    alert.onDidDismiss(()=>{
-      // this.navCtrl.push(MessagingPage);
-    })
-    
-  }
-
 }

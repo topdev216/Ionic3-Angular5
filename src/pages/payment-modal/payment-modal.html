@@ -8,6 +8,11 @@
 
   <ion-navbar>
     <ion-title>Current Plans</ion-title>
+    <ion-buttons right>
+        <button detail-none icon-right ion-button (click)="showPopover($event)">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -37,7 +42,7 @@
                 </ion-row>
 
                 <ion-row justify-content-center>
-                  <h1>$9.99</h1>
+                  <h1>$11.99</h1>
                 </ion-row>
                 <ion-row justify-content-center>
                   <span>per month</span>
@@ -45,18 +50,12 @@
               </ion-item>
 
               <ion-item class="card-content">
-                <ion-row justify-content-center>
-                  <ion-col col-2 >
-                    <ion-row justify-content-end>
-                        <ion-icon name="checkmark"></ion-icon>
-                    </ion-row>
-                  </ion-col>
-                  <ion-col col-10>
-                    <ion-row justify-content-center>
-                        <p text-wrap>Up to 5 trades per month of any type</p>
-                    </ion-row>
-                  </ion-col>
-                </ion-row>
+                <ion-icon item-start name="checkmark"></ion-icon>
+                <p text-wrap>Up to 10 trades per month of any type</p>
+              </ion-item>
+              <ion-item class="card-content">
+                  <ion-icon item-start name="checkmark"></ion-icon>
+                  <p text-wrap>Discounts on videogames, goods and TUG merchandise</p>
               </ion-item>
 
                 <button ion-button round block (click)="showCredit('planA')">Choose</button>
@@ -84,7 +83,7 @@
                 </ion-row>
 
                 <ion-row justify-content-center>
-                  <h1>$12.99</h1>
+                  <h1>$15.99</h1>
                 </ion-row>
                 <ion-row justify-content-center>
                   <span>per month</span>
@@ -92,19 +91,17 @@
               </ion-item>
 
               <ion-item class="card-content">
-                <ion-row justify-content-center>
-                  <ion-col col-2 >
-                    <ion-row justify-content-end>
-                        <ion-icon name="checkmark"></ion-icon>
-                    </ion-row>
-                  </ion-col>
-                  <ion-col col-10>
-                    <ion-row justify-content-center>
-                        <p text-wrap>Up to 10 trades per month of any type</p>
-                    </ion-row>
-                  </ion-col>
-                </ion-row>
-              </ion-item>
+                  <ion-icon item-start name="checkmark"></ion-icon>
+                  <p text-wrap>Up to 15 trades per month of any type</p>
+                </ion-item>
+                <ion-item class="card-content">
+                  <ion-icon item-start name="checkmark"></ion-icon>
+                  <p text-wrap>2 console trades per month</p>
+                </ion-item>
+                <ion-item class="card-content">
+                    <ion-icon item-start name="checkmark"></ion-icon>
+                    <p text-wrap>Discounts on videogames, movie tickets, concerts and all TUG merchandise</p>
+                </ion-item>
     
                     <button ion-button round block (click)="showCredit('planB')">CHOOSE</button>
     
@@ -131,27 +128,25 @@
                         </ion-row>
         
                         <ion-row justify-content-center>
-                          <h1>$15.99</h1>
+                          <h1>$19.99</h1>
                         </ion-row>
                         <ion-row justify-content-center>
                           <span>per month</span>
                         </ion-row>
                       </ion-item>
-        
+
                       <ion-item class="card-content">
-                        <ion-row justify-content-center>
-                          <ion-col col-2>
-                            <ion-row justify-content-end>
-                                <ion-icon name="checkmark"></ion-icon>
-                            </ion-row>
-                          </ion-col>
-                          <ion-col col-10>
-                            <ion-row justify-content-center>
-                                <p text-wrap>Up to 15 trades per month of any type</p>
-                            </ion-row>
-                          </ion-col>
-                        </ion-row>
-                      </ion-item>
+                          <ion-icon item-start name="checkmark"></ion-icon>
+                          <p text-wrap>Up to 20 trades per month of any type</p>
+                        </ion-item>
+                        <ion-item class="card-content">
+                          <ion-icon item-start name="checkmark"></ion-icon>
+                          <p text-wrap>2 console trades per month</p>
+                        </ion-item>
+                        <ion-item class="card-content">
+                            <ion-icon item-start name="checkmark"></ion-icon>
+                            <p text-wrap>Discounts on videogames, movie tickets, concerts, services, events, Best Buy, Walmart, Amazon, Apple Store and all TUG merchandise</p>
+                        </ion-item>
     
                     <button ion-button round block (click)="showCredit('planC')">CHOOSE</button>
     

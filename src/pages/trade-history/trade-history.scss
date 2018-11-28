@@ -1,4 +1,19 @@
 page-trade-history {
+
+
+    // @media (min-width: 0px) and (max-width:320px) {
+    //     .ionic-step-header-description{
+    //         font-size:4px !important;
+    //     }
+    // } 
+
+    // @media (min-width: 321px) and (max-width:375px) {
+    //     .ionic-step-header-label{
+    //         font-size:5px !important;          
+    //     }
+    // } 
+
+
     .toolbar-background {
         background-color:color($colors,primary);
       }
@@ -7,38 +22,114 @@ page-trade-history {
         padding:25px;
       }
 
-      .segment .segment-button{
-          font-size:17px;
-      }
-
-      #searchItem img {
-        border-radius: 50%;
-        border: solid 2px color($colors,primary);
-        margin: 0 auto;
-        }
-
-      .content{
-          h1{
+      .content{    
+          .trade-btn{
+            padding:10px;
+          }
+          .price{
+              margin-bottom:35px;
               color:white;
           }
           background-color:#002147;
-          #moreButton{
-            border:0;
+          color:white;
+
+          .ionic-step-header-label{
+              font-size:12px !important;
+              color:white;
+              font-weight: bold ;
+          }
+
+          .ionic-step-header-description{
+              font-size:10px !important;
+              color:white;
+              word-break:break-word !important;
+              white-space: normal;
+          }
+
+          .item{
+                background-color:#002c5e;
+                padding:0px;
+     
+                .game-title{
+                    font-weight:bold;
+                    text-align:center;
+                    color:rgb(214, 214, 214);
+                }
+
+                .game-platform{
+                    text-align:center;
+                    color:white;
+                }
+
+               
+
+                .timer-text{
+                    margin-top:5px;
+                    margin-right:15px;
+                }
+
+                .swap-icon{
+                    font-size:28px;
+                    color:white;
+                    animation: pulsar 1.6s infinite;
+                    -moz-animation: pulsar 1.6s infinite;
+                    -o-animation: pulsar 1.6s infinite;
+                    -webkit-animation: pulsar 1.6s infinite;
+                }
+
+                .swiper-pagination{
+                bottom:0px !important;
+                }
+
+                .swiper-slide{
+                
+                    height:195px;
+                    img{
+                    height:75px !important;
+                    cursor: pointer;
+                    }
+                    transition: transform .6s ease-in-out;
+                }
+
+                @keyframes pulsar {
+                    0% {
+                    @include transform(scale(.9));
+                    }
+                    70% {
+                    @include transform(scale(1));
+                    box-shadow: 0 0 0 150px rgba(#0c1824, 0);
+                    }
+                    100% {
+                    @include transform(scale(.9));
+                    box-shadow: 0 0 0 0 rgba(#0e1d2c, 0);
+                    }
+                }
+      
+
+                ion-badge{
+                    background:red !important;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    border-radius: 50%;
+                }
             }
         }
 
-        .item {
-            align-items: baseline;
-            background-color:#002857;
-            border-bottom:0.1px solid #01326b !important;
-            color:rgb(201, 201, 201);
-        }
-
-        ion-avatar img {     
-            width:100% !important;  
-            height : 100% !important;  
-            max-width: 70px !important;  //any size
-            max-height: 70px !important; //any size 
-        }
+        ion-spinner{
+            width:68px;
+            height:68px;
+            margin-top:50%;
+            * {
+              stroke: #FFA400 !important;
+            }
+        
+            &.spinner-circles circle,
+            &.spinner-bubbles circle,
+            &.spinner-dots circle {
+              fill: #FFA400 !important;
+            }
+          }
+    
 }
 

@@ -44,6 +44,75 @@ page-chat {
         }
     }
 
+    .item#friendList{
+
+      ion-badge{
+        background:transparent;
+        color:color($colors,primary);
+      }
+
+      ion-text-avatar{
+          $photoSize: 70px;
+          font-size:25px;
+          width: $photoSize;
+          height: $photoSize;
+          border-radius: 50%;
+          border: solid 2px color($colors,primary);
+          margin: 0 auto;
+      }
+      
+      h3{
+          font-weight:bold;
+          letter-spacing: 0.05rem;
+      }
+      align-items: baseline;
+      background-color:#002857;
+      border-bottom:0.1px solid #01326b !important;
+      color:rgb(201, 201, 201);
+  }
+
+  .avatar-container{
+    height:100%;
+    width:70px;
+}
+
+ion-avatar img {     
+    max-width:70px !important;
+    width: 70px !important;  
+    height : 70px !important;  
+}
+
+.dot {
+    position:absolute;
+    right:50%;
+    bottom:15%;
+    height: 12px;
+    width: 12px;
+    background-color: rgb(0, 204, 0);
+    border-radius: 50%;
+    border:1px solid white;
+    display: inline-block;
+  }
+
+  .offDot {
+    position:absolute;
+    right:50%;
+    bottom:15%;
+    height: 12px;
+    width: 12px;
+    background-color: rgb(221, 7, 0);
+    border-radius: 50%;
+    border:1px solid white;
+    display: inline-block;
+  }
+
+    #moreButton{
+        border:0;
+      //   color:rgb(201, 201, 201);
+    }
+
+
+
     ion-card{
       outline:0.03rem solid color($colors,primary) ;
       outline-style: groove;

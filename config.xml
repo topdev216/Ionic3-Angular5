@@ -96,5 +96,6 @@
     <plugin name="com-sarriaroman-photoviewer" spec="1.1.18" />
     <plugin name="cordova-plugin-youtube-video-player" spec="2.1.0" />
     <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="2.2.6" />
+    <plugin name="com.darktalker.cordova.screenshot" spec="0.1.6" />
     <engine name="android" spec="7.1.2" />
 </widget>

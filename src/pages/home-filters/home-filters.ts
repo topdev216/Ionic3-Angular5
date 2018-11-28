@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormGroup, FormControl } from '@angular/forms';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import { DataService } from '../../providers/services/dataService';
 
 /**
  * Generated class for the HomeFiltersPage page.
@@ -18,7 +20,7 @@ export class HomeFiltersPage {
 
   filter:string = "partner";
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService) {
     this.filter = this.navParams.get('filter') || "partner";
   }
 
@@ -35,4 +37,7 @@ export class HomeFiltersPage {
     this.navCtrl.getPrevious().data.filter = this.filter;
   }
 
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
 }

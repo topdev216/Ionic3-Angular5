@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, Form } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { SignupPage } from '../../pages/signup/signup';
 import { HomePage } from '../home/home';
 import { TabsPage } from '../tabs/tabs';
 import { AddUsernamePage } from '../add-username/add-username';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { FormBuilder, Validators } from '@angular/forms';
+import { Keyboard } from 'ionic-angular';
+
 
 
 /**
@@ -21,13 +24,31 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
   templateUrl: 'login.html',
 })
 export class LoginPage {
-
+   
+  passwordType: string = 'password';
+  passwordIcon: string = 'eye-off';
   email: string;
   password: string;
+  loginForm = this.fb.group({
+    email: ['',Validators.compose([Validators.required,Validators.email])],
+    password:['',Validators.required]
+  });
+  tabBar:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
   , public dataService: DataService
-  , public modalCtrl: ModalController) {
+  , public modalCtrl: ModalController
+  , public fb: FormBuilder
+  , public keyboard: Keyboard) {
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
+  }
+
+  ionViewWillEnter(){
+    this.tabBar.style.display = 'none';
+  }
+
+  ionViewWillLeave(){
+    this.tabBar.style.display = 'flex';
   }
 
   ngOnInit(){
@@ -38,7 +59,7 @@ export class LoginPage {
   }
 
   private googleLogin():void{
-    this.dataService.showLoading();
+    this.dataService.showLoading('Please wait...');
     this.dataService.googleLogin().then((data:any)=>{ 
       this.dataService.hideLoading();
       console.log('logged data: ',data.username);
@@ -51,11 +72,10 @@ export class LoginPage {
         this.navCtrl.popToRoot();
       }
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
-
-  // private  
-  passwordType: string = 'password';
-  passwordIcon: string = 'eye-off';
 
   private hideShowPassword(): void {
 
@@ -64,10 +84,11 @@ export class LoginPage {
     this.passwordIcon = this.passwordIcon === 'eye-off' ? 'eye' : 'eye-off';
   }
 
-  private login(): void {
-    this.dataService.showLoading();
+  private login(form:any): void {
+    console.log(form);
+    this.dataService.showLoading('Please wait...');
     this.dataService
-      .signIn(this.email, this.password)
+      .signIn(form.value.email, form.value.password)
       .then((user) => {
         console.log('login user:',user);
         this.dataService.hideLoading();
@@ -94,20 +115,6 @@ export class LoginPage {
 
   private createAccount(): void {
     this.navCtrl.push(SignupPage);
-  }
-
-  private facebookLogin():void{
-    this.dataService.showLoading();
-    this.dataService.facebookLogin().then((data:any)=>{
-      this.dataService.hideLoading();
-    })
-  }
-
-  private twitterLogin():void{
-    this.dataService.showLoading();
-    this.dataService.twitterLogin().then((data:any)=>{
-      this.dataService.hideLoading();
-    })
   }
 
 

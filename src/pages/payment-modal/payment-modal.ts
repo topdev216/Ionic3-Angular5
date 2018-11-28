@@ -1,6 +1,8 @@
 import { Component, ViewChild, HostListener } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController,Slides, Slide } from 'ionic-angular';
 import { CreditFormPage } from '../credit-form/credit-form';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import { DataService } from '../../providers/services/dataService';
 
 /**
  * Generated class for the PaymentModalPage page.
@@ -22,11 +24,14 @@ export class PaymentModalPage {
   @ViewChild('slideC') slideC: Slide;
   planA : boolean = false;
   innerWidth:number;
+  tabBar:any;
  
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams
-  , public viewCtrl: ViewController) {
+  , public viewCtrl: ViewController
+  , public dataService: DataService) {
+    this.tabBar = document.querySelector('.tabbar.show-tabbar');
   }
 
   @HostListener('window:resize', ['$event'])
@@ -42,6 +47,10 @@ export class PaymentModalPage {
       this.slides.slidesPerView  = 1.2;
       this.slides.spaceBetween = 7;
     }
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   ngOnInit(){
@@ -82,6 +91,14 @@ export class PaymentModalPage {
 
   dismiss(){
     this.viewCtrl.dismiss();
+  }
+
+  ionViewWillEnter(){
+    this.tabBar.style.display = 'none';
+  }
+
+  ionViewWillLeave(){
+    this.tabBar.style.display = 'flex';
   }
 
 }

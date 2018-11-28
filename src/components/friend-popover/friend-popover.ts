@@ -73,9 +73,17 @@ export class FriendPopoverComponent {
                   console.log('User has been blocked.');
                   loader.dismiss();
                 })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
                 
-              });
-            });
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
+            }).catch((err) => {
+              this.dataService.logError(err);
+            })
             
           }
         }
@@ -116,9 +124,18 @@ export class FriendPopoverComponent {
                   this.dataService.user = snap.val();
                   console.log('User has been unblocked.');
                   loader.dismiss();
-                });
-              });
-            });
+                })
+                .catch((err) => {
+                  this.dataService.logError(err);
+                })
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
             
           }
         }
@@ -146,6 +163,7 @@ export class FriendPopoverComponent {
       loader.dismiss();
     })
     .catch((err)=>{
+      this.dataService.logError(err);
       loader.dismiss();
     });
   }

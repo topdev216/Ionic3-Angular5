@@ -1,18 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable,NgZone } from '@angular/core';
-import { Platform, LoadingController, Loading, ToastController} from 'ionic-angular';
+import { Platform, LoadingController, Loading, ToastController, PopoverController} from 'ionic-angular';
 import * as firebase from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UrlEnvironment} from '../services/urlEnvironment';
 import { Observable } from 'rxjs/Observable';
 import { AddressInterface } from '../interfaces/addressInterface';  
-import * as moment from 'moment';
-// import { VideogameInterface } from '../interfaces/videogameInterface';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import { Reference } from '@firebase/database-types';
-import { GooglePlus } from '@ionic-native/google-plus';
-import { Subject, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
+import * as StackTrace from 'stacktrace-js';
 
 
 declare var Stripe:any;
@@ -29,6 +27,7 @@ declare var Stripe:any;
 export class DataService {
 
   public database = firebase.database();
+  public storage = firebase.storage();
   public loading: Loading;
   public uid: string;
   public email: string;
@@ -37,11 +36,15 @@ export class DataService {
   public fireUser: firebase.User;
   public friends:any[] = [];
   public trades:any [] = [];
+  public serverLogs: any [] = [];
   public tradesChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
   public tradeCountChange: ReplaySubject<number> = new ReplaySubject<number> ();
   public friendsChange: ReplaySubject<any[]> =  new ReplaySubject<any[]> ();
   public blockedChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
   public directChatChanges: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
+  public serverLogsChanges: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
+  public proposedTradesChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
+  public receivedTradesChange: ReplaySubject<any[]> = new ReplaySubject<any[]> ();
   public directChats:any[] = [];
   public blocked: any [] = [];
   public username:string;
@@ -55,15 +58,15 @@ export class DataService {
   public games: any [] = [];
   public activeTab;
   public previousTab;
+  public platform: Platform;
 
   constructor(public http: HttpClient
-  , public platform: Platform
   , public loadingCtrl: LoadingController
   , public afAuth: AngularFireAuth
   , public toastCtrl: ToastController
   , public zone: NgZone
   , public urlEnvironment: UrlEnvironment
-  , public gplus: GooglePlus) {
+  , public popoverCtrl: PopoverController) {
     console.log('Hello DataService Provider');
 
     this.friendsChange.subscribe((value)=>{
@@ -80,6 +83,10 @@ export class DataService {
 
     this.tradesChange.subscribe((value)=>{
       this.trades = value;
+    })
+
+    this.serverLogsChanges.subscribe((value) => {
+      this.serverLogs = value;
     })
 
   }
@@ -130,6 +137,36 @@ export class DataService {
     })
   }
 
+  public liveProposedTrades(){
+    this.database.ref('/trades').orderByChild('proposer').equalTo(this.uid).on('value', (snap) =>{
+      let array = [];
+      snap.forEach((proposedTrade) => {
+        let obj = {
+          trade: proposedTrade.val(),
+          key: proposedTrade.key
+        }
+        array.push(obj);
+      });
+
+      this.proposedTradesChange.next(array);
+    });
+  }
+
+  public liveReceivedTrades(){
+    this.database.ref('/trades').orderByChild('receiver').equalTo(this.uid).on('value', (snap) =>{
+      let array = [];
+      snap.forEach((receivedTrade) => {
+        let obj = {
+          trade:receivedTrade.val(),
+          key:receivedTrade.key
+        };
+        array.push(obj);
+      });
+
+      this.receivedTradesChange.next(array);
+    })
+  }
+
   public liveTrades(lastKey?): Observable<any>{
 
     let obj = {
@@ -167,13 +204,19 @@ export class DataService {
           }
           
           return obj;
-        });
+        })
+        .catch((err) => {
+          this.logError(err);
+        })
         reads.push(promise);
       })
 
       Promise.all(reads).then((values)=>{
         this.directChatChanges.next(values);
         console.log('direct chat service:',values);
+      })
+      .catch((err) => {
+        this.logError(err);
       })
     });
   }
@@ -187,13 +230,25 @@ export class DataService {
         let promise = this.fetchUserKey(childSnap.val().username).then((user)=>{
           
         var key = Object.keys(user.val())[0];
+        let initialLetter;
+        if(user.val()[key].firstName !== undefined){
+          initialLetter = user.val()[key].firstName.substring(0,1).toUpperCase();
+        }
+        else if(user.val()[key].username !== undefined){
+          initialLetter = user.val()[key].username.substring(0,1).toUpperCase();
+        }
+        else{
+          initialLetter = user.val()[key].name.substring(0,1).toUpperCase();
+        }
         let obj = {
           friend:user.val()[key],
           key:key,
+          initialLetter:initialLetter,
           online:user.val()[key].online
         };
         return obj
       },err =>{
+        this.logError(err);
         return err;
       });
         reads.push(promise);
@@ -207,7 +262,10 @@ export class DataService {
               this.onlineFriendListener(friend.key,index,true);
             })
             this.friendsChange.next(array);
-      });
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
     })
   }
 
@@ -220,13 +278,25 @@ export class DataService {
         let promise = this.fetchUserKey(childSnap.val().username).then((user)=>{
           
         var key = Object.keys(user.val())[0];
+        let initialLetter;
+        if(user.val()[key].firstName !== undefined){
+          initialLetter = user.val()[key].firstName.substring(0,1).toUpperCase();
+        }
+        else if(user.val()[key].username !== undefined){
+          initialLetter = user.val()[key].username.substring(0,1).toUpperCase();
+        }
+        else{
+          initialLetter = user.val()[key].name.substring(0,1).toUpperCase();
+        }
         let obj = {
           friend:user.val()[key],
           key:key,
-          online:user.val()[key].online
+          online:user.val()[key].online,
+          initialLetter:initialLetter
         };
         return obj
       },err =>{
+        this.logError(err);
         return err;
       });
         reads.push(promise);
@@ -239,7 +309,10 @@ export class DataService {
               this.onlineFriendListener(friend.key,index,false);
             })
             this.blockedChange.next(array);
-      });
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
     })
   }
 
@@ -264,22 +337,76 @@ export class DataService {
     });
   }
 
-  public saveBug(bug:any) :Promise<any>{
-    let bugRef = this.database.ref('/bugs').push();
+  public saveBug(bug:any,stackframe:string,screenshot: string, type:string) :Promise<any>{
+      let bugRef = this.database.ref('/bugs').push();
 
-    if(bug.previousPage !== null){
-      return bugRef.set({
-        page:bug.page,
-        previousPage:bug.previousPage,
-        description:bug.description
+      let url;
+      if(type === 'core'){
+        url = screenshot.substring(22);
+      }
+      else{
+        url = screenshot.substring(23);
+      }
+
+      console.log('save bug called');
+
+      console.log('image to upload:',url);
+      return this.storage.ref('/bugs/'+bugRef).putString(url,'base64').then((result) => {
+        console.log('Upload result:',result)
+        let screenshotRef = result.ref;
+        let timestamp = Date.now();
+        let date = new Date(timestamp),
+        datevalues = [
+          date.getUTCFullYear(),
+          date.getUTCMonth()+1,
+          date.getUTCDate(),
+          date.getUTCHours(),
+          date.getUTCMinutes(),
+          date.getUTCSeconds(),
+        ];
+
+        return screenshotRef.getDownloadURL().then((screenshotUrl)=>{
+          return bugRef.set({
+            description: bug.description,
+            stackframe: stackframe,
+            screenshot:screenshotUrl,
+            timestamp:date.toString()
+          })
+          .catch((err)=>{
+            this.logError(err);
+          });
+        })  
+        .catch((err)=>{
+          this.logError(err);
+        });
       })
-    }
-    else{
-      return bugRef.set({
-        page:bug.page,
-        description:bug.description
+      .catch((err)=>{
+        this.logError(err);
       })
-    }
+
+      
+ 
+  }
+
+  public logError(error:any) :void {
+    console.log(error);
+    let obj = {
+      description: error.message
+    };
+
+    StackTrace.fromError(error).then((stacktrace) => {
+      const stackString = stacktrace
+            .map( (sf) => {
+              return sf.toString();
+            }).join('\n');
+
+            if(this.platform.is('cordova')){
+              this.saveBug(obj,stackString,'','mobile');
+            }
+            else{
+              this.saveBug(obj,stackString,'','core');
+            }
+    })
     
   }
 
@@ -287,22 +414,27 @@ export class DataService {
     return this.database.ref('/users/'+uid+'/consoles/interested').once('value');
   }
 
+  public getOfferingConsoles(uid:string) :Promise <any> {
+    return this.database.ref('/users/'+uid+'/consoles/offer').once('value');
+  }
   public getInterestedAccessories(uid:string) :Promise <any> {
     return this.database.ref('/users/'+uid+'/accessories/interested').once('value');
   }
 
-  public showLoading(): void {
-    this.loading = this.loadingCtrl.create({
-      spinner:'crescent'
-    });
-    this.loading.present();
+  public getOfferingAccessories(uid:string) :Promise <any> {
+    return this.database.ref('/users/'+uid+'/accessories/offer').once('value');
   }
 
-  public hideLoading(): void {
-    if (this.loading) {
-      this.loading.dismiss();
-      this.loading = null;
-    }
+  public showLoading(content:string): Promise<any> {
+    this.loading = this.loadingCtrl.create({
+      content: content,
+      spinner:'crescent'
+    });
+    return this.loading.present();
+  }
+
+  public hideLoading():  Promise<any>{
+    return this.loading.dismiss()
   }
 
   public showToast(message: string): Promise<any> {
@@ -314,6 +446,13 @@ export class DataService {
     return toast.present();
   }
 
+  public showPopover(component:any,event:any): Promise<any> {
+    let popover = this.popoverCtrl.create(component);
+    return popover.present({
+      ev:event
+    });
+  }
+
   //SOCIAL LOGINS
   private socialSignIn(provider): Promise<any> {
     if (this.platform.is('cordova')) {
@@ -322,16 +461,22 @@ export class DataService {
         .then((data: any) => {
           console.log("data: ", data);
           return firebase.auth().getRedirectResult();
-        });
+        })
+        .catch((err) => {
+          this.logError(err);
+        })
     } else {
       return this.afAuth.auth.signInWithPopup(provider)
         .then((credential) => {
           return credential;
-        });
+        })
+        .catch((err) => {
+          this.logError(err);
+        })
     }
   }
 
-  public addUserToDatabase(uid:string,name:string,email:string,date: string,username:string,url:string): Promise<any> {
+  public addUserToDatabase(uid:string,name:string,email:string,date: string,username:string,url:string,firstName:string,lastName:string): Promise<any> {
     return this.database.ref('users/'+uid).set({
       username: username,
       name: name,
@@ -341,7 +486,9 @@ export class DataService {
       online:true,
       chat_notification_disable:false,
       paidMember:false,
-      userKey:uid
+      userKey:uid,
+      firstName: firstName,
+      lastName: lastName
     })
   }
 
@@ -359,6 +506,16 @@ export class DataService {
     })
   }
 
+  public serverLogsService() {
+    this.database.ref('/bugs').on('value', (snap) =>{
+      let array = [];
+      snap.forEach((bugSnap) => {
+        array.push(bugSnap.val());
+      })
+      this.serverLogsChanges.next(array);
+    })
+  }
+
   public googleLogin(): Promise<void> {
     return this.socialSignIn(new firebase.auth.GoogleAuthProvider)
       .then((credential: any) => {
@@ -367,28 +524,40 @@ export class DataService {
             console.log(snapshot.val());
             //user is not registered on database...
             if(snapshot.val() == null){
-              this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,'',user.photoURL)
+              this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,'',user.photoURL,'','')
               return snapshot.val();
             }//user doesn't have an username yet...
             else{
               return snapshot.val();
             }
-          });
-      });
+          })
+          .catch((err) => {
+            this.logError(err);
+          })
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
   }
 
   public facebookLogin(): Promise<void> {
     return this.socialSignIn(new firebase.auth.FacebookAuthProvider)
       .then((credential: any) => {
         return credential;
-      });
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
   }
 
   public twitterLogin(): Promise<void> {
     return this.socialSignIn(new firebase.auth.TwitterAuthProvider)
       .then((credential: any) => {
         return credential;
-      });
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
   }
 
   public signOut(): Promise<any> {
@@ -401,8 +570,14 @@ export class DataService {
         this.email = null;
         this.uid = null;
         return this.afAuth.auth.signOut();
-      });
-    });
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
+    })
+    .catch((err) => {
+      this.logError(err);
+    })
     // return this.afAuth.auth.signOut() 
   }
 
@@ -448,6 +623,9 @@ export class DataService {
         }
       })
       return count;
+    })
+    .catch((err) => {
+      this.logError(err);
     })
 
   }
@@ -498,6 +676,9 @@ export class DataService {
         return 0;
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public addConsole(platform:any,type:string) :Promise<any>{
@@ -524,6 +705,9 @@ export class DataService {
           })
         }
       })
+      .catch((err) => {
+        this.logError(err);
+      })
   }
 
   public removeConsole(platform:any,type:string) :Promise<any>{
@@ -540,6 +724,9 @@ export class DataService {
         })
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public checkAmountAccessory(type:string,id:any){
@@ -551,6 +738,9 @@ export class DataService {
       else{
         return 0;
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -577,6 +767,9 @@ export class DataService {
         })
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public removeAccessory(item:any,type:string) :Promise<any>{
@@ -592,6 +785,9 @@ export class DataService {
           coverImage:item.coverImage
         })
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -667,6 +863,12 @@ export class DataService {
       return this.database.ref('constants/trialEnd').once('value').then( (snapshot)=>{
         this.trialEnd = snapshot.val();
       })
+      .catch((err) => {
+        this.logError(err);
+      })
+    })
+    .catch((err) => {
+      this.logError(err);
     })
 
 
@@ -676,20 +878,29 @@ export class DataService {
     this.errorDismiss = value;
   }
 
-  public signUp(email: string, password: string,username:string): Promise<any> {
+  public signUp(email: string, password: string,username:string,firstName:string,lastName:string): Promise<any> {
     
     return firebase.auth()
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
           let user = firebase.auth().currentUser;
-          this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,username,'')
+          this.addUserToDatabase(user.uid,user.displayName,user.email,user.metadata.creationTime,username,'',firstName,lastName)
           .then(()=>{
             return user.sendEmailVerification();
           })
+          .catch((err) => {
+            this.logError(err);
+          })
+      })
+      .catch((err) => {
+        this.logError(err);
       })
       .then((user) => {
         return this.signOut();
-      });
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
   }
   
   public signIn(email: string, password: string): Promise<any> {
@@ -699,8 +910,17 @@ export class DataService {
         return this.flagLogin(data.user.uid).then(()=>{
           return user;
         })
-      });
-    });
+        .catch((err) => {
+          this.logError(err);
+        })
+      })
+      .catch((err) => {
+        this.logError(err);
+      })
+    })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
 
@@ -738,7 +958,10 @@ export class DataService {
 
     return firebase.database().ref('/videogames/' + this.uid).once('value').then(function(snapshot) {
      
-    });
+    })
+    .catch((err) => {
+      this.logError(err);
+    })
 
   }
 
@@ -762,6 +985,9 @@ export class DataService {
           
         }) 
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   
   }
@@ -787,6 +1013,9 @@ export class DataService {
           
         }) 
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -834,6 +1063,9 @@ export class DataService {
         return users;
       }
       
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
   
@@ -891,6 +1123,9 @@ export class DataService {
         return toast.present();
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
     
     
   }
@@ -940,6 +1175,12 @@ export class DataService {
       }).then(()=>{
         return tradeKey;
       })
+      .catch((err) => {
+        this.logError(err);
+      })
+    })
+    .catch((err) => {
+      this.logError(err);
     })
     
   }
@@ -961,10 +1202,14 @@ export class DataService {
         return blockedArray;
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public blockInventory(tradeKey:string,isProposer:boolean):Promise<any>{
-    return this.database.ref('/trades/'+tradeKey).once('value').then((snap)=>{
+    return this.database.ref('/trades/'+tradeKey).once('value').then( (snap)=>{
+      if(snap.val() !== null){
       let proposer = snap.val().proposer;
       let receiver = snap.val().receiver;
 
@@ -1083,7 +1328,16 @@ export class DataService {
             })
           })
         })
+        .catch((err) => {
+          this.logError(err);
         })
+        })
+        .catch((err) => {
+          this.logError(err);
+        })
+        })
+        .catch((err) => {
+          this.logError(err);
         })
       }
       else{
@@ -1159,10 +1413,23 @@ export class DataService {
 
               
       })
+      .catch((err) => {
+        this.logError(err);
+      })
+      })
+      .catch((err) => {
+        this.logError(err);
       })
 
         })
+        .catch((err) => {
+          this.logError(err);
+        })
       }
+    }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1215,8 +1482,8 @@ export class DataService {
         
       res.forEach((fetchedGame)=>{
         proposerGames.forEach((game)=>{
-          if(game.game.title === fetchedGame.val().title && game.game.platform === fetchedGame.val().platform){
-            if(game.game.pickedGames === fetchedGame.val().quantity){
+          if(game.title === fetchedGame.val().title && game.platform === fetchedGame.val().platform){
+            if(game.pickedGames === fetchedGame.val().quantity){
               // we completely block it
               fetchedGame.ref.update({
                 blockedItem:false
@@ -1227,7 +1494,7 @@ export class DataService {
             else{
               //we block only picked amount
               fetchedGame.ref.update({
-                blockedAmount: (fetchedGame.val().blockedAmount - game.game.pickedGames)
+                blockedAmount: (fetchedGame.val().blockedAmount - game.pickedGames)
               })
               console.log('partial block:',fetchedGame.key);
             }
@@ -1281,8 +1548,17 @@ export class DataService {
 
 
     })
+    .catch((err) => {
+      this.logError(err);
+    })
+  })
+  .catch((err) => {
+    this.logError(err);
   })
 
+    })
+    .catch((err) => {
+      this.logError(err);
     })
 
 
@@ -1290,6 +1566,9 @@ export class DataService {
 
 
 
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1322,6 +1601,9 @@ export class DataService {
           this.database.ref('chatrooms/'+chatKey+'/chats/').child(messageKey).remove();
         })
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1400,7 +1682,9 @@ export class DataService {
       }
 
     })
-
+    .catch((err) => {
+      this.logError(err);
+    })
 
    
   }
@@ -1473,6 +1757,9 @@ export class DataService {
         }
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
     
     
   }
@@ -1488,6 +1775,9 @@ export class DataService {
         quantity: quantity + 1
       })
       
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1527,6 +1817,9 @@ export class DataService {
         })
       }
       
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1654,6 +1947,9 @@ export class DataService {
       return data;
       
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public disableChatNotifications(): Promise<any>{
@@ -1684,6 +1980,9 @@ export class DataService {
         return data;
       }
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public checkMyBlockedList(uid:string) :Promise<any>{
@@ -1700,6 +1999,9 @@ export class DataService {
       else{
         return data;
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1756,7 +2058,13 @@ export class DataService {
                       object.error = true;
                       return object;
                     }
-                });              
+                })
+                .catch((err) => {
+                  this.logError(err);
+                })              
+            })
+            .catch((err) => {
+              this.logError(err);
             })
             
             
@@ -1768,6 +2076,14 @@ export class DataService {
         username:friend.username
       }
     })
+  }
+
+  public fetchUserTradesAsProposer() :Promise<any>{
+    return this.database.ref('/trades').orderByChild('proposer').equalTo(this.uid).once('value')
+  }
+
+  public fetchUserTradesAsReceiver() :Promise<any>{
+    return this.database.ref('/trades').orderByChild('receiver').equalTo(this.uid).once('value')
   }
 
   public removeFriend(friend:any) :Promise<any>{
@@ -1800,7 +2116,10 @@ export class DataService {
           });
         }
       });
-    });
+    })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public markUserInsideChat(chatKey:string):Promise<any>{
@@ -1812,6 +2131,9 @@ export class DataService {
           })
         }
       })
+    })
+    .catch((err) => {
+      this.logError(err);
     })
   }
 
@@ -1826,6 +2148,9 @@ export class DataService {
           return false;
         }
       }
+    })
+    .catch((err) => {
+      this.logError(err);
     })
     
   }
@@ -1851,6 +2176,9 @@ export class DataService {
         }
       })
     })
+    .catch((err) => {
+      this.logError(err);
+    })
   }
 
   public markReadNotifications(type:string):Promise<any>{
@@ -1867,7 +2195,10 @@ export class DataService {
             if(!notification.val().data.read || notification.val().data.read === 'false'){
               notification.child('data').ref.update({
                 read:true
-              }).then(()=>console.log('trading notification updated!'));
+              }).then(()=>console.log('trading notification updated!'))
+              .catch((err) => {
+                this.logError(err);
+              })
             }
           }
         } 
@@ -1875,7 +2206,10 @@ export class DataService {
           if(notification.val().data.type === type && (!notification.val().data.read || notification.val().data.read === 'false')){
             notification.child('data').ref.update({
               read:true
-            }).then(()=>console.log('social notification updated!'));
+            }).then(()=>console.log('social notification updated!'))
+            .catch((err) => {
+              this.logError(err);
+            })
           }
         }
         else{
@@ -1883,7 +2217,10 @@ export class DataService {
             if(!notification.val().data.read || notification.val().data.read === 'false'){
               notification.child('data').ref.update({
                 read:true
-              }).then(()=>console.log('games notification updated!'));
+              }).then(()=>console.log('games notification updated!'))
+              .catch((err) => {
+                this.logError(err);
+              })
             }
           }
         }
@@ -1892,7 +2229,10 @@ export class DataService {
         //   read:true
         // }).then(()=>console.log('notification updated!'));
       });
-    });
+    })
+    .catch((err) => {
+      this.logError(err);
+    })
     
   }
 
@@ -1970,7 +2310,7 @@ export class DataService {
         }
       })
       .catch((err) => {
-
+        this.logError(err);
         return err;
       });
   }

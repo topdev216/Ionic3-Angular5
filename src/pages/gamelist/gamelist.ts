@@ -6,6 +6,7 @@ import { AddVideogamePage } from '../add-videogame/add-videogame';
 import { ActionPopoverComponent } from '../../components/action-popover/action-popover';
 import { GameInformationPage } from '../game-information/game-information';
 import { PartnerResultsPage } from '../partner-results/partner-results';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 
 /**
@@ -72,6 +73,9 @@ export class GamelistPage{
       if(snap.val().username !== null){
         this.username = snap.val().username;
       }
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
     
     
@@ -202,10 +206,15 @@ export class GamelistPage{
           loader.dismiss();
         })
       },(err)=>{
+        this.dataService.logError(err);
         console.log('server error:',err);
         loader.dismiss();
       })
     })
+  }
+
+  private showPopoverHeader(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   ionViewWillLeave(){
@@ -242,7 +251,13 @@ export class GamelistPage{
         this.navCtrl.push(PartnerResultsPage,{results:results,type:this.type}).then(()=>{
           loader.dismiss();
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
         console.log('results:',results);
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     }
   }
@@ -258,6 +273,9 @@ export class GamelistPage{
       else{
         return;
       }
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
   }
 
@@ -283,6 +301,9 @@ export class GamelistPage{
       console.log('server data:',data);
       this.navCtrl.push(GameInformationPage,{data:data[0]}).then(()=>{
         loader.dismiss();
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     },(err)=>{
       console.log('server error:',err);
@@ -455,6 +476,9 @@ export class GamelistPage{
             console.log('accepted:',data);
             this.dataService.removeGameFromList(game.key,list,this.dataService.uid).then((res)=>{
               console.log('game has been removed',res);
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
             })
           }
         },

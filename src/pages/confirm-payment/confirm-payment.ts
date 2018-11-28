@@ -2,6 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { TabsPage } from '../tabs/tabs';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the ConfirmPaymentPage page.
@@ -51,6 +52,10 @@ export class ConfirmPaymentPage {
     }
   }
 
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
+
   pay(){
     
     this.zone.run(()=>{
@@ -70,7 +75,10 @@ export class ConfirmPaymentPage {
             position:'top'
           })
           toast.present();
-        });
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
       }
       else{
         console.log(data.status);

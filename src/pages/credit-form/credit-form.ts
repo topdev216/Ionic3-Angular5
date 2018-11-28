@@ -6,6 +6,7 @@ import { DataService } from '../../providers/services/dataService';
 import { ConfirmPaymentPage } from '../confirm-payment/confirm-payment';
 import { AddressInterface } from '../../providers/interfaces/addressInterface';
 import { ShippingAddressFormPage } from '../shipping-address-form/shipping-address-form';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 declare var Stripe:any;
 /**
  * Generated class for the CreditFormPage page.
@@ -70,6 +71,10 @@ export class CreditFormPage {
     this.card.mount('#card-element');
   }
 
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
+
   selectState(event:any){
     console.log(event);
     this.state = event;
@@ -112,10 +117,16 @@ export class CreditFormPage {
             this.dataService.saveAddress(address).then(()=>{
               this.navCtrl.push(ConfirmPaymentPage,{token:result.token.id,plan:this.pickedPlan});
             })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
           }
           else{
             this.navCtrl.push(ShippingAddressFormPage,{token:result.token.id,plan:this.pickedPlan})
           }
+        })
+        .catch((err) => {
+          this.dataService.logError(err);
         })
         // if (result && result.token) {
         //   return this.contractorService.saveCreditCard(result.token.id)
@@ -127,7 +138,10 @@ export class CreditFormPage {
         // } else {
         //   this.error = "error"
         // }
-      });
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
   }
 
 

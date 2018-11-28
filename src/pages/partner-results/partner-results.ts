@@ -5,6 +5,7 @@ import { ProfilePage } from '../profile/profile';
 import { DataService } from '../../providers/services/dataService';
 import { MessagingPage } from '../messaging/messaging';
 import { GamelistPage } from '../gamelist/gamelist';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the PartnerResultsPage page.
@@ -44,6 +45,10 @@ export class PartnerResultsPage {
     console.log('ionViewDidLoad PartnerResultsPage');
   }
 
+  private showPopoverHeader(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
+
   ionViewWillEnter(){
     this.events.subscribe('view profile', (data) => {
       console.log('data from popover:',data);
@@ -65,6 +70,9 @@ export class PartnerResultsPage {
         else{
         this.navCtrl.push(MessagingPage,{title:data.data.username,key:chatKey.key,username:this.dataService.username,condition:true,receiverKey:data.data.userKey});
         }
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     })
 

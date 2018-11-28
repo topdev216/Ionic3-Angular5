@@ -4,6 +4,7 @@ import { DataService } from '../../providers/services/dataService';
 import { ProfilePage } from '../profile/profile';
 import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the DiscoverPage page.
@@ -35,14 +36,6 @@ export class DiscoverPage {
     console.log('ionViewDidLoad DiscoverPage');
   }
 
-  ionViewWillLeave(){
-    this.dataService.previousTab = 'DiscoverPage';
-  }
-  ionViewWillEnter(){
-    this.dataService.activeTab = 'DiscoverPage';
-    console.log(this.dataService.activeTab);
-  }
-
   segmentChange(){
     this.queryResults = [];
   }
@@ -64,6 +57,16 @@ export class DiscoverPage {
       if(this.type == "username"){
         this.dataService.searchUsersByUsername(query.value.toLowerCase()).then((snap)=>{
           snap.forEach((childSnap)=>{
+
+            if(childSnap.val().firstName !== undefined){
+              childSnap.initialLetter = childSnap.val().firstName.substring(0,1).toUpperCase();
+            }
+            else if(childSnap.val().username !== undefined){
+              childSnap.initialLetter = childSnap.val().username.substring(0,1).toUpperCase();
+            }
+            else{
+              childSnap.initialLetter = childSnap.val().name.substring(0,1).toUpperCase();
+            }
             console.log('search result:',childSnap.val());
             if(childSnap.key !== this.dataService.uid){
               if(this.dataService.user.blocked !== undefined){
@@ -74,6 +77,7 @@ export class DiscoverPage {
                 }
               }
               else{
+                
                 this.queryResults.push(childSnap);
                 console.log(childSnap.val());
               }
@@ -87,10 +91,22 @@ export class DiscoverPage {
             }
             
           })
+          .catch((err) => {
+            this.dataService.logError(err);
+          })
       }
       else{
         this.dataService.searchUsersByName(this.query).then((snap)=>{
           snap.forEach((childSnap)=>{
+            if(childSnap.val().firstName !== undefined){
+              childSnap.initialLetter = childSnap.val().firstName.substring(0,1).toUpperCase();
+            }
+            else if(childSnap.val().username !== undefined){
+              childSnap.initialLetter = childSnap.val().username.substring(0,1).toUpperCase();
+            }
+            else{
+              childSnap.initialLetter = childSnap.val().name.substring(0,1).toUpperCase();
+            }
             if(childSnap.key !== this.dataService.uid){
               if(this.dataService.user.blocked !== undefined){
                 
@@ -113,9 +129,16 @@ export class DiscoverPage {
             }
             
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
       }
     }
     
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
   goToProfile(user:any,userKey:string){

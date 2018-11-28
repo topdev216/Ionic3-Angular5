@@ -41,15 +41,12 @@ page-profile {
       }
     
     .profile-top {
+        
         width: 100%;
         margin: 0;
         // background: linear-gradient(to right,#2980B9 ,#6DD5FA) !important;
         background-color:#002c5e !important;
         border-bottom:3px solid color($colors,primary);
-
-        button{
-          color:white;
-        }
 
         .trial-text{
           text-align: center;
@@ -74,6 +71,16 @@ page-profile {
                 border: solid 2px color($colors,primary);
                 margin: 0 auto;
             }
+        }
+
+        ion-text-avatar{
+            $photoSize: 128px;
+            font-size:55px;
+            width: $photoSize;
+            height: $photoSize;
+            border-radius: 50%;
+            border: solid 2px color($colors,primary);
+            margin: 0 auto;
         }
     }
 

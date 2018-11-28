@@ -3,6 +3,11 @@
 
     <ion-navbar>
       <ion-title>Trade Details</ion-title>
+      <ion-buttons right>
+          <button detail-none icon-right ion-button (click)="showPopover($event)">
+              <ion-icon name="more"></ion-icon>
+          </button>
+      </ion-buttons>
     </ion-navbar>
   
   </ion-header>

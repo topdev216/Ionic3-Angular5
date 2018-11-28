@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ErrorHandler, Injectable, Injector } from '@angular/core';
 import { IonicPage, NavController, NavParams, Form, LoadingController, ToastController } from 'ionic-angular';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { DataService } from '../../providers/services/dataService';
-import { duration } from 'moment';
+import * as StackTrace from 'stacktrace-js';
+import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import { LogsPage } from '../logs/logs';
 
 /**
  * Generated class for the BugReportPage page.
@@ -24,44 +27,18 @@ export class BugReportPage {
   previousPage:string = null;
   selectOptions:any;
   description:string = null;
-  bugForm: FormGroup;
+  image:string;
+  stacktrace:string;
+  type:string;
+  bugForm = this.formBuilder.group({
+    description: ['',Validators.compose([Validators.required,Validators.minLength(10)])]
+  });
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public loadingCtrl: LoadingController
-    , public toastCtrl: ToastController) {
-
-    this.bugForm = new FormGroup({
-      'page': new FormControl(this.page,
-        [Validators.required]),
-      'previousPage': new FormControl(this.previousPage),
-      'description': new FormControl(this.description,[Validators.required,Validators.minLength(10)])
-    })
-
-    this.selectOptions = {
-      title: 'Page',
-      subTitle: 'Select page',
-    }
-    this.pages = [
-      'Home',
-      'Chat',
-      'Discovery',
-      'Profile',
-      'Address Form',
-      'Notifications',
-      'Add Videogame',
-      'Games List',
-      'Messaging',
-      'Pick Game (Trades)',
-      'Select Platform',
-      'Confirm Trade',
-      'Trade Details',
-      'Friends List',
-      'Membership Plans',
-      'Credit Card Form',
-      'Shipping Address Form',
-      'Confirm Payment',
-      'Login',
-      'Register'
-    ]
+    , public toastCtrl: ToastController
+    , public formBuilder: FormBuilder) {
+    this.image = this.navParams.get('screenshot') as string;
+    this.stacktrace = this.navParams.get('stacktrace') as string;
   }
   
   submit(form:any){
@@ -70,30 +47,44 @@ export class BugReportPage {
     }
     else{
       console.log(form.value);
-      let loader = this.loadingCtrl.create({
-        spinner:'crescent',
-        content:'Please wait...'
-      })
-
-      let toast = this.toastCtrl.create({
-        message:'Your bug has been reported',
-        duration:2000
-      });
-
-      loader.present();
-      this.dataService.saveBug(form.value).then(()=>{
-        loader.dismiss().then(()=>{
+      this.dataService.showLoading('Sending report...');
+      console.log('image to send:',this.image);
+      if(this.dataService.platform.is('cordova')){
+        this.type = 'mobile';
+      }
+      else{
+        this.type = 'core'
+      }
+      this.dataService.saveBug(form.value,this.stacktrace,this.image,this.type).then(()=>{
+        this.dataService.hideLoading().then(()=>{
           this.navCtrl.pop()
           .then(()=>{
-            toast.present();
+            this.dataService.showToast('Your bug has been reported');
+          })
+          .catch((err) => {
+            this.dataService.logError(err);
           })
         })
+        .catch((err) => {
+          this.dataService.logError(err);
+        })
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     }
   }
 
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad BugReportPage');
+  }
+
+  viewLogs(){
+    this.navCtrl.push(LogsPage);
   }
 
 }

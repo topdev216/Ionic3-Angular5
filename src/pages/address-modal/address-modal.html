@@ -12,6 +12,12 @@
             <ion-icon class="backButton" color="light" name="arrow-back"></ion-icon>
           </button>
         </ion-buttons>
+
+        <ion-buttons right>
+            <button detail-none icon-right ion-button (click)="showPopover($event)">
+                <ion-icon name="more"></ion-icon>
+            </button>
+        </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -60,7 +66,7 @@
       
             
       
-        <button ion-button full type="submit">Submit</button>
+        <button ion-button full [disabled]="!postForm.valid" type="submit">Submit</button>
       
         </form>
       

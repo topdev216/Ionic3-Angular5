@@ -15,59 +15,41 @@
 <ion-content class="login-content " padding>
     <ion-grid fixed class="center">
   
-      <form (ngSubmit)="submit()" class="center test" #registerForm="ngForm">
+      <form (ngSubmit)="submit(registerForm)" [formGroup]="registerForm">
 
-          <ion-row>
+
+              <ion-row>
+                <ion-col>
+                    <ion-item>
+                      <ion-input placeholder="First Name" spellcheck="false" name="firstName" type="text" formControlName="firstName" required></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                      <ion-input placeholder="Last Name" spellcheck="false" name="lastName" type="text" formControlName="lastName" required></ion-input>
+                    </ion-item>
+                </ion-col>
+              </ion-row>
               <ion-item>
-                  <ion-icon name="ios-mail-outline" item-start></ion-icon>
-                <ion-input placeholder="Email" spellcheck="false" name="email" type="text" [(ngModel)]="email" required></ion-input>
+                <ion-input placeholder="Email" spellcheck="false" name="email" type="text" formControlName="email" required></ion-input>
               </ion-item>
-          </ion-row>
 
-          <ion-row>
               <ion-item>
-                  <ion-icon name="ios-mail-outline" item-start></ion-icon>
-                <ion-input placeholder="Username" spellcheck="false" name="username" type="text" [(ngModel)]="username" required></ion-input>
+                <ion-input placeholder="Username" spellcheck="false" name="username" type="text" formControlName="username" required></ion-input>
               </ion-item>
-          </ion-row>
 
-          <ion-row>
               <ion-item>
-                  <ion-icon name="ios-lock-outline" item-start></ion-icon>
-                <ion-input placeholder="Password" spellcheck="false" name="password" type="password" [(ngModel)]="password" [type]="passwordType" clearOnEdit="false" required></ion-input>
-                    <ion-icon [name]="passwordIcon" (click)='hideShowPassword()' item-end></ion-icon>
+                <ion-input placeholder="Password" spellcheck="false" name="password" type="password" formControlName="password" [type]="passwordType" clearOnEdit="false" required></ion-input>
               </ion-item>
-          </ion-row>
 
-        <!-- <ion-row>
-          <ion-col class="pb-b">
-            <ion-item>
-              <ion-label>
-                <ion-icon name="ios-mail-outline"></ion-icon>
-              </ion-label>
-              <ion-input placeholder="Email" spellcheck="false" name="email" type="text" [(ngModel)]="email" required></ion-input>
-            </ion-item>
-          </ion-col>
-        </ion-row>
-  
-        <ion-row>
-          <ion-col class="pb-t">
-            <ion-item>
-              <ion-label>
-                <ion-icon name="ios-lock-outline"></ion-icon>
-              </ion-label>
-              <ion-input placeholder="Password" spellcheck="false" name="password" type="password" [(ngModel)]="password" required></ion-input>
-            </ion-item>
-          </ion-col>
-        </ion-row> -->
-  
-        <ion-row>
-          <ion-col>
-            <button ion-button block color="signin" type="submit" [disabled]="!registerForm.form.valid">
+              <ion-item>
+                  <ion-input placeholder="Confirm Password" spellcheck="false" name="verifyPassword" type="password" formControlName="verifyPassword" [type]="passwordType" clearOnEdit="false" required></ion-input>
+                </ion-item>
+
+            <button ion-button block color="signin" type="submit" [disabled]="!registerForm.valid">
               Sign Up
             </button>
-          </ion-col>
-        </ion-row>
+        
       </form>
 
 

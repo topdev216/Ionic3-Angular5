@@ -4,6 +4,7 @@ import { DataService } from '../../providers/services/dataService';
 import { ConfirmTradePage } from '../confirm-trade/confirm-trade';
 import * as firebase from 'firebase/app';
 import { GameInformationPage } from '../game-information/game-information';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the PickGamePage page.
@@ -114,6 +115,10 @@ export class PickGamePage {
     this.tabBar.style.display = 'flex';
   }
 
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  }
+
   ionViewWillEnter(){
     this.tabBar.style.display = 'none';
   }
@@ -133,6 +138,7 @@ export class PickGamePage {
         loader.dismiss();
       })
     },(err)=>{
+      this.dataService.logError(err);
       console.log('server error:',err);
       loader.dismiss();
     })
@@ -473,7 +479,16 @@ export class PickGamePage {
 
       this.navCtrl.push(PickGamePage,{games:myGames,consoles:myConsoles,accessories:myAccessories,username:this.dataService.username,isUser:true,pickedGames:this.pickedGames,secondUsername:this.username,chatKey:this.chatKey,isDirect:this.isDirect})
     })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
   }
 
@@ -637,6 +652,9 @@ export class PickGamePage {
       console.log('phone:',this.phoneToken);
       this.browserToken = snap.val()[key].browserToken;
       this.navCtrl.push(ConfirmTradePage,{games:this.pickedGames,username:this.navParams.get('secondUsername'),chatKey:this.chatKey,phoneToken:this.phoneToken,browserToken:this.browserToken,isDirect:this.isDirect});
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
     })
 
 

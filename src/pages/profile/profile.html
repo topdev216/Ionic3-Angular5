@@ -1,7 +1,12 @@
-<ion-header [hidden]="!comingFromSearch">
+<ion-header>
 
   <ion-navbar>
     <ion-title></ion-title>
+    <ion-buttons right>
+        <button detail-none icon-right ion-button (click)="showPopover($event)">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -25,9 +30,17 @@
             <ion-row justify-content-center>
                   <h1>{{user.username}}</h1>            
             </ion-row>
-            <img src="{{user.coverPhoto}}" alt="asda">
+            <img *ngIf="user.coverPhoto !== ''" src="{{user.coverPhoto}}" alt="asda">
+            <ion-text-avatar color="secondary" *ngIf="user.coverPhoto == ''">
+              {{initialLetter}}
+            </ion-text-avatar>
           </div>
-          <button *ngIf="!comingFromSearch" ion-button (click)="changeProfile()" block clear>Change profile picture</button>
+          <ion-row justify-content-center>
+              <input type="file" id="upload" (change)="fileChange($event)" accept="image/*" #file style="display:none;"/>
+              <button *ngIf="!comingFromSearch" ion-button icon-right color="primary" (click)="file.click()" clear>
+                  Change Profile Picture <ion-icon name="create"></ion-icon>
+                </button>
+          </ion-row>
           <div *ngIf="remainingDays > 0" class="trial-text">
             <p>{{remainingDays}} days remaining</p>
           </div>
@@ -43,12 +56,12 @@
 
             <ion-row no-padding>
 
-            <ion-col *ngIf="user.paidMember; else signUp" text-wrap>
+            <ion-col *ngIf=" user.paidMember ; else signUp" text-wrap>
               <h4>Mailing Address</h4>
               <p>{{user.address?.street}} {{user.address?.city}} {{user.address?.state}} {{user.address?.zipCode}} USA</p>
             </ion-col>
 
-            <ng-template #signUp>
+            <ng-template *ngIf="!user.paidMember && !comingFromSearch">
               <ion-col>
                 <button ion-button clear (click)="goToPlans()">Check our plans</button>
               </ion-col>
@@ -97,8 +110,6 @@
 
    
     <ion-row justify-content-center>
-      <button ion-button outline icon-left *ngIf="!comingFromSearch" (click)="addVideogame()"><ion-icon name="add"></ion-icon>ADD GAMES</button>
-      <button ion-button outline icon-left (click)="openGameList()"><ion-icon name="game-controller-b"></ion-icon>VIEW GAMES</button>
       <button ion-button outline icon-left *ngIf="comingFromSearch" (click)="sendMessage()"><ion-icon name="chatboxes"></ion-icon>Send Message</button>
       <button *ngIf="comingFromSearch && !isFriend" ion-button outline icon-left (click)="addFriend(user)"><ion-icon name="add"></ion-icon>ADD FRIEND</button>
       <button *ngIf="comingFromSearch && isFriend" ion-button outline icon-left (click)="removeFriend(user)"><ion-icon name="remove-circle"></ion-icon>remove friend</button>

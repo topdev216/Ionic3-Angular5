@@ -36,6 +36,7 @@ export class UsernameValidator {
                 resolve(null);
             }
         }, (err) =>{
+            this.dataService.logError(err);
             resolve({'usernameInUse': true})
         });
  

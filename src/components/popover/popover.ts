@@ -50,15 +50,24 @@ export class PopoverComponent {
           console.log(friend.val());
         })
       })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
 
       this.dataService.getUserPublicRooms().then((snap) =>{
         snap.forEach((room) =>{
           this.chatrooms.push({room:room.val(),key:room.key});
         })
       })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
 
       this.dataService.fetchRoom(this.chatKey).then((snap)=>{
         this.activeRoom = snap.val();
+      })
+      .catch((err) => {
+        this.dataService.logError(err);
       })
     
   }
@@ -96,9 +105,15 @@ export class PopoverComponent {
 
               this.viewCtrl.dismiss().then(() => {
                 this.appCtrl.getRootNav().push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false,pickedGames:[],chatKey:this.chatKey});
-              });
+              })
+              .catch((err) => {
+                this.dataService.logError(err);
+              })
               // this.navCtrl.push(PickGamePage,{games:this.gameArray,username:data.name,isUser:false});
 
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
             })
           }
         }
@@ -150,7 +165,11 @@ export class PopoverComponent {
                 toast.present();
               })
             })
+            .catch((err) => {
+              this.dataService.logError(err);
+            })
           }
+
           
         }
       ],
@@ -188,6 +207,9 @@ export class PopoverComponent {
               this.dataService.inviteChatroom(data,key,this.chatroomName,this.chatKey).subscribe( (data) => {
                 console.log(data);
               })
+            })
+            .catch((err) => {
+              this.dataService.logError(err);
             })
             let toast = this.toastCtrl.create({
               message:'Invitation has been sent successfully',

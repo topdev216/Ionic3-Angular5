@@ -35,6 +35,9 @@ export class NotificationPopoverComponent {
       console.log('notification deleted!');
       this.viewCtrl.dismiss();
     })
+    .catch((err) => {
+      this.dataService.logError(err);
+    })
   }
 
   goProfile(){

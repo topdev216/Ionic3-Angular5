@@ -2,16 +2,21 @@ page-home {
     .content{
         background:url('../assets/imgs/home.jpg') no-repeat center center fixed; 
         background-size:cover;
-       
+
+        
         // background: #000000;  /* fallback for old browsers */
         // background: -webkit-linear-gradient(to right, #434343, #000000);  /* Chrome 10-25, Safari 5.1-6 */
         // background: linear-gradient(to right, #434343, #000000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+        
         .main-content{
 
           .offer-button{
             border:1px solid black;
             color:color($colors,dark);
+          }
+
+          .card-md{
+            width:100%;
           }
 
           

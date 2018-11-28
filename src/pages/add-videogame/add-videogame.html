@@ -8,6 +8,11 @@
 
   <ion-navbar hideBackButton="false">
     <ion-title></ion-title>
+    <ion-buttons right>
+        <button detail-none icon-right ion-button (click)="showPopover($event)">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -69,25 +74,46 @@
             </div>
 
             <div *ngIf="gameList.length > 0 && !gamePicked && filter == 'game'">
-              <ion-item detail-push id="searchItem" *ngFor="let game of gameList" (click)="selectedGame(game)">
-                <ion-row no-padding>
+              <ion-item detail-push id="searchItem" *ngFor="let game of gameList; let i = index" (click)="selectedGame(game)">
+                  <ion-row *ngIf="i === 0;else elseCard" class="first-card" no-padding>
 
-                    <ion-col col-3 no-padding>
-                      <img src="https://{{game?.cover?.url}}" alt="">
-                    </ion-col>
+                      <ion-col col-3 no-padding>
+                        <img src="https://{{game?.cover?.url}}" alt="">
+                      </ion-col>
+  
+                      <ion-col col-9 padding-left>
+                        <div text-wrap> {{game.name}} </div>
+                        <div *ngFor="let genre of game.genres; let i = index">
+                            <p *ngIf="i == 0" text-wrap>{{genre.name}}</p>
+                        </div>
+                        <p text-wrap>{{game.first_release_date}}</p>
+                        <p text-wrap *ngIf="platform == null">Platforms: {{game.platforms | joinPipe}}</p>
+                        <p text-wrap *ngIf="platform !== null">{{platform}}</p>
+                        <p text-wrap *ngIf="platform !== null" class="game-offer">{{game.offering_count}} offers</p>
+                      </ion-col>
+                      
+                  </ion-row>
+                  <ng-template #elseCard>
+                      <ion-row no-padding>
 
-                    <ion-col col-9 padding-left>
-                      <div text-wrap> {{game.name}} </div>
-                      <div *ngFor="let genre of game.genres; let i = index">
-                          <p *ngIf="i == 0" text-wrap>{{genre.name}}</p>
-                      </div>
-                      <p text-wrap>{{game.first_release_date}}</p>
-                      <p text-wrap *ngIf="platform == null">Platforms: {{game.platforms | joinPipe}}</p>
-                      <p text-wrap *ngIf="platform !== null">{{platform}}</p>
-                      <p text-wrap *ngIf="platform !== null" class="game-offer">{{game.offering_count}} offers</p>
-                    </ion-col>
-                    
-                </ion-row>
+                          <ion-col col-3 no-padding>
+                            <img src="https://{{game?.cover?.url}}" alt="">
+                          </ion-col>
+      
+                          <ion-col col-9 padding-left>
+                            <div text-wrap> {{game.name}} </div>
+                            <div *ngFor="let genre of game.genres; let i = index">
+                                <p *ngIf="i == 0" text-wrap>{{genre.name}}</p>
+                            </div>
+                            <p text-wrap>{{game.first_release_date}}</p>
+                            <p text-wrap *ngIf="platform == null">Platforms: {{game.platforms | joinPipe}}</p>
+                            <p text-wrap *ngIf="platform !== null">{{platform}}</p>
+                            <p text-wrap *ngIf="platform !== null" class="game-offer">{{game.offering_count}} offers</p>
+                          </ion-col>
+                          
+                      </ion-row>
+                  </ng-template>
+                
               </ion-item>
             </div>
 
@@ -213,12 +239,12 @@
 
 
     <ion-segment [(ngModel)]="filter" class="item-filter">
-        <ion-segment-button value="home">
+        <!-- <ion-segment-button value="home">
             <ion-icon name="home"></ion-icon>
             <div style="margin-top: -20px !important; ">
               Home
             </div>
-          </ion-segment-button>
+          </ion-segment-button> -->
         <ion-segment-button value="game">
           <ion-icon name="game-controller-b"></ion-icon>
           <div style="margin-top: -20px !important; ">

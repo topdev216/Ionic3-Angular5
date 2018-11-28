@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { AddressInterface } from '../../providers/interfaces/addressInterface';
 import { ConfirmPaymentPage } from '../confirm-payment/confirm-payment';
+import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 
 /**
  * Generated class for the ShippingAddressFormPage page.
@@ -47,7 +48,14 @@ export class ShippingAddressFormPage {
       this.dataService.saveAddress(address).then(()=>{
         this.navCtrl.push(ConfirmPaymentPage,{token:this.stripeToken,plan:this.pickedPlan});
       })
+      .catch((err) => {
+        this.dataService.logError(err);
+      })
 
+  }
+
+  private showPopover(myEvent):void{
+    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
   }
 
 }
