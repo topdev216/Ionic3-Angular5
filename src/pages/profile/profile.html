@@ -38,7 +38,7 @@
           <ion-row justify-content-center>
               <input type="file" id="upload" (change)="fileChange($event)" accept="image/*" #file style="display:none;"/>
               <button *ngIf="!comingFromSearch" ion-button icon-right color="primary" (click)="file.click()" clear>
-                  Change Profile Picture <ion-icon name="create"></ion-icon>
+                  <ion-icon name="create"></ion-icon>
                 </button>
           </ion-row>
           <div *ngIf="remainingDays > 0" class="trial-text">

@@ -9,6 +9,7 @@ import { MessagingPage } from '../messaging/messaging';
 import { PaymentModalPage } from '../payment-modal/payment-modal';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 /**
  * Generated class for the ProfilePage page.
@@ -164,7 +165,7 @@ export class ProfilePage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   editAddress(){

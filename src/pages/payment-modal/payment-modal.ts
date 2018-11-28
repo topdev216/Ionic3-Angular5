@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, ViewController,Slides, Slide } fro
 import { CreditFormPage } from '../credit-form/credit-form';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 import { DataService } from '../../providers/services/dataService';
+import * as StackTrace from 'stacktrace-js';
+
 
 /**
  * Generated class for the PaymentModalPage page.
@@ -50,7 +52,7 @@ export class PaymentModalPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   ngOnInit(){

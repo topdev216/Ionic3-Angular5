@@ -7,6 +7,7 @@ import { ActionPopoverComponent } from '../../components/action-popover/action-p
 import { GameInformationPage } from '../game-information/game-information';
 import { PartnerResultsPage } from '../partner-results/partner-results';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 
 /**
@@ -214,7 +215,7 @@ export class GamelistPage{
   }
 
   private showPopoverHeader(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   ionViewWillLeave(){

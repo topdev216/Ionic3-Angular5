@@ -23,6 +23,7 @@ import { TabsPageModule } from '../pages/tabs/tabs.module';
 import { Keyboard } from '@ionic-native/keyboard';
 import { NativeKeyboard } from '@ionic-native/native-keyboard';
 import { DiscoverPage } from '../pages/discover/discover';
+import { LogsPage } from '../pages/logs/logs';
 
 @Component({
   templateUrl: 'app.html'
@@ -164,6 +165,10 @@ export class MyApp {
 
     this.events.subscribe('invite friend', (data) => {
       
+    })
+
+    this.events.subscribe('logs page', () => {
+      this.navCtrl.push(LogsPage);
     })
 
     this.events.subscribe('log out', () => {

@@ -6,6 +6,7 @@ import { VideogameInterface } from '../../providers/interfaces/videogameInterfac
 import { DataService } from '../../providers/services/dataService';
 import * as moment from 'moment';
 import * as firebase from 'firebase';
+import * as StackTrace from 'stacktrace-js';
 import { GamelistPage } from '../gamelist/gamelist';
 import { PlatformSelectionPage } from '../platform-selection/platform-selection';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
@@ -469,7 +470,14 @@ export class AddVideogamePage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+    StackTrace.get().then((trace) => {
+      const stackString = trace[0].toString();
+      this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+      this.dataService.showToast('Error sending stacktrace...');
+    })
   }
 
   private goToList():void{

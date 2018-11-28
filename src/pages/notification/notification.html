@@ -62,7 +62,8 @@
     
         <ion-item (press)="showPopover($event,notification)" (tap)="expand(notification)">
           <ion-avatar item-start>
-            <img src="{{notification.notification.data.photo}}" alt="social">
+            <img *ngIf="notification.notification.data.photo !== ''" src="{{notification.notification.data.photo}}" alt="social">
+            <ion-text-avatar *ngIf="notification.notification.data.photo == ''">{{notification.initialLetter}}</ion-text-avatar>
           </ion-avatar>
 
           
@@ -211,7 +212,8 @@
     
         <ion-item (press)="showPopover($event,notification)" (tap)="expand(notification)">
           <ion-avatar item-start>
-            <img src="{{notification.notification.data.photo}}" alt="asd">
+            <img *ngIf="notification.notification.data.photo !== ''" src="{{notification.notification.data.photo}}" alt="social">
+            <ion-text-avatar *ngIf="notification.notification.data.photo == ''">{{notification.initialLetter}}</ion-text-avatar>
           </ion-avatar>
 
           

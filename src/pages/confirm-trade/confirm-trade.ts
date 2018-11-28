@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, AlertController, ViewController, L
 import { DataService } from '../../providers/services/dataService';
 import { MessagingPage } from '../messaging/messaging';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 /**
  * Generated class for the ConfirmTradePage page.
@@ -53,7 +54,14 @@ export class ConfirmTradePage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+    StackTrace.get().then((trace) => {
+      const stackString = trace[0].toString();
+      this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+      this.dataService.showToast('Error sending stacktrace...');
+    })
   }
 
   confirmTrade(){

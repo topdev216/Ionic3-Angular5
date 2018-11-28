@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 import { DataService } from '../../providers/services/dataService';
+import * as StackTrace from 'stacktrace-js';
 
 /**
  * Generated class for the PlatformSelectionPage page.
@@ -51,7 +52,7 @@ export class PlatformSelectionPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
 }

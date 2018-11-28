@@ -4,6 +4,7 @@ import { DataService } from '../../providers/services/dataService';
 import { AddressInterface } from '../../providers/interfaces/addressInterface';
 import { ConfirmPaymentPage } from '../confirm-payment/confirm-payment';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 /**
  * Generated class for the ShippingAddressFormPage page.
@@ -55,7 +56,7 @@ export class ShippingAddressFormPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
 }

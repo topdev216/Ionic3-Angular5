@@ -5,6 +5,7 @@ import { ProfilePage } from '../profile/profile';
 import { EN_TAB_PAGES } from '../../providers/backbutton/app.config';
 import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 /**
  * Generated class for the DiscoverPage page.
@@ -138,7 +139,7 @@ export class DiscoverPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   goToProfile(user:any,userKey:string){

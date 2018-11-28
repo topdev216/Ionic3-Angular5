@@ -33,6 +33,14 @@
               <ion-label floating>Street Address</ion-label>
               <ion-input spellcheck="false" type="text" [(ngModel)]="streetAddress" formControlName="streetAddress"></ion-input>
             </ion-item>
+
+            <div class="validation-errors">
+                <ng-container *ngFor="let validation of validation_messages.streetAddress" >
+                  <div class="error-message" *ngIf="postForm.get('streetAddress').hasError(validation.type)">
+                {{ validation.message }}
+                  </div>
+                </ng-container>
+            </div>
           </ion-col>
       
           <ion-col no-padding>
@@ -40,6 +48,14 @@
               <ion-label floating>Zip Code</ion-label>
               <ion-input spellcheck="false" type="tel" maxlength="5" [(ngModel)]="zipcode" formControlName="zipcode"></ion-input>
             </ion-item>
+
+            <div class="validation-errors">
+                <ng-container *ngFor="let validation of validation_messages.zipcode" >
+                  <div class="error-message" *ngIf="postForm.get('zipcode').hasError(validation.type)">
+                {{ validation.message }}
+                  </div>
+                </ng-container>
+            </div>
          
           </ion-col>
       
@@ -52,6 +68,14 @@
               <ion-label floating>City</ion-label>
               <ion-input spellcheck="false" type="text" [(ngModel)]="city" formControlName="city"></ion-input>
             </ion-item>
+
+            <div class="validation-errors">
+                <ng-container *ngFor="let validation of validation_messages.city" >
+                  <div class="error-message" *ngIf="postForm.get('city').hasError(validation.type)">
+                {{ validation.message }}
+                  </div>
+                </ng-container>
+            </div>
          
           </ion-col>
       
@@ -60,6 +84,13 @@
               <ion-label floating>State</ion-label>
               <ion-input spellcheck="false" type="text" maxlength="2" text-uppercase [(ngModel)]="state" formControlName="state"></ion-input>
             </ion-item>
+            <div class="validation-errors">
+                <ng-container *ngFor="let validation of validation_messages.state" >
+                  <div class="error-message" *ngIf="postForm.get('state').hasError(validation.type)">
+                {{ validation.message }}
+                  </div>
+                </ng-container>
+            </div>
           </ion-col>
       
         </ion-row>

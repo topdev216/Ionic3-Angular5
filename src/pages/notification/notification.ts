@@ -6,6 +6,8 @@ import { NotificationPopoverComponent } from '../../components/notification-popo
 import { TradeDetailsPage } from '../trade-details/trade-details';
 import { MessagingPage } from '../messaging/messaging';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
+
 
 /**
  * Generated class for the NotificationPage page.
@@ -42,142 +44,6 @@ export class NotificationPage {
     , private events: Events
     , private popoverCtrl: PopoverController) {
 
-    //   this.dataService.getNotifications().on('value',(data)=>{
-    //   this.loading = true;
-    //   this.socialNotifications = [];
-    //   this.tradeNotifications = [];
-    //   this.gameNotifications = [];
-    //   this.socialUnreadNotifications = 0;
-    //   this.tradeUnreadNotifications = 0;
-    //   this.gameUnreadNotifications = 0;
-    //   data.forEach( (notification) =>{
-        
-    //     if(notification.val().data.type == 'social'){
-    //       if(!notification.val().data.read || notification.val().data.read === 'false'){
-    //         this.socialUnreadNotifications++;
-    //       }
-    //       let obj = {
-    //         notification: notification.val(),
-    //         expanded:false,
-    //         timestamp: Number(notification.val().data.creationTime),
-    //         games:notification.val().games,
-    //         expandHeight:100,
-    //         notificationKey:notification.key
-    //       };
-
-    //       console.log('notification browser:',obj)
-
-    //       this.zone.run(() => {
-    //         this.socialNotifications.push(obj);
-    //       })
-    //     }
-    //     else if(notification.val().data.type == 'trade'){
-
-    //       if(!notification.val().data.read || notification.val().data.read === 'false'){
-    //         this.tradeUnreadNotifications++;
-    //       }
-          
-
-    //       this.dataService.checkTradeStatus(notification.val().data.key).then((snap) =>{
-    //         if(snap.val() !== null){
-    //           if(snap.val().status === 'pending'){
-    //             let obj = {
-    //               notification: notification.val(),
-    //               expanded:false,
-    //               timestamp: Number(notification.val().data.creationTime),
-    //               games:notification.val().games,
-    //               expandHeight:240,
-    //               buttonCondition:true,
-    //               tradeStatus:snap.val().status,
-    //               notificationKey:notification.key
-
-    //             };
-    //             this.zone.run(() => {
-    //               this.tradeNotifications.push(obj);
-    //             })
-    //             console.log('notification browser asdasdasd:',obj)
-
-
-    //           }
-    //           else{
-    //             let obj = {
-    //               notification: notification.val(),
-    //               expanded:false,
-    //               timestamp: Number(notification.val().data.creationTime),
-    //               games:notification.val().games,
-    //               expandHeight:240,
-    //               buttonCondition:false,
-    //               tradeStatus:snap.val().status,
-    //               notificationKey:notification.key
-    //             };
-    //             this.zone.run(() => {
-    //               this.tradeNotifications.push(obj);
-    //             })
-    //             console.log('notification browser asdasdasd:',obj)
-
-    //           }
-    //         }
-    //         else{
-    //             let obj = {
-    //               notification: notification.val(),
-    //               expanded:false,
-    //               timestamp: Number(notification.val().data.creationTime),
-    //               games:notification.val().games,
-    //               expandHeight:240,
-    //               buttonCondition:false,
-    //               notificationKey:notification.key
-    //             };
-    //             this.zone.run(() => {
-    //               this.tradeNotifications.push(obj);
-    //             })
-    //             console.log('notification browser asdasdasd:',obj)
-    //         }
-            
-    //       })
-          
-
-    //     }
-    //     else if(notification.val().data.type == 'offering' || notification.val().data.type == 'interested'){
-
-    //       if(!notification.val().data.read || notification.val().data.read === 'false'){
-    //         this.gameUnreadNotifications++;
-    //       }
-
-    //       let obj = {
-    //         notification: notification.val(),
-    //         expanded:false,
-    //         timestamp: Number(notification.val().data.creationTime),
-    //         games:notification.val().games,
-    //         expandHeight:100,
-    //         notificationKey:notification.key
-    //       };
-    //       console.log('notification browser:',obj)
-    //       this.zone.run(() => {
-    //         this.gameNotifications.push(obj);
-    //       })
-    //     }
-    //     else{
-    //       let obj = {
-    //         notification: notification.val(),
-    //         expanded:false,
-    //         timestamp: Number(notification.val().data.creationTime),
-    //         games:notification.val().games,
-    //         expandHeight:0,
-    //         notificationKey:notification.key
-    //       };
-    //       console.log('notification browser:',obj)
-    //       this.zone.run(() => {
-    //         this.tradeNotifications.push(obj);
-    //       })
-    //     }
-    //   })
-    //   this.socialNotifications.reverse();
-    //   this.tradeNotifications.reverse();
-    //   this.gameNotifications.reverse();
-    //   this.loading = false;
-    // })
-
-    
   }
 
   loadNotifications(infiniteScroll? : InfiniteScroll){
@@ -229,8 +95,12 @@ export class NotificationPage {
           return;
         }
         else{
+            let string = notification.val().user;
+            let user = JSON.parse(string);
+            let initialLetter = user.username.substring(0,1).toUpperCase();
           let obj = {
             notification: notification.val(),
+            initialLetter: initialLetter,
             expanded:false,
             timestamp: Number(notification.val().data.creationTime),
             games:notification.val().games,
@@ -259,6 +129,7 @@ export class NotificationPage {
         this.dataService.checkTradeStatus(notification.val().data.key).then((snap) =>{
           if(snap.val() !== null){
             if(snap.val().status === 'pending'){
+             
               let obj = {
                 notification: notification.val(),
                 expanded:false,
@@ -277,6 +148,7 @@ export class NotificationPage {
 
             }
             else{
+             
               let obj = {
                 notification: notification.val(),
                 expanded:false,
@@ -294,6 +166,7 @@ export class NotificationPage {
             }
           }
           else{
+           
               let obj = {
                 notification: notification.val(),
                 expanded:false,
@@ -327,8 +200,14 @@ export class NotificationPage {
           return;
         }
         else{
-          let obj = {
+          let string = notification.val().data.user as string;
+          let obj = {};
+          let user = JSON.parse(string);
+          console.log('notification user:',user);
+          let initialLetter = user.username.substring(0,1).toUpperCase();
+          obj = {
             notification: notification.val(),
+            initialLetter:initialLetter,
             expanded:false,
             timestamp: Number(notification.val().data.creationTime),
             games:notification.val().games,
@@ -348,6 +227,7 @@ export class NotificationPage {
           // })
         }
         else{
+         
           let obj = {
             notification: notification.val(),
             expanded:false,
@@ -398,7 +278,7 @@ export class NotificationPage {
   }
 
   private showPopoverHeader(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   ionViewDidLoad() {

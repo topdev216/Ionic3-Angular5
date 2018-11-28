@@ -5,6 +5,7 @@ import { BackButtonProvider } from '../../providers/backbutton/backbutton';
 import { IonicStepperComponent } from 'ionic-stepper';
 import { GameInformationPage } from '../game-information/game-information';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 
 export interface CountdownTimer {
@@ -162,7 +163,7 @@ export class TradeHistoryPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+  StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   iterateProposedTrades(){

@@ -41,9 +41,23 @@
               Set up payment</button>
         </ion-item>
 
+        <ion-item no-padding>
+                <button detail-none menuClose ion-item outline (click)="goToLogs()" text-wrap><ion-icon name="code" item-end></ion-icon>
+                 View Logs</button>
+            </ion-item>
+
         
         <ion-item class="trade-bucket-text">
-            Trade Bucket: 15 trades
+            Trade Bucket  
+            <ion-item>
+                Trades: {{tradeAmount}}
+            </ion-item>
+            <ion-item *ngIf="consoleAmount > 0">
+                Consoles: {{consoleAmount}}
+            </ion-item>
+            <ion-item *ngIf="accessoriesAmount > 0">
+                Accessories: {{accessoriesAmount}}
+            </ion-item>
         </ion-item>
         
 

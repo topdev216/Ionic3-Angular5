@@ -9,6 +9,8 @@ import * as moment from 'moment';
 import { GameInformationPage } from '../game-information/game-information';
 import { TradeDetailsPage } from '../trade-details/trade-details';
 import { IonicStepperComponent } from 'ionic-stepper';
+import * as StackTrace from 'stacktrace-js';
+
 
 export interface CountdownTimer {
   seconds: number;
@@ -766,7 +768,7 @@ export class HomePage implements OnInit {
     // popover.present({
     //   ev:myEvent
     // });
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent)
+    StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   private goToProfile() :void{

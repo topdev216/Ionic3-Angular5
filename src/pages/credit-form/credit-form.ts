@@ -8,6 +8,7 @@ import { AddressInterface } from '../../providers/interfaces/addressInterface';
 import { ShippingAddressFormPage } from '../shipping-address-form/shipping-address-form';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
 declare var Stripe:any;
+import * as StackTrace from 'stacktrace-js';
 /**
  * Generated class for the CreditFormPage page.
  *
@@ -72,7 +73,7 @@ export class CreditFormPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   selectState(event:any){

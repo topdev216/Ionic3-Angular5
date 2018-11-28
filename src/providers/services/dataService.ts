@@ -395,11 +395,7 @@ export class DataService {
     };
 
     StackTrace.fromError(error).then((stacktrace) => {
-      const stackString = stacktrace
-            .map( (sf) => {
-              return sf.toString();
-            }).join('\n');
-
+      const stackString = stacktrace[0].toString();
             if(this.platform.is('cordova')){
               this.saveBug(obj,stackString,'','mobile');
             }
@@ -446,8 +442,8 @@ export class DataService {
     return toast.present();
   }
 
-  public showPopover(component:any,event:any): Promise<any> {
-    let popover = this.popoverCtrl.create(component);
+  public showPopover(component:any,event:any,stacktrace:string): Promise<any> {
+    let popover = this.popoverCtrl.create(component,{stacktrace: stacktrace});
     return popover.present({
       ev:event
     });
@@ -790,6 +786,10 @@ export class DataService {
       this.logError(err);
     })
   }
+
+  // public generateStacktrace() : Promise<any> {
+  //   return StackTrace.get();
+  // }
 
   public sendTradeNotification(browserToken:string,phoneToken:string,username:string,message:string,tradeKey:string,chatKey:string): Observable<any>{
 

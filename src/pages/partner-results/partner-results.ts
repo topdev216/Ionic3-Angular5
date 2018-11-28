@@ -6,6 +6,8 @@ import { DataService } from '../../providers/services/dataService';
 import { MessagingPage } from '../messaging/messaging';
 import { GamelistPage } from '../gamelist/gamelist';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
+
 
 /**
  * Generated class for the PartnerResultsPage page.
@@ -46,7 +48,7 @@ export class PartnerResultsPage {
   }
 
   private showPopoverHeader(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   ionViewWillEnter(){

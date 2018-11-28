@@ -76,7 +76,14 @@ export class BugReportPage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+    StackTrace.get().then((trace) => {
+      const stackString = trace[0].toString();
+      this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+      this.dataService.showToast('Error sending stacktrace...');
+    })
   }
 
   ionViewDidLoad() {

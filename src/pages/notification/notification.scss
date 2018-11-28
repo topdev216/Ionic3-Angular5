@@ -76,5 +76,15 @@ page-notification {
         max-width: 70px !important;  //any size
         max-height: 70px !important; //any size 
     }
+
+    ion-text-avatar{
+        $photoSize: 70px;
+        font-size:35px;
+        width: $photoSize !important;
+        height: $photoSize !important;
+        border-radius: 50%;
+        border: solid 2px color($colors,primary);
+        margin: 0 auto;
+    }
         
 }

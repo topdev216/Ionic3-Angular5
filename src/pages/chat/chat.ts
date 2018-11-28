@@ -11,6 +11,7 @@ import { FriendPopoverComponent } from '../../components/friend-popover/friend-p
 import { PickGamePage } from '../pick-game/pick-game';
 import { ProfilePage } from '../profile/profile';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 
 /**
@@ -326,7 +327,14 @@ export class ChatPage {
   }
 
   private showPopoverHeader(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+    StackTrace.get().then((trace) => {
+      const stackString = trace[0].toString();
+      this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);
+    })
+    .catch((err) => {
+      this.dataService.logError(err);
+      this.dataService.showToast('Error sending stacktrace...');
+    })
   }
 
   private enterChat(chat:any,isDirect:boolean) :void{

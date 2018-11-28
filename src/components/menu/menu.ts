@@ -28,6 +28,10 @@ export class MenuComponent {
   @ViewChild('mycontent') navCtrl: NavController;
 
   private friends: any [] = [];
+  private user: any;
+  private tradeAmount:number;
+  private consoleAmount:number;
+  private accessoriesAmount:number;
 
   constructor(public dataService: DataService,public alertCtrl: AlertController
     , public events: Events
@@ -41,6 +45,25 @@ export class MenuComponent {
          
     this.events.subscribe('user logged', (data) =>{
       console.log('MENU UID:',this.dataService.uid) ;
+      this.user = this.dataService.user;
+      console.log('user in menu:',this.user);
+      if(this.user.hasOwnProperty('planName')){
+        if(this.user.planName === 'Standard'){
+          this.tradeAmount = 15;
+          this.consoleAmount = 2;
+          this.accessoriesAmount = 2;
+        }
+        else if(this.user.planName === 'Lite'){
+          this.tradeAmount = 10;
+          this.consoleAmount = 0;
+          this.accessoriesAmount = 0;
+        }
+        else{
+          this.tradeAmount = 20;
+          this.consoleAmount = 2;
+          this.accessoriesAmount = 2;
+        }
+      }
       firebase.database().ref('/users/'+this.dataService.uid+'/friends/').on('value', (snapshot)=>{
 
         this.friends = [];
@@ -63,6 +86,10 @@ export class MenuComponent {
 
   private goToFeedback(){
     this.events.publish('report bug');
+  }
+
+  private goToLogs(){
+    this.events.publish('logs page');
   }
 
   private goToDiscover(){

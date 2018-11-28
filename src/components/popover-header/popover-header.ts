@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ViewController, Events, Platform, NavController, App, Tabs } from 'ionic-angular';
+import { ViewController, Events, Platform, NavController, App, Tabs, NavParams } from 'ionic-angular';
 import { DataService } from '../../providers/services/dataService';
 import { Screenshot } from '@ionic-native/screenshot';
 import * as StackTrace from 'stacktrace-js';
@@ -19,15 +19,18 @@ import * as html2canvas from 'html2canvas';
 export class PopoverHeaderComponent {
 
   text: string;
+  stacktrace:string;
 
   constructor(public viewCtrl: ViewController, public dataService: DataService 
     , private screenshot: Screenshot
     , private navCtrl: NavController
     , private events: Events
     , private app: App
+    , private navParams: NavParams
     ) {
     console.log('Hello PopoverHeaderComponent Component');
     this.text = 'Hello World';
+    this.stacktrace = this.navParams.get('stacktrace');
   }
 
   private logout(): void{
@@ -60,20 +63,9 @@ export class PopoverHeaderComponent {
       this.dataService.showLoading('Please wait...');
       if(this.dataService.platform.is('cordova')){
         this.screenshot.URI().then((value) => {
-          StackTrace.get().then((trace) => {
-            const stackString = trace
-            .splice(0, 20)
-            .map( (sf) => {
-              return sf.toString();
-            }).join('\n');
             this.dataService.hideLoading();
-
             console.log('mobile image:',value);
-            this.events.publish('report bug',{uri: value.URI,stackTrace: stackString});
-          })
-          .catch((err) => {
-            this.dataService.logError(err);
-          })
+            this.events.publish('report bug',{uri: value.URI,stackTrace: this.stacktrace});
         })
         .catch((err) => {
           this.dataService.logError(err);
@@ -82,20 +74,10 @@ export class PopoverHeaderComponent {
       else{
         html2canvas(document.body).then( (canvas) => {
           let value = canvas.toDataURL('image/png');
-          
-          let stackString = null as string;
-          StackTrace.get().then((trace) => {
-            stackString = trace
-            .splice(0, 20)
-            .map( (sf) => {
-              return sf.toString();
-            }).join('\n');
+       
             this.dataService.hideLoading();
-            this.events.publish('report bug',{uri: value,stackTrace: stackString});
-          })
-          .catch((err) => {
-            this.dataService.logError(err);
-          })
+            this.events.publish('report bug',{uri: value,stackTrace: this.stacktrace});
+         
         })
         .catch((err) => {
           this.dataService.logError(err);

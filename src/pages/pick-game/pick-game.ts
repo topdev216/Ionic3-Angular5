@@ -5,6 +5,7 @@ import { ConfirmTradePage } from '../confirm-trade/confirm-trade';
 import * as firebase from 'firebase/app';
 import { GameInformationPage } from '../game-information/game-information';
 import { PopoverHeaderComponent } from '../../components/popover-header/popover-header';
+import * as StackTrace from 'stacktrace-js';
 
 /**
  * Generated class for the PickGamePage page.
@@ -116,7 +117,7 @@ export class PickGamePage {
   }
 
   private showPopover(myEvent):void{
-    this.dataService.showPopover(PopoverHeaderComponent,myEvent);
+StackTrace.get().then((trace) => {       const stackString = trace[0].toString();       this.dataService.showPopover(PopoverHeaderComponent,myEvent,stackString);     })     .catch((err) => {       this.dataService.logError(err);       this.dataService.showToast('Error sending stacktrace...');     })
   }
 
   ionViewWillEnter(){
